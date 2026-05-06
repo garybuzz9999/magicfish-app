@@ -1442,7 +1442,19 @@ function renderMainMenu() {
             <div class="menu-card" data-section="news">📰<br><span>Новини</span></div>
             <div class="menu-card" data-section="forum">💬<br><span>Форум</span></div>
             <div class="menu-card" data-section="sos" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:white;font-weight:900;animation:sosGlow 1.5s infinite;border-radius:28px;padding:16px 8px;text-align:center;cursor:pointer;box-shadow:0 4px 20px rgba(231,76,60,0.5);">🆘<br><span>SOS</span></div>
-            <div class="menu-card" data-section="alarm">📡<br><span>GTR Alarm</span></div>
+            <div class="menu-card" onclick="handleGTRAdClick()" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:white;grid-column:span 2;padding:16px;border-radius:24px;box-shadow:0 4px 16px rgba(0,0,0,0.3);cursor:pointer;position:relative;overflow:hidden;">
+              <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;">
+                <div style="font-size:2.5rem;">📡</div>
+                <div style="font-size:1.2rem;font-weight:900;letter-spacing:2px;">GTR</div>
+                <div id="gtrMainTitle" style="font-size:0.85rem;opacity:0.9;font-weight:600;">Waterproof Products for Fishing</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px;">
+                  <div style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:16px;font-size:0.7rem;">📦 Чохли IPX8</div>
+                  <div style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:16px;font-size:0.7rem;">🎒 Рюкзаки</div>
+                  <div style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:16px;font-size:0.7rem;">📡 BLE 4.0</div>
+                </div>
+                <div id="gtrMainButton" style="background:#f39c12;color:white;padding:8px 20px;border-radius:20px;font-weight:700;font-size:0.8rem;margin-top:6px;">🛒 View Catalog</div>
+              </div>
+            </div>
             <div class="menu-card" data-section="cabinet" style="background:#f0fdf4;border:2px solid #27ae60;">👤<br><span>Кабінет</span></div>
         `;
     } else {
@@ -1468,19 +1480,13 @@ function renderMainMenu() {
             </div>
           </div>
 
-          <!-- Center - GTR Ad Image (language switching) -->
-          <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 8px 24px rgba(0,0,0,0.3);cursor:pointer;" onclick="handleGTRAdClick()">
-            <div id="gtrAdContent" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;color:white;">
-              <div style="font-size:3rem;margin-bottom:12px;">📡</div>
-              <div style="font-size:1.4rem;font-weight:900;letter-spacing:3px;margin-bottom:8px;">GTR</div>
-              <div id="gtrAdTitle" style="font-size:1rem;font-weight:700;opacity:0.9;margin-bottom:16px;">Водонепроникні продукти</div>
-              <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;">
-                <div style="background:rgba(255,255,255,0.15);padding:8px 16px;border-radius:20px;font-size:0.8rem;">📦 Чохли IPX8</div>
-                <div style="background:rgba(255,255,255,0.15);padding:8px 16px;border-radius:20px;font-size:0.8rem;">🎒 Рюкзаки</div>
-                <div style="background:rgba(255,255,255,0.15);padding:8px 16px;border-radius:20px;font-size:0.8rem;">📡 BLE 4.0</div>
-              </div>
-              <div id="gtrAdButton" style="background:#f39c12;color:white;padding:12px 24px;border-radius:30px;font-weight:700;font-size:0.9rem;margin-top:8px;">🛒 Переглянути каталог</div>
-            </div>
+          <!-- Center - GTR Device Image (language switching) -->
+          <div id="gtrDeviceContainer" style="background:#1a1a2e;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 8px 24px rgba(0,0,0,0.3);">
+            <img id="gtrDeviceImage" 
+                 src="gtr-uk.jpg" 
+                 alt="GTR Phantom" 
+                 style="width:100%;height:100%;object-fit:contain;"
+                 onerror="this.style.display='none';this.parentElement.innerHTML='<div style=color:white;text-align:center;padding:40px;><div style=font-size:3rem;>📡</div><div style=font-size:1.2rem;font-weight:700;margin-top:12px;>GTR PHANTOM</div><div style=font-size:0.8rem;opacity:0.7;margin-top:8px;>Фото завантажується...</div></div>';">
           </div>
 
           <!-- Right sponsors - scrolling down -->
@@ -1522,18 +1528,25 @@ function renderMainMenu() {
 
 // ========== GTR AD FUNCTIONS ==========
 function updateGTRAdImage() {
-    const title = document.getElementById('gtrAdTitle');
-    const button = document.getElementById('gtrAdButton');
-    if (!title || !button) return;
-    
+    // Update button text
+    const title = document.getElementById('gtrMainTitle');
+    const button = document.getElementById('gtrMainButton');
     const isUkrainian = currentUser?.lang === 'uk' || localStorage.getItem('mf_lang') === 'uk' || !localStorage.getItem('mf_lang');
     
-    if (isUkrainian) {
-        title.textContent = 'Водонепроникні продукти для риболовлі';
-        button.textContent = '🛒 Переглянути каталог';
-    } else {
-        title.textContent = 'Waterproof Products for Fishing';
-        button.textContent = '🛒 View Catalog';
+    if (title && button) {
+        if (isUkrainian) {
+            title.textContent = 'Водонепроникні продукти для риболовлі';
+            button.textContent = '🛒 Переглянути каталог';
+        } else {
+            title.textContent = 'Waterproof Products for Fishing';
+            button.textContent = '🛒 View Catalog';
+        }
+    }
+    
+    // Update device image in partners section
+    const deviceImg = document.getElementById('gtrDeviceImage');
+    if (deviceImg) {
+        deviceImg.src = isUkrainian ? 'gtr-uk.jpg' : 'gtr-en.jpg';
     }
 }
 
