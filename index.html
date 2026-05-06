@@ -264,15 +264,71 @@ let stores = [
     { id:10, name:"Рибальський Рай",       lat:49.444, lng:32.060, address:"вул. Хрещатик, 3, Черкаси",        phone:"+380472665544", hours:"9:00-18:00",  gear:"Спінінги, карпове, поплавкове, зимове", city:"Черкаси", site:"" },
     { id:11, name:"Снасті Захід (Львів)",  lat:49.841, lng:24.031, address:"вул. Городоцька, 77, Львів",       phone:"+380322114433", hours:"10:00-20:00", gear:"Нахлист, форелеве, гірські потоки", city:"Львів",   site:"https://snasti-zahid.lviv.ua" },
     { id:12, name:"Fishland (Запоріжжя)",  lat:47.838, lng:35.139, address:"просп. Соборний, 150, Запоріжжя", phone:"+380612556688", hours:"9:00-19:00",  gear:"Повний асортимент + човни та мотори", city:"Запоріжжя", site:"" },
+    // Топ-2 по обласних центрах
+    { id:13, name:"Рибалка PRO Харків",      lat:49.9935, lng:36.2304, address:"вул. Пушкінська, 25, Харків", phone:"+380577889900", hours:"9:00-20:00", gear:"Shimano, Daiwa, прикормки Sensas, ехолоти Garmin", city:"Харків", site:"" },
+    { id:14, name:"Fishing Shop Харків",     lat:49.9823, lng:36.2512, address:"вул. Сумська, 88, Харків", phone:"+380577112233", hours:"10:00-19:00", gear:"Бюджетні вудки, сітки, підсаки, термоси", city:"Харків", site:"" },
+    { id:15, name:"Рибацький світ Одеса",    lat:46.4825, lng:30.7233, address:"вул. Преображенська, 15, Одеса", phone:"+380489998877", hours:"9:00-19:00", gear:"Морська риболовля, катушки Penn, воблери Rapala", city:"Одеса", site:"" },
+    { id:16, name:"SeaFish Одеса",           lat:46.4756, lng:30.7412, address:"Приморський бульвар, 5, Одеса", phone:"+380482334455", hours:"10:00-20:00", gear:"Спінінги морські, катери, ехолоти", city:"Одеса", site:"" },
+    { id:17, name:"Рибалка-Дніпро",          lat:48.4647, lng:35.0462, address:"вул. Набережна, 12, Дніпро", phone:"+380563332211", hours:"9:00-19:00", gear:"Фідер, короповики, прикормки Traper", city:"Дніпро", site:"" },
+    { id:18, name:"ProFishing Дніпро",       lat:48.4523, lng:35.0589, address:"просп. Гагаріна, 44, Дніпро", phone:"+380564445566", hours:"10:00-20:00", gear:"Ехолоти Lowrance, джерки, силікон", city:"Дніпро", site:"" },
+    { id:19, name:"Карпатська риболовля",    lat:49.8397, lng:24.0297, address:"вул. Городоцька, 120, Львів", phone:"+380322556677", hours:"9:00-19:00", gear:"Форелеві снасті, нахлист, мухи, вейдерси", city:"Львів", site:"" },
+    { id:20, name:"Fishing Point Львів",     lat:49.8234, lng:24.0123, address:"вул. Шевченка, 77, Львів", phone:"+380323667788", hours:"10:00-20:00", gear:"Спінінги Favorite, воблери, зимова риболовля", city:"Львів", site:"" },
+    { id:21, name:"Рибальський Запоріжжя",   lat:47.8388, lng:35.1396, address:"просп. Леніна, 88, Запоріжжя", phone:"+380617778899", hours:"9:00-19:00", gear:"Сомові снасті, донки, квоки, катушки Ryobi", city:"Запоріжжя", site:"" },
+    { id:22, name:"Дніпрові Пороги",         lat:47.8256, lng:35.1512, address:"вул. Запорізька, 15, Запоріжжя", phone:"+380619990011", hours:"10:00-20:00", gear:"Судакові джиг-головки, твістери, ехолоти", city:"Запоріжжя", site:"" },
+    { id:23, name:"Fishing Shop Вінниця",    lat:49.2331, lng:28.4682, address:"вул. Соборна, 44, Вінниця", phone:"+380432778899", hours:"9:00-19:00", gear:"Фідерні вудки Salmo, кормушки, підставки", city:"Вінниця", site:"" },
+    { id:24, name:"ProRibak Вінниця",        lat:49.2234, lng:28.4567, address:"вул. Київська, 22, Вінниця", phone:"+380434556677", hours:"10:00-19:00", gear:"Коропові rod pod, сигналізатори, намети", city:"Вінниця", site:"" },
+    { id:25, name:"Рибалка+ Полтава",        lat:49.5883, lng:34.5514, address:"вул. Соборності, 12, Полтава", phone:"+380532667788", hours:"9:00-19:00", gear:"Матчеві вудки, поплавці Cralusso, прикормки", city:"Полтава", site:"" },
+    { id:26, name:"FishMarket Полтава",      lat:49.5756, lng:34.5389, address:"вул. Європейська, 88, Полтава", phone:"+380533889900", hours:"10:00-20:00", gear:"Спінінги Graphiteleader, шнури Sunline", city:"Полтава", site:"" },
+    { id:27, name:"Рибацький куточок",       lat:49.4445, lng:32.0598, address:"бул. Шевченка, 77, Черкаси", phone:"+380472556677", hours:"9:00-19:00", gear:"Донні снасті, сітки, садки, термоси", city:"Черкаси", site:"" },
+    { id:28, name:"Fishing Pro Черкаси",     lat:49.4334, lng:32.0467, address:"вул. Хрещатик, 88, Черкаси", phone:"+380473778899", hours:"10:00-19:00", gear:"Ехолоти Humminbird, воблери Strike Pro", city:"Черкаси", site:"" },
+    { id:29, name:"Рибалка Чернігів",        lat:51.4982, lng:31.2893, address:"просп. Миру, 44, Чернігів", phone:"+380462889900", hours:"9:00-19:00", gear:"Щукові снасті, жерлиці, блешні Mepps", city:"Чернігів", site:"" },
+    { id:30, name:"Десна-Фіш",               lat:51.4867, lng:31.2756, address:"вул. Шевченка, 22, Чернігів", phone:"+380463667788", hours:"10:00-20:00", gear:"Фідер Mikado, кормушки method, прикормки", city:"Чернігів", site:"" },
+    { id:31, name:"Сумська риболовля",       lat:50.9077, lng:34.7981, address:"вул. Соборна, 15, Суми", phone:"+380542778899", hours:"9:00-19:00", gear:"Зимові вудки, мормишки, балансири Rapala", city:"Суми", site:"" },
+    { id:32, name:"Fishing Zone Суми",       lat:50.8956, lng:34.7845, address:"вул. Харківська, 88, Суми", phone:"+380543556677", hours:"10:00-19:00", gear:"Ультралайт, мікроджиг, вертушки Blue Fox", city:"Суми", site:"" },
+    { id:33, name:"Рівне-Риболов",           lat:50.6199, lng:26.2516, address:"вул. Соборна, 77, Рівне", phone:"+380362667788", hours:"9:00-19:00", gear:"Поплавкові вудки, живцівниці, підсаки", city:"Рівне", site:"" },
+    { id:34, name:"ProFish Рівне",           lat:50.6078, lng:26.2389, address:"просп. Миру, 44, Рівне", phone:"+380363889900", hours:"10:00-20:00", gear:"Спінінги Black Hole, шнури PowerPro", city:"Рівне", site:"" },
 ];
 
-let campings = [
-    { id:1, name:"Рибальський рай «Десна»",  lat:51.50,  lng:31.29,  address:"с. Рибалівка, Чернігівська обл.", price:350, amenities:["🚿 Душ","🚽 Туалет","🔥 Вогнище","🏕️ Намети","🐟 Риболовля"], phone:"+380991112233", rating:4.7, reviews:34,  description:"Тихе місце на березі Десни. Ідеально для риболовлі та відпочинку від міста." },
-    { id:2, name:"Кемп «Золота Рибка»",      lat:50.455, lng:30.524, address:"Київська обл., с. Вишеньки",      price:500, amenities:["🚿 Душ","🚽 Туалет","⛺ Глампінг","🍳 Кухня","🚤 Причал","🅿️ Паркінг"], phone:"+380671234567", rating:4.9, reviews:89,  description:"Преміум кемпінг з усіма зручностями. Оренда човнів та снастей." },
-    { id:3, name:"Відпочинок «Карась»",      lat:47.51,  lng:34.21,  address:"Запорізька обл., берег водосховища", price:200, amenities:["🔥 Вогнище","🏕️ Намети","🎣 Снасті в оренду"], phone:"+380562223344", rating:4.3, reviews:17,  description:"Бюджетний кемпінг. Відмінний клів на карася та коропа!" },
-    { id:4, name:"Еко-кемп «Шацькі озера»", lat:51.524, lng:23.941, address:"Волинська обл., Шацький р-н",      price:450, amenities:["🚿 Душ","🏕️ Намети","⛺ Будиночки","🚤 Причал","🌲 Ліс","🐟 Риболовля"], phone:"+380332887766", rating:4.8, reviews:112, description:"Серед лісу та чистих карпатських озер. Нічна та денна риболовля." },
-    { id:5, name:"Садиба «Дністер»",        lat:48.647, lng:25.725, address:"Тернопільська обл., Заліщики",     price:380, amenities:["🚿 Душ","🚽 Туалет","🍳 Домашня кухня","🔥 Мангал","🐟 Риболовля"], phone:"+380352445566", rating:4.5, reviews:43,  description:"Домашня атмосфера, смачна їжа, клів на хижака." },
-    { id:6, name:"Кемп «Карпатський»",      lat:48.457, lng:24.546, address:"Івано-Франківська обл., Яремче",   price:600, amenities:["🚿 Душ","⛺ Глампінг","🌊 Річка","🏔️ Гори","🍳 Кухня"], phone:"+380342556677", rating:4.6, reviews:58,  description:"Форелева річка прямо біля табору. Нахлист та спінінг." },
+// Бази відпочинку на трасі Київ-Чоп (М06)
+let basesKyivChop=[
+  {id:1,name:"База відпочинку Лісова Хата",lat:50.3234,lng:29.8567,city:"Житомир",phone:"+380412556677",services:"Будиночки, баня, риболовля, мангали. На березі озера."},
+  {id:2,name:"Садиба Волинська Пісня",lat:50.7456,lng:26.8901,city:"Рівне",phone:"+380362778899",services:"Котеджі, басейн, риболовля, верхова їзда."},
+  {id:3,name:"База Галицький Затишок",lat:49.8234,lng:24.5678,city:"Львів",phone:"+380322889900",services:"Будиночки в горах, риболовля на форель, екскурсії."},
+  {id:4,name:"Відпочинковий комплекс Закарпаття",lat:48.9567,lng:23.1234,city:"Мукачево",phone:"+380314445566",services:"Котеджі, термальні басейни, риболовля, SPA."},
+  {id:5,name:"Садиба Карпатська Вишня",lat:48.7890,lng:23.4567,city:"Свалява",phone:"+380314667788",services:"Дерев'яні будиночки, форелеві ставки, екотуризм."},
+  {id:6,name:"База Поліський Куточок",lat:50.5678,lng:28.2345,city:"Новоград-Волинський",phone:"+380415223344",services:"Будиночки біля озера, риболовля, човни."},
+  {id:7,name:"Рибальська садиба Березина",lat:49.6234,lng:25.1234,city:"Тернопіль",phone:"+380352556677",services:"Котеджі, ставки з коропом, альтанки."},
+  {id:8,name:"База Львівські озера",lat:49.9012,lng:23.8901,city:"Львів",phone:"+380322998877",services:"Номери, риболовля, прокат снастей, ресторан."},
+  {id:9,name:"Комплекс Ужанська долина",lat:48.6234,lng:22.5678,city:"Ужгород",phone:"+380312334455",services:"Будиночки, риболовля на Тисі, рафтинг."},
+  {id:10,name:"Садиба Чопські кручі",lat:48.4123,lng:22.2012,city:"Чоп",phone:"+380312223344",services:"Котеджі біля кордону, риболовля, мангали."}
+];
+
+// Бази відпочинку на трасі Київ-Варшава (М07)
+let basesKyivWarsaw=[
+  {id:1,name:"База відпочинку Волинські озера",lat:50.7890,lng:25.5678,city:"Луцьк",phone:"+380332667788",services:"Будиночки на Шацьких озерах, риболовля, катамарани."},
+  {id:2,name:"Садиба Поліський Рай",lat:51.2345,lng:26.7890,city:"Костопіль",phone:"+380365889900",services:"Котеджі в лісі, риболовля, гриби, ягоди."},
+  {id:3,name:"Комплекс Княжий двір",lat:50.3456,lng:25.0789,city:"Володимир",phone:"+380334556677",services:"Замкова стилістика, риболовля, історичні екскурсії."},
+  {id:4,name:"База Любомльські ліси",lat:51.2123,lng:24.0345,city:"Любомль",phone:"+380337112233",services:"Будиночки, дикий відпочинок, риболовля."},
+  {id:5,name:"Садиба Волинська перлина",lat:51.3567,lng:23.8901,city:"Шацьк",phone:"+380333445566",services:"Котеджі на озері Світязь, риболовля, пляж."},
+  {id:6,name:"База Сарненські озера",lat:51.3234,lng:26.5678,city:"Сарни",phone:"+380365667788",services:"Дерев'яні будиночки, риболовля на щуку."},
+  {id:7,name:"Комплекс Ратнівський",lat:51.2890,lng:24.8901,city:"Ратне",phone:"+380336778899",services:"Будиночки біля кордону, риболовля, мисливство."},
+  {id:8,name:"Садиба Західний Буг",lat:50.8456,lng:24.0123,city:"Володимир",phone:"+380334889900",services:"Котеджі на річці, риболовля, сплави."},
+  {id:9,name:"База Прип'ятські плавні",lat:51.7890,lng:25.1234,city:"Любешів",phone:"+380339112233",services:"Будиночки на воді, риболовля, човни."},
+  {id:10,name:"Комплекс Ковельський затишок",lat:51.2156,lng:24.7123,city:"Ковель",phone:"+380335667788",services:"Номери, риболовля, ресторан української кухні."}
+];
+
+// Кемпінги по Україні
+let campings=[
+  {id:1,name:"Кемпінг Карпати",lat:48.5234,lng:23.7890,city:"Рахів",phone:"+380314556677",services:"Місця під намети/автодоми, душ, вогнище, магазин."},
+  {id:2,name:"Camping Lviv West",lat:49.8123,lng:23.7234,city:"Львів",phone:"+380322778899",services:"RV-parking, електрика, WiFi, кухня, WC."},
+  {id:3,name:"Кемпінг Шацькі озера",lat:51.4890,lng:23.8234,city:"Шацьк",phone:"+380333556677",services:"Намети, будиночки, пляж, прокат каяків."},
+  {id:4,name:"Eko Camp Ужгород",lat:48.6345,lng:22.3456,city:"Ужгород",phone:"+380312445566",services:"Глемпінг, душ, барбекю, WiFi, риболовля."},
+  {id:5,name:"Camping Rivne",lat:50.6234,lng:26.1234,city:"Рівне",phone:"+380362889900",services:"Караванінг, палатки, електрика, душ."},
+  {id:6,name:"Кемпінг Любомль",lat:51.2234,lng:24.0456,city:"Любомль",phone:"+380337223344",services:"Дикий кемпінг, вогнище, озеро, мінімальна інфра."},
+  {id:7,name:"Mountain Camp",lat:48.8567,lng:24.6123,city:"Івано-Франківськ",phone:"+380342667788",services:"Гірський кемпінг, намети, трекінг, риболовля."},
+  {id:8,name:"Кемпінг Волинь",lat:50.7456,lng:25.3234,city:"Луцьк",phone:"+380332445566",services:"Автодоми welcome, електрика, душ, кафе."},
+  {id:9,name:"Camping Zhytomyr",lat:50.2678,lng:28.6234,city:"Житомир",phone:"+380412667788",services:"RV park, WiFi, магазин, WC, душ."},
+  {id:10,name:"Кемпінг Тернопіль",lat:49.5456,lng:25.5678,city:"Тернопіль",phone:"+380352778899",services:"Біля ставу, палатки, прокат човнів."}
 ];
 
 
@@ -1412,12 +1468,41 @@ function renderMainMenu() {
             </div>
           </div>
 
-          <!-- Center - GTR Phantom image -->
-          <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 8px 24px rgba(0,0,0,0.3);">
-            <img src="https://i.postimg.cc/hvqF6k3v/gtr-phantom.jpg" 
-                 alt="GTR Phantom" 
-                 style="width:100%;height:100%;object-fit:cover;">
+          <!-- Center - GTR Ad Image (language switching) -->
+          <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 8px 24px rgba(0,0,0,0.3);">
+            <img id="gtrAdImage" 
+                 src="https://ru.files.fm/u/tchm6fwa6k" 
+                 alt="GTR Products" 
+                 style="width:100%;height:100%;object-fit:cover;cursor:pointer;"
+                 onclick="handleGTRAdClick()">
           </div>
+          <script>
+          // Auto-switch GTR ad image based on language
+          function updateGTRAdImage() {
+            const img = document.getElementById('gtrAdImage');
+            if (!img) return;
+            const isUkrainian = currentUser?.lang === 'uk' || localStorage.getItem('mf_lang') === 'uk' || !localStorage.getItem('mf_lang');
+            img.src = isUkrainian ? 'https://ru.files.fm/u/tchm6fwa6k' : 'https://ru.files.fm/u/77pgsh4xrp';
+          }
+          
+          function handleGTRAdClick() {
+            // Show GTR products menu
+            const lang = currentUser?.lang === 'uk' || localStorage.getItem('mf_lang') === 'uk' || !localStorage.getItem('mf_lang');
+            const options = lang ? 
+              ['📡 GTR Phantom BLE 4.0', '📦 Чохли водонепроникні', '🎒 Рюкзаки водонепроникні'] :
+              ['📡 GTR Phantom BLE 4.0', '📦 Waterproof Cases', '🎒 Waterproof Backpacks'];
+            
+            const choice = prompt(options.join('\n\n') + '\n\n' + (lang ? 'Оберіть (1-3):' : 'Choose (1-3):'));
+            if (choice === '1') renderAlarm();
+            else if (choice === '2') showGTRCases();
+            else if (choice === '3') showGTRBackpacks();
+          }
+          
+          // Update image when language changes
+          if (typeof updateGTRAdImage === 'function') {
+            setTimeout(updateGTRAdImage, 100);
+          }
+          </script>
 
           <!-- Right sponsors - scrolling down -->
           <div style="position:relative;overflow:hidden;background:linear-gradient(180deg,#e9ecef 0%,#f8f9fa 100%);border-radius:12px;padding:8px 0;">
@@ -1449,6 +1534,11 @@ function renderMainMenu() {
     document.getElementById('becomePartnerBtn')?.addEventListener('click', () => {
         alert('📧 Для співпраці: partners@magicfish.app\n\nМи раді новим партнерам!');
     });
+    
+    // Update GTR ad image based on language
+    setTimeout(() => {
+        if (typeof updateGTRAdImage === 'function') updateGTRAdImage();
+    }, 200);
 }
 
 // ========== SOS (ПОКРАЩЕНИЙ) ==========
@@ -3823,28 +3913,29 @@ function renderBonus() {
 }
 
 // ========== GTR WATERPROOF CASES ==========
-function renderGTRCases() {
-    
+function showGTRCases() {
     const sym = getCurrencySymbol();
     const cases = [
-        { id:1, name:'GTR Case S', desc:'Смартфон до 6.5"', price:12, features:['IPX8 водонепроникний','Touchscreen-сумісний','Ремінець на шию','Прозора передня панель'], emoji:'📱' },
-        { id:2, name:'GTR Case M', desc:'Смартфон до 7" + гаманець', price:16, features:['IPX8 водонепроникний','Кишеня для карток','Карабін в комплекті','Флуоресцентний колір'], emoji:'📲' },
-        { id:3, name:'GTR Case XL', desc:'Планшет до 10"', price:24, features:['IPX8 водонепроникний','Посилений корпус','Подвійний замок','Можна занурювати до 10м'], emoji:'💻' },
-        { id:4, name:'GTR Dry Bag 5L', desc:'Сумка для речей', price:18, features:['Водонепроникна 100%','5 літрів','Рюкзачні лямки','Захист від піску'], emoji:'🎒' },
-        { id:5, name:'GTR Arm Band', desc:'Нарукавний чохол', price:9, features:['IPX4','Для бігу / риболовлі','Розмір S-XL','Touchscreen вікно'], emoji:'💪' },
-        { id:6, name:'GTR Float Case', desc:'Чохол що тримається на воді', price:20, features:['Плавучий корпус','IPX8','Помаранчевий — видно у воді','До 6.7"'], emoji:'🟠' },
+        { id:1, name:'GTR Case S', desc:'Смартфон до 6.5"', price:12, features:['IPX8 водонепроникний','Touchscreen-сумісний','Ремінець на шию','Прозора передня панель'], emoji:'📱', color:'#3b82f6' },
+        { id:2, name:'GTR Case M', desc:'Смартфон до 7" + гаманець', price:16, features:['IPX8 водонепроникний','Кишеня для карток','Карабін в комплекті','Флуоресцентний колір'], emoji:'📲', color:'#3b82f6' },
+        { id:3, name:'GTR Case XL', desc:'Планшет до 10"', price:24, features:['IPX8 водонепроникний','Посилений корпус','Подвійний замок','Можна занурювати до 10м'], emoji:'💻', color:'#2563eb' },
+        { id:4, name:'GTR Dry Bag 5L', desc:'Сумка для речей', price:18, features:['Водонепроникна 100%','5 літрів','Рюкзачні лямки','Захист від піску'], emoji:'🎒', color:'#1d4ed8' },
+        { id:5, name:'GTR Arm Band', desc:'Нарукавний чохол', price:9, features:['IPX4','Для бігу / риболовлі','Розмір S-XL','Touchscreen вікно'], emoji:'💪', color:'#3b82f6' },
+        { id:6, name:'GTR Float Case', desc:'Чохол що тримається на воді', price:20, features:['Плавучий корпус','IPX8','Помаранчевий — видно у воді','До 6.7"'], emoji:'🟠', color:'#f97316' },
+        { id:7, name:'GTR Universal Pouch', desc:'Універсальна кишеня', price:14, features:['Водонепроникна','Для документів','Кріплення MOLLE','Прозоре вікно'], emoji:'📄', color:'#3b82f6' },
+        { id:8, name:'GTR Sport Case', desc:'Спортивний чохол', price:19, features:['IPX7','Для фітнесу/риболовлі','Відбиваючі елементи','Кишені для ключів'], emoji:'🏃', color:'#10b981' },
     ];
     const app = document.getElementById('appRoot');
     app.innerHTML = `
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <h1>📦 GTR Cases</h1>
-        <button id="backCases" class="back-btn">← Back</button>
+        <h1>📦 GTR Чохли</h1>
+        <button id="backCases" class="back-btn">← Назад</button>
       </div>
-      <div style="background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:24px;padding:16px;color:white;margin-bottom:20px;text-align:center;">
-        <div style="font-size:1.1rem;font-weight:700;">💧 Waterproof protection for your gadgets</div>
-        <div style="font-size:0.82rem;opacity:0.8;margin-top:4px;">IPX8 certified · Fishing & outdoor grade</div>
+      <div style="background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:24px;padding:16px;color:white;margin-bottom:20px;text-align:center;">
+        <div style="font-size:1.1rem;font-weight:700;">💧 Водонепроникний захист для гаджетів</div>
+        <div style="font-size:0.82rem;opacity:0.8;margin-top:4px;">IPX8 сертифікація · Для риболовлі та outdoor</div>
       </div>
       <div id="casesList"></div>
     </div>`;
@@ -3860,17 +3951,71 @@ function renderGTRCases() {
               <div style="font-weight:800;font-size:1.05rem;color:#1f3b4c;">${c.name}</div>
               <div style="font-size:0.82rem;color:#888;margin-bottom:8px;">${c.desc}</div>
               <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;">
-                ${c.features.map(f=>`<span style="background:#e8f4fd;color:#1565c0;padding:3px 10px;border-radius:40px;font-size:0.72rem;font-weight:600;">${f}</span>`).join('')}
+                ${c.features.map(f=>`<span style="background:#e8f4fd;color:${c.color};padding:3px 10px;border-radius:40px;font-size:0.72rem;font-weight:600;">${f}</span>`).join('')}
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;">
                 <div style="font-size:1.3rem;font-weight:900;color:#f39c12;">${sym}${c.price}</div>
-                <button style="background:#1f3b4c;color:white;border:none;border-radius:40px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.88rem;">🛒 Order</button>
+                <button style="background:${c.color};color:white;border:none;border-radius:40px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.88rem;">🛒 Замовити</button>
               </div>
             </div>
           </div>`;
-        div.querySelector('button').onclick = () => alert(`✅ Order for ${c.name} (${sym}${c.price})\n\nDelivery via UkrPoshta / Nova Poshta.\nDemo — real orders coming soon!`);
+        div.querySelector('button').onclick = () => alert(`✅ Замовлення: ${c.name} (${sym}${c.price})\n\n📦 Доставка: Нова Пошта / УкрПошта\n📞 Контакт: +380503334455\n\nДемо — реальні замовлення незабаром!`);
         list.appendChild(div);
     });
+}
+
+// ========== GTR WATERPROOF BACKPACKS ==========
+function showGTRBackpacks() {
+    const sym = getCurrencySymbol();
+    const backpacks = [
+        { id:1, name:'GTR Dry Pack 20L', desc:'Рюкзак 20 літрів', price:45, features:['IPX6 водонепроникний','Roll-top застібка','Мягкі лямки','Відбиваючі елементи'], emoji:'🎒', color:'#10b981' },
+        { id:2, name:'GTR Dry Pack 30L', desc:'Рюкзак 30 літрів', price:55, features:['IPX6','Відділення для ноутбука','Посилена спинка','Грудна стяжка'], emoji:'🎒', color:'#059669' },
+        { id:3, name:'GTR Fishing Pack 40L', desc:'Рибальський рюкзак 40л', price:75, features:['Повна водонепроникність','Відділення для снастей','Rod holder','Hip belt'], emoji:'🎣', color:'#047857' },
+        { id:4, name:'GTR Dry Bag Mini 10L', desc:'Компактна сумка 10л', price:28, features:['100% водонепроникна','Легка','Карабін в комплекті','Яскравий колір'], emoji:'💼', color:'#10b981' },
+        { id:5, name:'GTR Pro Pack 50L', desc:'Професійний рюкзак 50л', price:95, features:['IPX7','Система MOLLE','Кишені для термосу','Поясний ремінь'], emoji:'🏔️', color:'#065f46' },
+        { id:6, name:'GTR Waist Pack', desc:'Поясна сумка', price:22, features:['Водонепроникна','Для документів/телефону','Регульований пояс','Прихована кишеня'], emoji:'👜', color:'#10b981' },
+    ];
+    const app = document.getElementById('appRoot');
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${currentUser.nickname}</div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h1>🎒 GTR Рюкзаки</h1>
+        <button id="backPacks" class="back-btn">← Назад</button>
+      </div>
+      <div style="background:linear-gradient(135deg,#10b981,#059669);border-radius:24px;padding:16px;color:white;margin-bottom:20px;text-align:center;">
+        <div style="font-size:1.1rem;font-weight:700;">💧 Водонепроникні рюкзаки для риболовлі</div>
+        <div style="font-size:0.82rem;opacity:0.8;margin-top:4px;">IPX6-IPX7 · Професійна якість для outdoor</div>
+      </div>
+      <div id="packsList"></div>
+    </div>`;
+    document.getElementById('backPacks').onclick = () => renderMainMenu();
+    const list = document.getElementById('packsList');
+    backpacks.forEach(p => {
+        const div = document.createElement('div');
+        div.style.cssText = 'background:white;border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:0 3px 12px rgba(0,0,0,0.08);';
+        div.innerHTML = `
+          <div style="display:flex;align-items:flex-start;gap:14px;">
+            <div style="font-size:2.5rem;flex-shrink:0;">${p.emoji}</div>
+            <div style="flex:1;">
+              <div style="font-weight:800;font-size:1.05rem;color:#1f3b4c;">${p.name}</div>
+              <div style="font-size:0.82rem;color:#888;margin-bottom:8px;">${p.desc}</div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;">
+                ${p.features.map(f=>`<span style="background:#d1fae5;color:${p.color};padding:3px 10px;border-radius:40px;font-size:0.72rem;font-weight:600;">${f}</span>`).join('')}
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="font-size:1.3rem;font-weight:900;color:#f39c12;">${sym}${p.price}</div>
+                <button style="background:${p.color};color:white;border:none;border-radius:40px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.88rem;">🛒 Замовити</button>
+              </div>
+            </div>
+          </div>`;
+        div.querySelector('button').onclick = () => alert(`✅ Замовлення: ${p.name} (${sym}${p.price})\n\n📦 Доставка: Нова Пошта / УкрПошта\n📞 Контакт: +380503334455\n\nДемо — реальні замовлення незабаром!`);
+        list.appendChild(div);
+    });
+}
+
+function renderGTRCases() {
+    showGTRCases();
 }
 
 // ========== GTR СИГНАЛІЗАТОР ==========
