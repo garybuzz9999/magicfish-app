@@ -8,6 +8,13 @@
         .map-container { height: 300px; border-radius: 28px; margin-bottom: 20px; overflow: hidden; position: relative; }
         .map-container iframe { width: 100%; height: 100%; border: none; border-radius: 28px; }
         .map-pins-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        
+        /* GTR Popup on hover */
+        .menu-card:hover .gtr-popup,
+        .menu-card:active .gtr-popup {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
     </style>
     <!-- Leaflet з CDN — якщо не завантажиться (локальний файл), використовується fallback карта -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -1442,17 +1449,29 @@ function renderMainMenu() {
             <div class="menu-card" data-section="news">📰<br><span>Новини</span></div>
             <div class="menu-card" data-section="forum">💬<br><span>Форум</span></div>
             <div class="menu-card" data-section="sos" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:white;font-weight:900;animation:sosGlow 1.5s infinite;border-radius:28px;padding:16px 8px;text-align:center;cursor:pointer;box-shadow:0 4px 20px rgba(231,76,60,0.5);">🆘<br><span>SOS</span></div>
-            <div class="menu-card" onclick="handleGTRAdClick()" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:white;grid-column:span 2;padding:16px;border-radius:24px;box-shadow:0 4px 16px rgba(0,0,0,0.3);cursor:pointer;position:relative;overflow:hidden;">
-              <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;">
-                <div style="font-size:2.5rem;">📡</div>
-                <div style="font-size:1.2rem;font-weight:900;letter-spacing:2px;">GTR</div>
-                <div id="gtrMainTitle" style="font-size:0.85rem;opacity:0.9;font-weight:600;">Waterproof Products for Fishing</div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px;">
-                  <div style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:16px;font-size:0.7rem;">📦 Чохли IPX8</div>
-                  <div style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:16px;font-size:0.7rem;">🎒 Рюкзаки</div>
-                  <div style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:16px;font-size:0.7rem;">📡 BLE 4.0</div>
+            <div class="menu-card" onclick="handleGTRAdClick()" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:white;position:relative;overflow:visible;cursor:pointer;">
+              <div style="font-size:2rem;margin-bottom:4px;">📡</div>
+              <span style="font-weight:700;">GTR Alarm</span>
+              
+              <!-- Expanded info on hover/click -->
+              <div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:16px;width:280px;box-shadow:0 8px 24px rgba(0,0,0,0.5);z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;" class="gtr-popup">
+                <div style="font-size:1.2rem;font-weight:900;letter-spacing:2px;margin-bottom:12px;">GTR PHANTOM</div>
+                <div id="gtrPopupSubtitle" style="font-size:0.7rem;opacity:0.8;margin-bottom:12px;">Універсальний сигналізатор клювання</div>
+                <div style="display:flex;flex-direction:column;gap:8px;font-size:0.65rem;">
+                  <div style="display:flex;gap:8px;align-items:start;">
+                    <span style="font-size:1rem;">📶</span>
+                    <div><strong>Bluetooth 4.0</strong><br><span id="gtrF1" style="opacity:0.7;">До 100м</span></div>
+                  </div>
+                  <div style="display:flex;gap:8px;align-items:start;">
+                    <span style="font-size:1rem;">💧</span>
+                    <div><strong>IPX6</strong><br><span id="gtrF2" style="opacity:0.7;">Захист від води</span></div>
+                  </div>
+                  <div style="display:flex;gap:8px;align-items:start;">
+                    <span style="font-size:1rem;">🔋</span>
+                    <div><strong id="gtrF3">До 120 днів</strong><br><span id="gtrF3s" style="opacity:0.7;">Низьке споживання</span></div>
+                  </div>
                 </div>
-                <div id="gtrMainButton" style="background:#f39c12;color:white;padding:8px 20px;border-radius:20px;font-weight:700;font-size:0.8rem;margin-top:6px;">🛒 View Catalog</div>
+                <button style="background:#f39c12;color:white;border:none;border-radius:20px;padding:8px 16px;font-weight:700;width:100%;margin-top:12px;cursor:pointer;">🛒 Каталог</button>
               </div>
             </div>
             <div class="menu-card" data-section="cabinet" style="background:#f0fdf4;border:2px solid #27ae60;">👤<br><span>Кабінет</span></div>
@@ -1568,50 +1587,60 @@ function renderMainMenu() {
 
 // ========== GTR AD FUNCTIONS ==========
 function updateGTRAdImage() {
-    // Update button text
-    const title = document.getElementById('gtrMainTitle');
-    const button = document.getElementById('gtrMainButton');
     const isUkrainian = currentUser?.lang === 'uk' || localStorage.getItem('mf_lang') === 'uk' || !localStorage.getItem('mf_lang');
     
-    if (title && button) {
+    // Update GTR popup content
+    const subtitle = document.getElementById('gtrPopupSubtitle');
+    const f1 = document.getElementById('gtrF1');
+    const f2 = document.getElementById('gtrF2');
+    const f3 = document.getElementById('gtrF3');
+    const f3s = document.getElementById('gtrF3s');
+    
+    if (subtitle) {
         if (isUkrainian) {
-            title.textContent = 'Водонепроникні продукти для риболовлі';
-            button.textContent = '🛒 Переглянути каталог';
+            subtitle.textContent = 'Універсальний сигналізатор клювання';
+            if (f1) f1.textContent = 'До 100м';
+            if (f2) f2.textContent = 'Захист від води';
+            if (f3) f3.textContent = 'До 120 днів';
+            if (f3s) f3s.textContent = 'Низьке споживання';
         } else {
-            title.textContent = 'Waterproof Products for Fishing';
-            button.textContent = '🛒 View Catalog';
+            subtitle.textContent = 'Universal bite alarm';
+            if (f1) f1.textContent = 'Up to 100m';
+            if (f2) f2.textContent = 'Water protection';
+            if (f3) f3.textContent = 'Up to 120 days';
+            if (f3s) f3s.textContent = 'Low consumption';
         }
     }
     
     // Update device content in partners section
-    const subtitle = document.getElementById('gtrDeviceSubtitle');
-    const f1 = document.getElementById('gtrFeature1');
-    const f2 = document.getElementById('gtrFeature2');
-    const f3 = document.getElementById('gtrFeature3');
-    const f3sub = document.getElementById('gtrFeature3sub');
-    const f4 = document.getElementById('gtrFeature4');
-    const f4sub = document.getElementById('gtrFeature4sub');
-    const f5 = document.getElementById('gtrFeature5');
+    const devSubtitle = document.getElementById('gtrDeviceSubtitle');
+    const df1 = document.getElementById('gtrFeature1');
+    const df2 = document.getElementById('gtrFeature2');
+    const df3 = document.getElementById('gtrFeature3');
+    const df3sub = document.getElementById('gtrFeature3sub');
+    const df4 = document.getElementById('gtrFeature4');
+    const df4sub = document.getElementById('gtrFeature4sub');
+    const df5 = document.getElementById('gtrFeature5');
     
-    if (subtitle) {
+    if (devSubtitle) {
         if (isUkrainian) {
-            subtitle.textContent = 'УНІВЕРСАЛЬНИЙ ПІДВІСНИЙ СИГНАЛІЗАТОР КЛЮВАННЯ';
-            if (f1) f1.textContent = "Стабільне з'єднання до 100 м";
-            if (f2) f2.textContent = 'Захист від води та пилу';
-            if (f3) f3.textContent = 'До 120 днів роботи';
-            if (f3sub) f3sub.textContent = 'Низьке енергоспоживання';
-            if (f4) f4.textContent = 'Вібро-сповіщення';
-            if (f4sub) f4sub.textContent = 'Не пропустить клюв на відстані';
-            if (f5) f5.textContent = 'Швидка зарядка';
+            devSubtitle.textContent = 'УНІВЕРСАЛЬНИЙ ПІДВІСНИЙ СИГНАЛІЗАТОР КЛЮВАННЯ';
+            if (df1) df1.textContent = "Стабільне з'єднання до 100 м";
+            if (df2) df2.textContent = 'Захист від води та пилу';
+            if (df3) df3.textContent = 'До 120 днів роботи';
+            if (df3sub) df3sub.textContent = 'Низьке енергоспоживання';
+            if (df4) df4.textContent = 'Вібро-сповіщення';
+            if (df4sub) df4sub.textContent = 'Не пропустить клюв на відстані';
+            if (df5) df5.textContent = 'Швидка зарядка';
         } else {
-            subtitle.textContent = 'UNIVERSAL SUSPENDED ALARM FOR FISHING';
-            if (f1) f1.textContent = 'Stable connection up to 100 m';
-            if (f2) f2.textContent = 'Protection against water and dust';
-            if (f3) f3.textContent = 'Up to 120 days of work';
-            if (f3sub) f3sub.textContent = 'Low power consumption';
-            if (f4) f4.textContent = 'Vibration alerts';
-            if (f4sub) f4sub.textContent = 'Do not miss even the slightest bite';
-            if (f5) f5.textContent = 'Fast charging';
+            devSubtitle.textContent = 'UNIVERSAL SUSPENDED ALARM FOR FISHING';
+            if (df1) df1.textContent = 'Stable connection up to 100 m';
+            if (df2) df2.textContent = 'Protection against water and dust';
+            if (df3) df3.textContent = 'Up to 120 days of work';
+            if (df3sub) df3sub.textContent = 'Low power consumption';
+            if (df4) df4.textContent = 'Vibration alerts';
+            if (df4sub) df4sub.textContent = 'Do not miss even the slightest bite';
+            if (df5) df5.textContent = 'Fast charging';
         }
     }
 }
