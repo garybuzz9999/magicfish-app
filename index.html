@@ -1523,15 +1523,66 @@ function updateGTRAdImage() {
 }
 
 function handleGTRAdClick() {
+    // Show GTR Products page like on screenshot 2
+    renderGTRProducts();
+}
+
+function renderGTRProducts() {
+    const app = document.getElementById('appRoot');
     const lang = currentUser?.lang === 'uk' || localStorage.getItem('mf_lang') === 'uk' || !localStorage.getItem('mf_lang');
-    const options = lang ? 
-        ['📡 GTR Phantom BLE 4.0', '📦 Чохли водонепроникні', '🎒 Рюкзаки водонепроникні'] :
-        ['📡 GTR Phantom BLE 4.0', '📦 Waterproof Cases', '🎒 Waterproof Backpacks'];
     
-    const choice = prompt(options.join('\n\n') + '\n\n' + (lang ? 'Оберіть (1-3):' : 'Choose (1-3):'));
-    if (choice === '1') renderAlarm();
-    else if (choice === '2') showGTRCases();
-    else if (choice === '3') showGTRBackpacks();
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${currentUser.nickname}</div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h1 style="display:flex;align-items:center;gap:10px;"><span style="font-size:2rem;">📡</span> GTR</h1>
+        <button id="backGTR" class="back-btn">← ${lang ? 'Назад' : 'Back'}</button>
+      </div>
+      
+      <!-- GTR Phantom BLE 4.0 -->
+      <div onclick="renderAlarm()" style="background:white;border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:0 3px 12px rgba(0,0,0,0.08);cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:60px;height:60px;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">📡</div>
+          <div style="flex:1;">
+            <div style="font-weight:800;font-size:1.05rem;color:#1f3b4c;">GTR Phantom BLE 4.0</div>
+            <div style="font-size:0.82rem;color:#4CAF50;margin-top:2px;">${lang ? 'не підключено' : 'not connected'}</div>
+          </div>
+          <button style="background:#f39c12;color:white;border:none;border-radius:40px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.88rem;">🔌 ${lang ? 'Підключити' : 'Connect'}</button>
+        </div>
+      </div>
+      
+      <!-- GTR Waterproof Cases -->
+      <div onclick="showGTRCases()" style="background:white;border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:0 3px 12px rgba(0,0,0,0.08);cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:60px;height:60px;background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">📦</div>
+          <div style="flex:1;">
+            <div style="font-weight:800;font-size:1.05rem;color:#1f3b4c;">${lang ? 'Чохли водонепроникні' : 'Waterproof Cases'}</div>
+            <div style="font-size:0.82rem;color:#888;margin-top:2px;">${lang ? '8 моделей • IPX8' : '8 models • IPX8'}</div>
+          </div>
+          <button style="background:#3b82f6;color:white;border:none;border-radius:40px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.88rem;">🛒 ${lang ? 'Купити' : 'Buy'}</button>
+        </div>
+      </div>
+      
+      <!-- GTR Waterproof Backpacks -->
+      <div onclick="showGTRBackpacks()" style="background:white;border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:0 3px 12px rgba(0,0,0,0.08);cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:60px;height:60px;background:linear-gradient(135deg,#10b981,#059669);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">🎒</div>
+          <div style="flex:1;">
+            <div style="font-weight:800;font-size:1.05rem;color:#1f3b4c;">${lang ? 'Рюкзаки водонепроникні' : 'Waterproof Backpacks'}</div>
+            <div style="font-size:0.82rem;color:#888;margin-top:2px;">${lang ? '6 моделей • 10-50L' : '6 models • 10-50L'}</div>
+          </div>
+          <button style="background:#10b981;color:white;border:none;border-radius:40px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.88rem;">🛒 ${lang ? 'Купити' : 'Buy'}</button>
+        </div>
+      </div>
+      
+      <!-- Info banner -->
+      <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:24px;padding:16px;color:white;text-align:center;margin-top:20px;">
+        <div style="font-size:0.9rem;opacity:0.9;">${lang ? 'Офіційні продукти GTR для риболовлі та outdoor' : 'Official GTR products for fishing & outdoor'}</div>
+        <div style="font-size:0.75rem;opacity:0.6;margin-top:4px;">${lang ? 'Підтримується: GTR Phantom · GTR Mini · GTR Pro' : 'Supported: GTR Phantom · GTR Mini · GTR Pro'}</div>
+      </div>
+    </div>`;
+    
+    document.getElementById('backGTR').onclick = () => renderMainMenu();
 }
 
 // ========== SOS (ПОКРАЩЕНИЙ) ==========
