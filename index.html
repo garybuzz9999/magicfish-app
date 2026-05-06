@@ -1476,33 +1476,6 @@ function renderMainMenu() {
                  style="width:100%;height:100%;object-fit:cover;cursor:pointer;"
                  onclick="handleGTRAdClick()">
           </div>
-          <script>
-          // Auto-switch GTR ad image based on language
-          function updateGTRAdImage() {
-            const img = document.getElementById('gtrAdImage');
-            if (!img) return;
-            const isUkrainian = currentUser?.lang === 'uk' || localStorage.getItem('mf_lang') === 'uk' || !localStorage.getItem('mf_lang');
-            img.src = isUkrainian ? 'https://ru.files.fm/u/tchm6fwa6k' : 'https://ru.files.fm/u/77pgsh4xrp';
-          }
-          
-          function handleGTRAdClick() {
-            // Show GTR products menu
-            const lang = currentUser?.lang === 'uk' || localStorage.getItem('mf_lang') === 'uk' || !localStorage.getItem('mf_lang');
-            const options = lang ? 
-              ['📡 GTR Phantom BLE 4.0', '📦 Чохли водонепроникні', '🎒 Рюкзаки водонепроникні'] :
-              ['📡 GTR Phantom BLE 4.0', '📦 Waterproof Cases', '🎒 Waterproof Backpacks'];
-            
-            const choice = prompt(options.join('\n\n') + '\n\n' + (lang ? 'Оберіть (1-3):' : 'Choose (1-3):'));
-            if (choice === '1') renderAlarm();
-            else if (choice === '2') showGTRCases();
-            else if (choice === '3') showGTRBackpacks();
-          }
-          
-          // Update image when language changes
-          if (typeof updateGTRAdImage === 'function') {
-            setTimeout(updateGTRAdImage, 100);
-          }
-          </script>
 
           <!-- Right sponsors - scrolling down -->
           <div style="position:relative;overflow:hidden;background:linear-gradient(180deg,#e9ecef 0%,#f8f9fa 100%);border-radius:12px;padding:8px 0;">
@@ -1539,6 +1512,26 @@ function renderMainMenu() {
     setTimeout(() => {
         if (typeof updateGTRAdImage === 'function') updateGTRAdImage();
     }, 200);
+}
+
+// ========== GTR AD IMAGE FUNCTIONS ==========
+function updateGTRAdImage() {
+    const img = document.getElementById('gtrAdImage');
+    if (!img) return;
+    const isUkrainian = currentUser?.lang === 'uk' || localStorage.getItem('mf_lang') === 'uk' || !localStorage.getItem('mf_lang');
+    img.src = isUkrainian ? 'https://ru.files.fm/u/tchm6fwa6k' : 'https://ru.files.fm/u/77pgsh4xrp';
+}
+
+function handleGTRAdClick() {
+    const lang = currentUser?.lang === 'uk' || localStorage.getItem('mf_lang') === 'uk' || !localStorage.getItem('mf_lang');
+    const options = lang ? 
+        ['📡 GTR Phantom BLE 4.0', '📦 Чохли водонепроникні', '🎒 Рюкзаки водонепроникні'] :
+        ['📡 GTR Phantom BLE 4.0', '📦 Waterproof Cases', '🎒 Waterproof Backpacks'];
+    
+    const choice = prompt(options.join('\n\n') + '\n\n' + (lang ? 'Оберіть (1-3):' : 'Choose (1-3):'));
+    if (choice === '1') renderAlarm();
+    else if (choice === '2') showGTRCases();
+    else if (choice === '3') showGTRBackpacks();
 }
 
 // ========== SOS (ПОКРАЩЕНИЙ) ==========
