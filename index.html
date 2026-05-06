@@ -1469,12 +1469,18 @@ function renderMainMenu() {
           </div>
 
           <!-- Center - GTR Ad Image (language switching) -->
-          <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 8px 24px rgba(0,0,0,0.3);">
-            <img id="gtrAdImage" 
-                 src="https://ru.files.fm/u/tchm6fwa6k" 
-                 alt="GTR Products" 
-                 style="width:100%;height:100%;object-fit:cover;cursor:pointer;"
-                 onclick="handleGTRAdClick()">
+          <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 8px 24px rgba(0,0,0,0.3);cursor:pointer;" onclick="handleGTRAdClick()">
+            <div id="gtrAdContent" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;color:white;">
+              <div style="font-size:3rem;margin-bottom:12px;">📡</div>
+              <div style="font-size:1.4rem;font-weight:900;letter-spacing:3px;margin-bottom:8px;">GTR</div>
+              <div id="gtrAdTitle" style="font-size:1rem;font-weight:700;opacity:0.9;margin-bottom:16px;">Водонепроникні продукти</div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;">
+                <div style="background:rgba(255,255,255,0.15);padding:8px 16px;border-radius:20px;font-size:0.8rem;">📦 Чохли IPX8</div>
+                <div style="background:rgba(255,255,255,0.15);padding:8px 16px;border-radius:20px;font-size:0.8rem;">🎒 Рюкзаки</div>
+                <div style="background:rgba(255,255,255,0.15);padding:8px 16px;border-radius:20px;font-size:0.8rem;">📡 BLE 4.0</div>
+              </div>
+              <div id="gtrAdButton" style="background:#f39c12;color:white;padding:12px 24px;border-radius:30px;font-weight:700;font-size:0.9rem;margin-top:8px;">🛒 Переглянути каталог</div>
+            </div>
           </div>
 
           <!-- Right sponsors - scrolling down -->
@@ -1514,12 +1520,21 @@ function renderMainMenu() {
     }, 200);
 }
 
-// ========== GTR AD IMAGE FUNCTIONS ==========
+// ========== GTR AD FUNCTIONS ==========
 function updateGTRAdImage() {
-    const img = document.getElementById('gtrAdImage');
-    if (!img) return;
+    const title = document.getElementById('gtrAdTitle');
+    const button = document.getElementById('gtrAdButton');
+    if (!title || !button) return;
+    
     const isUkrainian = currentUser?.lang === 'uk' || localStorage.getItem('mf_lang') === 'uk' || !localStorage.getItem('mf_lang');
-    img.src = isUkrainian ? 'https://ru.files.fm/u/tchm6fwa6k' : 'https://ru.files.fm/u/77pgsh4xrp';
+    
+    if (isUkrainian) {
+        title.textContent = 'Водонепроникні продукти для риболовлі';
+        button.textContent = '🛒 Переглянути каталог';
+    } else {
+        title.textContent = 'Waterproof Products for Fishing';
+        button.textContent = '🛒 View Catalog';
+    }
 }
 
 function handleGTRAdClick() {
