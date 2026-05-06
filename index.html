@@ -2684,19 +2684,41 @@ function renderCampings() {
             <button id="campSortBtn" class="btn btn-secondary">📍 Поруч</button>
         </div>
         <button id="getCampLocation" class="btn btn-location btn-block">📍 Визначити моє місце</button>
+        <div id="campLocationStatus" style="margin:8px 0;font-size:0.85rem;color:#888;text-align:center;"></div>
         <div id="campMap" class="map-container"></div>
         <div id="campList"></div>
     </div>`;
     document.getElementById('backCampings').onclick = () => renderMainMenu();
-    document.getElementById('getCampLocation').onclick = () => getUserLocation(ok => { if(ok) renderCampList(true); });
-    document.getElementById('campSortBtn').onclick = () => { if(!currentLocation){alert("Спочатку визначте місце");return;} renderCampList(true); };
+    document.getElementById('getCampLocation').onclick = () => {
+        getUserLocation(ok => {
+            if(ok) {
+                document.getElementById('campLocationStatus').innerHTML = `✅ Місце визначено: ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+                renderCampList(true);
+            } else {
+                document.getElementById('campLocationStatus').innerHTML = '❌ Не вдалося визначити місце';
+            }
+        });
+    };
+    document.getElementById('campSortBtn').onclick = () => { 
+        if(!currentLocation){alert("❌ Спочатку натисніть 'Визначити моє місце'");return;} 
+        renderCampList(true); 
+    };
     document.getElementById('campSearch').oninput = () => renderCampList(false);
 
     let campMap = null;
     function renderCampList(sortByDist) {
         const q = document.getElementById('campSearch').value.toLowerCase();
-        let filtered = campings.filter(c => c.name.toLowerCase().includes(q) || c.address.toLowerCase().includes(q));
-        if (sortByDist && currentLocation) filtered.sort((a,b)=>getDistance(currentLocation.lat,currentLocation.lng,a.lat,a.lng)-getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng));
+        let filtered = campings.filter(c => 
+            c.name.toLowerCase().includes(q) || 
+            c.city.toLowerCase().includes(q) ||
+            c.services.toLowerCase().includes(q)
+        );
+        if (sortByDist && currentLocation) {
+            filtered.sort((a,b)=>
+                getDistance(currentLocation.lat,currentLocation.lng,a.lat,a.lng)-
+                getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng)
+            );
+        }
         const listDiv = document.getElementById('campList');
         listDiv.innerHTML = '';
         const mapDiv = document.getElementById('campMap');
@@ -2704,43 +2726,30 @@ function renderCampings() {
         campMap = L.map(mapDiv).setView([49,32],6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(campMap);
         setTimeout(() => { if(campMap) campMap.invalidateSize(); }, 300);
+        
         filtered.forEach(c => {
-            L.marker([c.lat,c.lng]).addTo(campMap).bindPopup(`<b>${c.name}</b><br>${c.price} грн/ніч<br>⭐ ${c.rating}`);
-            let dist = currentLocation ? `<span class="distance">📏 ${Math.round(getDistance(currentLocation.lat,currentLocation.lng,c.lat,c.lng))} м</span>` : '';
+            L.marker([c.lat,c.lng]).addTo(campMap).bindPopup(`<b>${c.name}</b><br>📍 ${c.city}`);
+            let dist = currentLocation ? `<div style="color:#27ae60;font-size:0.85rem;font-weight:700;margin-top:8px;">📏 ${Math.round(getDistance(currentLocation.lat,currentLocation.lng,c.lat,c.lng)/1000)} км від вас</div>` : '';
             const card = document.createElement('div');
-            card.className = 'camping-card';
+            card.style.cssText = 'background:white;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;';
             card.innerHTML = `
-                <div class="camping-img">${c.photo?`<img src="${c.photo}" style="width:100%;height:100%;object-fit:cover;">`:'🏕️'}</div>
-                <div class="camping-body">
-                    <div class="camping-title">${c.name}</div>
-                    <div style="font-size:0.85rem;color:#888;margin-bottom:8px;">📍 ${c.address}</div>
-                    <div class="camping-amenities">${c.amenities.map(a=>`<span class="amenity">${a}</span>`).join('')}</div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-                        <div><div class="camping-price">${c.price} грн / ніч</div><div class="rating-stars">${'⭐'.repeat(Math.round(c.rating))} ${c.rating} (${c.reviews} відгуків)</div></div>
-                        ${dist}
-                    </div>
-                </div>`;
-            card.onclick = () => showCampingDetails(c);
+                <div style="font-size:1.8rem;margin-bottom:8px;">⛺</div>
+                <div style="font-weight:800;font-size:1.05rem;color:#1f3b4c;margin-bottom:4px;">${c.name}</div>
+                <div style="font-size:0.85rem;color:#888;margin-bottom:8px;">📍 ${c.city}</div>
+                <div style="font-size:0.82rem;color:#555;margin-bottom:8px;">${c.services}</div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <a href="tel:${c.phone}" style="background:#27ae60;color:white;padding:6px 14px;border-radius:20px;text-decoration:none;font-size:0.8rem;font-weight:700;">📞 ${c.phone}</a>
+                    <button onclick="event.stopPropagation();window.open('https://www.google.com/maps?q=${c.lat},${c.lng}','_blank')" style="background:#3b82f6;color:white;border:none;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:700;cursor:pointer;">🗺️ Карта</button>
+                </div>
+                ${dist}`;
             listDiv.appendChild(card);
         });
-        if (currentLocation) { campMap.setView([currentLocation.lat,currentLocation.lng],11); L.marker([currentLocation.lat,currentLocation.lng]).addTo(campMap).bindPopup('Ви тут'); }
+        if (currentLocation) { 
+            campMap.setView([currentLocation.lat,currentLocation.lng],8); 
+            L.marker([currentLocation.lat,currentLocation.lng]).addTo(campMap).bindPopup('📍 Ви тут'); 
+        }
     }
     renderCampList(false);
-}
-
-function showCampingDetails(c) {
-    const modal = openModal(`
-        <div style="font-size:2.5rem;text-align:center;margin-bottom:12px;">🏕️</div>
-        <h3>${c.name}</h3>
-        <p>📍 ${c.address}</p>
-        <p>📞 <a href="tel:${c.phone}" style="color:#1e3a3a;">${c.phone}</a></p>
-        <p>💰 ${c.price} грн / ніч</p>
-        <p>⭐ ${c.rating} (${c.reviews} відгуків)</p>
-        <p style="margin:12px 0;">${c.description}</p>
-        <div class="camping-amenities" style="margin-bottom:16px;">${c.amenities.map(a=>`<span class="amenity">${a}</span>`).join('')}</div>
-        <button onclick="window.open('https://www.google.com/maps?q=${c.lat},${c.lng}','_blank')" class="btn btn-block" style="margin-bottom:8px;">🗺️ Відкрити на карті</button>
-        <button class="close-modal">Закрити</button>`);
-    modal.querySelector('.close-modal').onclick=()=>modal.remove();
 }
 
 // ========== ВОДОЙМИ ==========
@@ -4427,6 +4436,7 @@ function renderAlarm() {
 // ========== ГОЛОВНИЙ РОУТЕР ==========
 // ========== БАЗИ ВІДПОЧИНКУ (список для користувачів) ==========
 function renderResorts() {
+    ensureLeafletFallback();
     const app = document.getElementById('appRoot');
     app.innerHTML = `
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
@@ -4435,13 +4445,99 @@ function renderResorts() {
             <h1>🏖️ Бази відпочинку</h1>
             <button id="backResorts" class="back-btn">← Назад</button>
         </div>
-        <div style="text-align:center;padding:40px;color:#888;">
-            <div style="font-size:3rem;margin-bottom:12px;">🏖️</div>
-            <div style="font-size:1.1rem;font-weight:700;margin-bottom:8px;">Список баз відпочинку</div>
-            <div style="font-size:0.85rem;">Скоро тут з'являться партнерські бази відпочинку з можливістю онлайн-бронювання</div>
+        
+        <!-- Route selector -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button id="routeChop" class="btn btn-block" style="background:#27ae60;color:white;font-weight:700;">🚗 Київ → Чоп (М06)</button>
+            <button id="routeWarsaw" class="btn btn-block" style="background:#3b82f6;color:white;font-weight:700;">🚗 Київ → Варшава (М07)</button>
         </div>
+        
+        <div class="search-bar">
+            <input id="resortSearch" placeholder="🔍 Пошук бази...">
+            <button id="resortSortBtn" class="btn btn-secondary">📍 Поруч</button>
+        </div>
+        <button id="getResortLocation" class="btn btn-location btn-block">📍 Визначити моє місце</button>
+        <div id="resortLocationStatus" style="margin:8px 0;font-size:0.85rem;color:#888;text-align:center;"></div>
+        <div id="resortMap" class="map-container"></div>
+        <div id="resortList"></div>
     </div>`;
+    
     document.getElementById('backResorts').onclick = () => renderMainMenu();
+    
+    let currentRoute = 'chop';
+    let resortMap = null;
+    
+    document.getElementById('routeChop').onclick = () => { currentRoute = 'chop'; renderResortList(false); };
+    document.getElementById('routeWarsaw').onclick = () => { currentRoute = 'warsaw'; renderResortList(false); };
+    document.getElementById('getResortLocation').onclick = () => {
+        getUserLocation(ok => {
+            if(ok) {
+                document.getElementById('resortLocationStatus').innerHTML = `✅ Місце визначено: ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+                renderResortList(true);
+            } else {
+                document.getElementById('resortLocationStatus').innerHTML = '❌ Не вдалося визначити місце';
+            }
+        });
+    };
+    document.getElementById('resortSortBtn').onclick = () => { 
+        if(!currentLocation){alert("❌ Спочатку натисніть 'Визначити моє місце'");return;} 
+        renderResortList(true); 
+    };
+    document.getElementById('resortSearch').oninput = () => renderResortList(false);
+    
+    function renderResortList(sortByDist) {
+        const q = document.getElementById('resortSearch').value.toLowerCase();
+        const bases = currentRoute === 'chop' ? basesKyivChop : basesKyivWarsaw;
+        
+        let filtered = bases.filter(b => 
+            b.name.toLowerCase().includes(q) || 
+            b.city.toLowerCase().includes(q) ||
+            b.services.toLowerCase().includes(q)
+        );
+        
+        if (sortByDist && currentLocation) {
+            filtered.sort((a,b)=>
+                getDistance(currentLocation.lat,currentLocation.lng,a.lat,a.lng)-
+                getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng)
+            );
+        }
+        
+        const listDiv = document.getElementById('resortList');
+        listDiv.innerHTML = '';
+        const mapDiv = document.getElementById('resortMap');
+        if (resortMap) resortMap.remove();
+        resortMap = L.map(mapDiv).setView([49.5,26],7);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(resortMap);
+        setTimeout(() => { if(resortMap) resortMap.invalidateSize(); }, 300);
+        
+        filtered.forEach(b => {
+            const markerColor = currentRoute === 'chop' ? '🟢' : '🔵';
+            L.marker([b.lat,b.lng]).addTo(resortMap).bindPopup(`${markerColor} <b>${b.name}</b><br>📍 ${b.city}`);
+            
+            let dist = currentLocation ? `<div style="color:#27ae60;font-size:0.85rem;font-weight:700;margin-top:8px;">📏 ${Math.round(getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng)/1000)} км від вас</div>` : '';
+            
+            const card = document.createElement('div');
+            card.style.cssText = 'background:white;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-left:4px solid '+(currentRoute==='chop'?'#27ae60':'#3b82f6')+';';
+            card.innerHTML = `
+                <div style="font-size:1.6rem;margin-bottom:8px;">🏖️</div>
+                <div style="font-weight:800;font-size:1.05rem;color:#1f3b4c;margin-bottom:4px;">${b.name}</div>
+                <div style="font-size:0.85rem;color:#888;margin-bottom:8px;">📍 ${b.city}</div>
+                <div style="font-size:0.82rem;color:#555;margin-bottom:12px;line-height:1.4;">${b.services}</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <a href="tel:${b.phone}" style="background:#27ae60;color:white;padding:6px 14px;border-radius:20px;text-decoration:none;font-size:0.8rem;font-weight:700;display:inline-block;">📞 ${b.phone}</a>
+                    <button onclick="window.open('https://www.google.com/maps?q=${b.lat},${b.lng}','_blank')" style="background:#3b82f6;color:white;border:none;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:700;cursor:pointer;">🗺️ Карта</button>
+                </div>
+                ${dist}`;
+            listDiv.appendChild(card);
+        });
+        
+        if (currentLocation) { 
+            resortMap.setView([currentLocation.lat,currentLocation.lng],8); 
+            L.marker([currentLocation.lat,currentLocation.lng]).addTo(resortMap).bindPopup('📍 Ви тут'); 
+        }
+    }
+    
+    renderResortList(false);
 }
 
 // ========== ФОРУМ ==========
