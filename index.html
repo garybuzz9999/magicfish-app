@@ -1480,13 +1480,53 @@ function renderMainMenu() {
             </div>
           </div>
 
-          <!-- Center - GTR Device Image (language switching) -->
-          <div id="gtrDeviceContainer" style="background:#1a1a2e;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 8px 24px rgba(0,0,0,0.3);">
-            <img id="gtrDeviceImage" 
-                 src="gtr-uk.jpg" 
-                 alt="GTR Phantom" 
-                 style="width:100%;height:100%;object-fit:contain;"
-                 onerror="this.style.display='none';this.parentElement.innerHTML='<div style=color:white;text-align:center;padding:40px;><div style=font-size:3rem;>📡</div><div style=font-size:1.2rem;font-weight:700;margin-top:12px;>GTR PHANTOM</div><div style=font-size:0.8rem;opacity:0.7;margin-top:8px;>Фото завантажується...</div></div>';">
+          <!-- Center - GTR Device (embedded design) -->
+          <div id="gtrDeviceContainer" style="background:#0a0a0a;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 8px 24px rgba(0,0,0,0.3);padding:20px;">
+            <div id="gtrDeviceContent" style="width:100%;max-width:280px;color:white;text-align:left;">
+              <!-- GTR Logo -->
+              <div style="font-size:1.8rem;font-weight:900;letter-spacing:3px;margin-bottom:4px;">GTR</div>
+              <div style="font-size:1rem;font-weight:700;opacity:0.9;margin-bottom:16px;">PHANTOM</div>
+              <div id="gtrDeviceSubtitle" style="font-size:0.75rem;font-weight:600;opacity:0.8;margin-bottom:20px;">УНІВЕРСАЛЬНИЙ ПІДВІСНИЙ СИГНАЛІЗАТОР КЛЮВАННЯ</div>
+              
+              <!-- Features -->
+              <div style="display:flex;flex-direction:column;gap:10px;font-size:0.7rem;">
+                <div style="display:flex;align-items:start;gap:10px;">
+                  <div style="color:#3b82f6;font-size:1.2rem;">📶</div>
+                  <div>
+                    <div style="font-weight:700;">Bluetooth 4.0</div>
+                    <div id="gtrFeature1" style="opacity:0.7;">Стабільне з'єднання до 100 м</div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:start;gap:10px;">
+                  <div style="color:#06b6d4;font-size:1.2rem;">💧</div>
+                  <div>
+                    <div style="font-weight:700;">IPX6</div>
+                    <div id="gtrFeature2" style="opacity:0.7;">Захист від води та пилу</div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:start;gap:10px;">
+                  <div style="color:#10b981;font-size:1.2rem;">🔋</div>
+                  <div>
+                    <div id="gtrFeature3" style="font-weight:700;">До 120 днів роботи</div>
+                    <div id="gtrFeature3sub" style="opacity:0.7;">Низьке енергоспоживання</div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:start;gap:10px;">
+                  <div style="color:#8b5cf6;font-size:1.2rem;">📳</div>
+                  <div>
+                    <div id="gtrFeature4" style="font-weight:700;">Вібро-сповіщення</div>
+                    <div id="gtrFeature4sub" style="opacity:0.7;">Не пропустить клюв на відстані</div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:start;gap:10px;">
+                  <div style="color:#f59e0b;font-size:1.2rem;">⚡</div>
+                  <div>
+                    <div style="font-weight:700;">USB-C</div>
+                    <div id="gtrFeature5" style="opacity:0.7;">Швидка зарядка</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Right sponsors - scrolling down -->
@@ -1543,10 +1583,36 @@ function updateGTRAdImage() {
         }
     }
     
-    // Update device image in partners section
-    const deviceImg = document.getElementById('gtrDeviceImage');
-    if (deviceImg) {
-        deviceImg.src = isUkrainian ? 'gtr-uk.jpg' : 'gtr-en.jpg';
+    // Update device content in partners section
+    const subtitle = document.getElementById('gtrDeviceSubtitle');
+    const f1 = document.getElementById('gtrFeature1');
+    const f2 = document.getElementById('gtrFeature2');
+    const f3 = document.getElementById('gtrFeature3');
+    const f3sub = document.getElementById('gtrFeature3sub');
+    const f4 = document.getElementById('gtrFeature4');
+    const f4sub = document.getElementById('gtrFeature4sub');
+    const f5 = document.getElementById('gtrFeature5');
+    
+    if (subtitle) {
+        if (isUkrainian) {
+            subtitle.textContent = 'УНІВЕРСАЛЬНИЙ ПІДВІСНИЙ СИГНАЛІЗАТОР КЛЮВАННЯ';
+            if (f1) f1.textContent = "Стабільне з'єднання до 100 м";
+            if (f2) f2.textContent = 'Захист від води та пилу';
+            if (f3) f3.textContent = 'До 120 днів роботи';
+            if (f3sub) f3sub.textContent = 'Низьке енергоспоживання';
+            if (f4) f4.textContent = 'Вібро-сповіщення';
+            if (f4sub) f4sub.textContent = 'Не пропустить клюв на відстані';
+            if (f5) f5.textContent = 'Швидка зарядка';
+        } else {
+            subtitle.textContent = 'UNIVERSAL SUSPENDED ALARM FOR FISHING';
+            if (f1) f1.textContent = 'Stable connection up to 100 m';
+            if (f2) f2.textContent = 'Protection against water and dust';
+            if (f3) f3.textContent = 'Up to 120 days of work';
+            if (f3sub) f3sub.textContent = 'Low power consumption';
+            if (f4) f4.textContent = 'Vibration alerts';
+            if (f4sub) f4sub.textContent = 'Do not miss even the slightest bite';
+            if (f5) f5.textContent = 'Fast charging';
+        }
     }
 }
 
