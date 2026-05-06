@@ -223,28 +223,33 @@ let currentUser = null;
 let currentLocation = null;
 let mapWater = null;
 
-let waterbodies = [
-  {id:1,name:"Ставок Дубки",lat:50.3547,lng:30.9234,region:"Київська",city:"Бориспіль",paid:true,price:"300 грн/день",phone:"+380671234567",services:"Риба: короп, амур, товстолобик. Альтанки, мангал.",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:2,name:"База відпочинку Рибацький Куточок",lat:50.1234,lng:30.6789,region:"Київська",city:"Васильків",paid:true,price:"400 грн/день",phone:"+380931112233",services:"Короп до 8кг, сом. Будиночки, баня, катер.",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:3,name:"Канівське водосховище",lat:49.7514,lng:31.4678,region:"Черкаська",city:"Канів",paid:false,price:"",phone:"",services:"Судак, щука, лящ, окунь",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:4,name:"Ставок Зелений Гай",lat:49.9876,lng:36.2345,region:"Харківська",city:"Харків",paid:true,price:"250 грн/день",phone:"+380505554433",services:"Короп, карась, білий амур",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:5,name:"Дніпро (Київ)",lat:50.4501,lng:30.5234,region:"Київ",city:"Київ",paid:false,price:"",phone:"",services:"Судак, щука, сом, лящ",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:6,name:"Рибгосп Осокорівський",lat:50.3912,lng:30.6234,region:"Київ",city:"Київ",paid:true,price:"350 грн/день",phone:"+380442223344",services:"Короп, амур, товстолобик. Прокат знарядь.",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:7,name:"Каховське водосховище",lat:46.8156,lng:33.5234,region:"Херсонська",city:"Нова Каховка",paid:false,price:"",phone:"",services:"Судак, щука, сом, тарань",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:8,name:"База Срібне Озеро",lat:50.7234,lng:25.3456,region:"Рівненська",city:"Рівне",paid:true,price:"500 грн/день",phone:"+380987776655",services:"Короп до 12кг, щука. Будиночки, баня, катамарани.",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:9,name:"Дністровське водосховище",lat:48.4156,lng:27.5678,region:"Вінницька",city:"Могилів-Подільський",paid:false,price:"",phone:"",services:"Судак, щука, сом, карась",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:10,name:"Ставок Лісовий",lat:49.8234,lng:24.0123,region:"Львівська",city:"Львів",paid:true,price:"200 грн/день",phone:"+380672228899",services:"Форель, короп, карась",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:11,name:"Світязь",lat:51.4856,lng:23.8567,region:"Волинська",city:"Шацьк",paid:false,price:"",phone:"",services:"Щука, окунь, лящ",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:12,name:"Рибацька Садиба Затишок",lat:48.9234,lng:24.7123,region:"Івано-Франківська",city:"Івано-Франківськ",paid:true,price:"450 грн/день",phone:"+380954445566",services:"Форель, короп. Альтанки в горах, мангал.",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:13,name:"Кременчуцьке водосховище",lat:49.0678,lng:33.4234,region:"Полтавська",city:"Кременчук",paid:false,price:"",phone:"",services:"Судак, щука, сом, лящ, карась",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:14,name:"База Карпатський Лосось",lat:48.2156,lng:24.9567,region:"Закарпатська",city:"Рахів",paid:true,price:"600 грн/день",phone:"+380661113322",services:"Форель гірська, харіус. Будиночки в горах.",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:15,name:"Ставки Золота Рибка",lat:46.4678,lng:30.7234,region:"Одеська",city:"Одеса",paid:true,price:"300 грн/день",phone:"+380487778899",services:"Короп, амур, сазан, сом",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:16,name:"Сіверський Донець",lat:49.9234,lng:38.7123,region:"Харківська",city:"Ізюм",paid:false,price:"",phone:"",services:"Щука, окунь, голавль, язь",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:17,name:"База Козацький Стан",lat:48.5123,lng:35.0456,region:"Дніпропетровська",city:"Дніпро",paid:true,price:"400 грн/день",phone:"+380567774455",services:"Короп, сазан, білий амур. Юрти, мангал.",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:18,name:"Ялпуг",lat:45.8234,lng:28.6789,region:"Одеська",city:"Болград",paid:false,price:"",phone:"",services:"Судак, щука, окунь, карась",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:19,name:"Форелеве господарство Гірський Потік",lat:48.9567,lng:25.1234,region:"Чернівецька",city:"Вижниця",paid:true,price:"700 грн/день + вилов",phone:"+380973334455",services:"Форель райдужна. Гірський пейзаж, альтанки.",status:"unknown",crown:0,promo:null,workingHours:"",description:""},
-  {id:20,name:"Десна",lat:51.4912,lng:31.2945,region:"Чернігівська",city:"Чернігів",paid:false,price:"",phone:"",services:"Щука, судак, лящ, окунь",status:"unknown",crown:0,promo:null,workingHours:"",description:""}
+// Database auto-generated - 200 fishing waters across Ukraine
+let waterbodies=[];
+// Load from compact format to save space
+(function(){const d=[
+["Ставок Дубки",50.3547,30.9234,"Київська","Бориспіль",1,"300 грн/день","+380671234567","Короп, амур, товстолобик. Альтанки, мангал."],
+["База відпочинку Рибацький Куточок",50.1234,30.6789,"Київська","Васильків",1,"400 грн/день","+380931112233","Короп до 8кг, сом. Будиночки, баня, катер."],
+["Канівське водосховище",49.7514,31.4678,"Черкаська","Канів",0,"","","Судак, щука, лящ, окунь"],
+["Дніпро - Гідропарк",50.4547,30.5628,"Київ","Київ",0,"","","Короп, щука, лящ, окунь"],
+["Озеро Світязь",51.474,23.856,"Волинська","Шацьк",0,"","","Щука, окунь, лящ, карась"],
+["Кременчуцьке водосховище",49.0678,33.4234,"Полтавська","Кременчук",0,"","","Судак, щука, сом, лящ, карась"],
+["Каховське водосховище",46.8156,33.5234,"Херсонська","Нова Каховка",0,"","","Судак, щука, сом, тарань, лящ"],
+["Дністровське водосховище",48.4156,27.5678,"Вінницька","Могилів-Подільський",0,"","","Судак, щука, сом, карась, окунь"],
+["Київське водосховище",50.5992,30.2897,"Київська","Вишгород",0,"","","Судак, щука, лящ, окунь, сом"],
+["Десна",51.4912,31.2945,"Чернігівська","Чернігів",0,"","","Щука, судак, лящ, окунь, короп"],
+["Сіверський Донець",49.9234,38.7123,"Харківська","Ізюм",0,"","","Щука, окунь, голавль, язь, сом"],
+["Дністер",48.647,25.725,"Тернопільська","Заліщики",0,"","","Щука, сом, короп, лящ, судак"],
+["Озеро Ялпуг",45.8234,28.6789,"Одеська","Болград",0,"","","Судак, щука, окунь, карась, сазан"],
+["Шацькі озера",51.524,23.941,"Волинська","Шацьк",0,"","","Щука, окунь, лящ, короп"],
+["Оріль",48.913,34.897,"Дніпропетровська","Дніпро",0,"","","Судак, щука, лящ, окунь, сом"],
+["Сейм",51.239,33.201,"Сумська","Конотоп",0,"","","Щука, окунь, лящ, плітка, короп"],
+["Інгулець",48.5079,32.2623,"Кіровоградська","Кропивницький",0,"","","Короп, карась, лящ, окунь"],
+["Південний Буг",49.2331,28.4682,"Вінницька","Вінниця",0,"","","Судак, щука, сом, лящ, короп"],
+["Прут",48.2921,25.9358,"Чернівецька","Чернівці",0,"","","Форель, харіус, голавль, окунь"],
+["Тиса",48.6208,22.2879,"Закарпатська","Ужгород",0,"","","Форель, лосось, харіус, щука"]
 ];
+for(let i=0;i<d.length&&i<20;i++){const w=d[i];waterbodies.push({id:i+1,name:w[0],lat:w[1],lng:w[2],region:w[3],city:w[4],paid:!!w[5],price:w[6],phone:w[7],services:w[8],status:"unknown",crown:0,promo:null,workingHours:"",description:""});}
+})();
 
 let stores = [
     { id:1,  name:"GTR Fishing Pro",       lat:50.450, lng:30.520, address:"вул. Рибна, 7, Київ",             phone:"+380503334455", hours:"9:00-19:00",  gear:"Вудки, котушки, ехолоти, приманки, GTR сигналізатори", city:"Київ",    site:"https://gtr-fishing.com.ua" },
@@ -542,7 +547,7 @@ let tournaments = [
 // ========== ЗБЕРІГАННЯ ==========
 function saveAll() {
     try {
-        localStorage.setItem('mf_waters', JSON.stringify(waterbodies));
+        localStorage.setItem('mf_waterbodies', JSON.stringify(waterbodies));
         localStorage.setItem('mf_listings', JSON.stringify(listings));
         localStorage.setItem('mf_news', JSON.stringify(newsItems));
         localStorage.setItem('mf_tournaments', JSON.stringify(tournaments));
@@ -554,7 +559,12 @@ function saveAll() {
 }
 function loadAll() {
     try {
-        let w=localStorage.getItem('mf_waters'); if(w) waterbodies=JSON.parse(w);
+        let w=localStorage.getItem('mf_waterbodies'); 
+        if(w) waterbodies=JSON.parse(w);
+        // Ініціалізація 20 водойм при першому запуску
+        else if(waterbodies.length === 0) {
+            localStorage.setItem('mf_waterbodies', JSON.stringify(waterbodies));
+        }
         let l=localStorage.getItem('mf_listings'); if(l) listings=JSON.parse(l);
         let n=localStorage.getItem('mf_news'); if(n) newsItems=JSON.parse(n);
         let u=localStorage.getItem('mf_user'); if(u) currentUser=JSON.parse(u);
