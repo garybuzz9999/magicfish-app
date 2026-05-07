@@ -638,29 +638,54 @@ function loadAll() {
     } catch(e) {}
 }
 
-// ========== ГЕОЛОКАЦІЯ (з fallback для Chrome/content://) ==========
+// ========== ГЕОЛОКАЦІЯ (покращена точність) ==========
 function getUserLocation(callback) {
-    if (!navigator.geolocation) { if (callback) callback(false); return; }
+    if (!navigator.geolocation) { 
+        console.log('Geolocation not supported');
+        if (callback) callback(false); 
+        return; 
+    }
 
-    // Safari на iOS потребує enableHighAccuracy:false для першого запиту
-    // і не підтримує автоматичний виклик без дії користувача
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    const options = isSafari
-        ? { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
-        : { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 };
+    // Покращені опції для точності
+    const options = {
+        enableHighAccuracy: true,  // Максимальна точність
+        timeout: 15000,            // 15 секунд на отримання
+        maximumAge: 0              // Не використовувати кеш
+    };
 
     const tryGeo = () => navigator.geolocation.getCurrentPosition(
-        pos => { currentLocation = {lat: pos.coords.latitude, lng: pos.coords.longitude}; if(callback) callback(true); },
+        pos => { 
+            currentLocation = {
+                lat: pos.coords.latitude, 
+                lng: pos.coords.longitude,
+                accuracy: pos.coords.accuracy
+            };
+            console.log('Location obtained:', currentLocation);
+            if(callback) callback(true); 
+        },
         (err) => {
             console.log('Geolocation error:', err.code, err.message);
+            // Показуємо зрозумілу помилку користувачу
+            if (err.code === 1) {
+                alert('❌ Доступ до геолокації заборонено.\n\nДозвольте доступ до місцезнаходження в налаштуваннях браузера.');
+            } else if (err.code === 2) {
+                alert('❌ Не вдалося визначити місце.\n\nПеревірте що GPS увімкнено.');
+            } else if (err.code === 3) {
+                alert('⏱️ Час очікування вийшов.\n\nСпробуйте ще раз.');
+            }
             if (callback) callback(false);
         },
         options
     );
 
     if (window.location.protocol !== 'https:' && window.location.protocol !== 'http:') {
-        try { tryGeo(); } catch(e) { if (callback) callback(false); }
-    } else { tryGeo(); }
+        try { tryGeo(); } catch(e) { 
+            console.log('Geolocation exception:', e);
+            if (callback) callback(false); 
+        }
+    } else { 
+        tryGeo(); 
+    }
 }
 
 // ========== UNIVERSAL LOCATION PICKER ==========
@@ -2702,7 +2727,8 @@ function renderCampings() {
     document.getElementById('getCampLocation').onclick = () => {
         getUserLocation(ok => {
             if(ok) {
-                document.getElementById('campLocationStatus').innerHTML = `✅ Місце визначено: ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+                const acc = currentLocation.accuracy ? ` (±${Math.round(currentLocation.accuracy)}м)` : '';
+                document.getElementById('campLocationStatus').innerHTML = `✅ Місце визначено: ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}${acc}`;
                 renderCampList(true);
             } else {
                 document.getElementById('campLocationStatus').innerHTML = '❌ Не вдалося визначити місце';
@@ -2780,7 +2806,8 @@ function renderWaterbodies() {
     </div>`;
     document.getElementById('backWater').onclick = () => renderMainMenu();
     function renderWaterCards() {
-        document.getElementById('locationStatus').innerHTML = currentLocation ? `✅ ${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)}` : '❌ Місце не визначено';
+        const acc = currentLocation?.accuracy ? ` (±${Math.round(currentLocation.accuracy)}м)` : '';
+        document.getElementById('locationStatus').innerHTML = currentLocation ? `✅ ${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)}${acc}` : '❌ Місце не визначено';
         const listDiv = document.getElementById('waterList');
         listDiv.innerHTML = '';
         waterbodies.forEach(water => {
@@ -4478,7 +4505,8 @@ function renderResorts() {
     document.getElementById('getResortLocation').onclick = () => {
         getUserLocation(ok => {
             if(ok) {
-                document.getElementById('resortLocationStatus').innerHTML = `✅ Місце визначено: ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+                const acc = currentLocation.accuracy ? ` (±${Math.round(currentLocation.accuracy)}м)` : '';
+                document.getElementById('resortLocationStatus').innerHTML = `✅ Місце визначено: ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}${acc}`;
                 renderResortList(true);
             } else {
                 document.getElementById('resortLocationStatus').innerHTML = '❌ Не вдалося визначити місце';
