@@ -2094,7 +2094,7 @@ function renderCabinet() {
             <div class="input-group"><label>🌐 Сайт / Інтернет-магазин</label>
             <input id="pSite" type="url" value="${u.site||''}" placeholder="https://your-site.com.ua">
             ${!u.site ? `<div style="background:#fff9e6;border-radius:16px;padding:10px 14px;margin-top:4px;font-size:0.82rem;color:#856404;display:flex;align-items:center;gap:8px;">
-                💡 <span>Немає сайту? <strong>Зробимо від 5000 грн</strong> — пишіть: <a href="mailto:site@magicfish.club" style="color:#1e3a3a;font-weight:700;">site@magicfish.club</a></span>
+                💡 <span>Немає сайту? <strong>Замовляйте сайт-магазин на</strong> <a href="mailto:site@magicfish.club" style="color:#1e3a3a;font-weight:700;">site@magicfish.club</a></span>
             </div>` : `<div style="display:flex;gap:8px;margin-top:4px;">
                 <a href="${u.site}" target="_blank" style="flex:1;background:#e8f4fd;color:#1565c0;border-radius:40px;padding:8px 14px;font-size:0.82rem;font-weight:700;text-decoration:none;text-align:center;">🌐 Відкрити сайт</a>
             </div>`}
@@ -2934,7 +2934,7 @@ function renderStores() {
                         <span style="font-size:0.8rem;color:#555;">🎣 ${s.gear.substring(0,55)}...</span><br>
                         ${s.site
                             ? `<a href="${s.site}" target="_blank" style="color:#1565c0;font-size:0.8rem;font-weight:600;">🌐 ${s.site.replace('https://','')}</a>`
-                            : `<span style="font-size:0.75rem;color:#f39c12;font-weight:600;">💡 Немає сайту? → site@magicfish.club</span>`}
+                            : `<span style="font-size:0.75rem;color:#f39c12;font-weight:600;">💡 Немає сайту? Замовляйте на site@magicfish.club</span>`}
                     </div>
                     <div style="text-align:right;flex-shrink:0;">
                         ${dist}
@@ -3132,8 +3132,7 @@ function showStoreModal(s) {
         ${s.site
             ? `<a href="${s.site}" target="_blank" class="btn btn-block" style="display:block;text-align:center;text-decoration:none;margin-top:12px;background:#1f3b4c;color:white;">🌐 Відкрити інтернет-магазин</a>`
             : `<div style="background:#fff9e6;border-radius:16px;padding:12px;margin-top:12px;font-size:0.82rem;color:#856404;">
-                💡 <strong>Немає сайту?</strong> Зробимо від <strong>5000 грн</strong><br>
-                <a href="mailto:site@magicfish.club" style="color:#1e3a3a;font-weight:700;">site@magicfish.club</a>
+                💡 <strong>Немає сайту?</strong> Замовляйте сайт-магазин на <a href="mailto:site@magicfish.club" style="color:#1e3a3a;font-weight:700;">site@magicfish.club</a>
                </div>`}
         <button onclick="window.open('https://www.google.com/maps?q=${s.lat},${s.lng}','_blank')" class="btn btn-block" style="margin-top:8px;background:#e8f4fd;color:#1565c0;">🗺️ На карті</button>
         <button class="close-modal" style="margin-top:8px;">Закрити</button>`);
