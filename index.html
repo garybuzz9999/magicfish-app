@@ -4596,7 +4596,30 @@ function renderAlarm() {
         <button id="backGTR" class="back-btn">← Назад</button>
       </div>
 
-      <!-- Шапка пристрою -->
+      <!-- Банер купівлі GTR Phantom -->
+      <div style="background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:24px;padding:18px;margin-bottom:16px;color:white;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+          <div style="font-size:2.5rem;">📡</div>
+          <div style="flex:1;">
+            <div style="font-weight:900;font-size:1.1rem;">GTR Phantom BLE 4.0</div>
+            <div style="font-size:0.8rem;opacity:0.8;margin-top:2px;">Сигналізатор клювання · Bluetooth · IPX6</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.4rem;font-weight:900;color:#f39c12;">₴1 890</div>
+            <div style="font-size:0.7rem;opacity:0.7;">+ доставка</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+          <span style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:40px;font-size:0.72rem;">📶 Bluetooth 4.0</span>
+          <span style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:40px;font-size:0.72rem;">💧 IPX6</span>
+          <span style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:40px;font-size:0.72rem;">🔋 120 днів</span>
+          <span style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:40px;font-size:0.72rem;">📳 Вібро</span>
+          <span style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:40px;font-size:0.72rem;">⚡ USB-C</span>
+        </div>
+        <button id="buyPhantomBtn" style="width:100%;background:#f39c12;color:#1a0a00;border:none;border-radius:40px;padding:14px;font-weight:900;font-size:1rem;cursor:pointer;">🛒 Замовити GTR Phantom</button>
+      </div>
+
+      <!-- Шапка підключення -->
       <div style="background:#f5f7f0;border-radius:28px;padding:16px;margin-bottom:20px;display:flex;align-items:center;gap:14px;">
         <div style="width:48px;height:48px;border-radius:50%;background:#1f3b4c;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">📡</div>
         <div style="flex:1;">
@@ -4617,11 +4640,18 @@ function renderAlarm() {
       </div>
 
       <!-- Не підключено -->
-      <div id="gtrDisconnected" style="text-align:center;padding:32px 20px;color:#aaa;">
+      <div id="gtrDisconnected" style="text-align:center;padding:24px 20px;color:#aaa;">
         <div style="font-size:3.5rem;margin-bottom:12px;">📡</div>
         <div style="font-size:1rem;font-weight:700;color:#555;margin-bottom:6px;">Пристрій не підключено</div>
         <div style="font-size:0.85rem;">Увімкніть GTR Phantom і натисніть «Підключити»</div>
-        <div style="margin-top:16px;font-size:0.75rem;color:#bbb;">Підтримується: GTR Phantom · GTR Mini · GTR Pro</div>
+        <div style="margin-top:8px;font-size:0.75rem;color:#bbb;">Підтримується: GTR Phantom · GTR Mini · GTR Pro</div>
+        <div style="margin-top:24px;border-top:1px solid #eee;padding-top:20px;">
+          <div style="font-size:0.85rem;font-weight:700;color:#1f3b4c;margin-bottom:12px;">🛒 Аксесуари GTR</div>
+          <div style="display:flex;gap:10px;">
+            <button onclick="showGTRCases()" style="flex:1;background:#3b82f6;color:#fff;border:none;border-radius:16px;padding:14px 8px;font-weight:700;font-size:0.85rem;cursor:pointer;">📦 Чохли<br><span style="font-size:0.72rem;font-weight:400;opacity:0.9;">від ₴249</span></button>
+            <button onclick="showGTRBackpacks()" style="flex:1;background:#10b981;color:#fff;border:none;border-radius:16px;padding:14px 8px;font-weight:700;font-size:0.85rem;cursor:pointer;">🎒 Рюкзаки<br><span style="font-size:0.72rem;font-weight:400;opacity:0.9;">від ₴549</span></button>
+          </div>
+        </div>
       </div>
 
       <!-- Підключено -->
@@ -4753,6 +4783,10 @@ function renderAlarm() {
             }
         }, 5000);
     }
+
+    document.getElementById('buyPhantomBtn').addEventListener('click', function() {
+        showOrderForm('GTR Phantom BLE 4.0', 1890);
+    });
 
     document.getElementById('gtrApiBtn').addEventListener('click', function() {
         openModal('<h3 style="color:#0d47a1;">📶 GTR Phantom BLE 4.0 — API</h3>' +
@@ -9290,7 +9324,30 @@ function renderAlarm() {
         <button id="backGTR" class="back-btn">← Назад</button>
       </div>
 
-      <!-- Шапка пристрою -->
+      <!-- Банер купівлі GTR Phantom -->
+      <div style="background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:24px;padding:18px;margin-bottom:16px;color:white;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+          <div style="font-size:2.5rem;">📡</div>
+          <div style="flex:1;">
+            <div style="font-weight:900;font-size:1.1rem;">GTR Phantom BLE 4.0</div>
+            <div style="font-size:0.8rem;opacity:0.8;margin-top:2px;">Сигналізатор клювання · Bluetooth · IPX6</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.4rem;font-weight:900;color:#f39c12;">₴1 890</div>
+            <div style="font-size:0.7rem;opacity:0.7;">+ доставка</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+          <span style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:40px;font-size:0.72rem;">📶 Bluetooth 4.0</span>
+          <span style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:40px;font-size:0.72rem;">💧 IPX6</span>
+          <span style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:40px;font-size:0.72rem;">🔋 120 днів</span>
+          <span style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:40px;font-size:0.72rem;">📳 Вібро</span>
+          <span style="background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:40px;font-size:0.72rem;">⚡ USB-C</span>
+        </div>
+        <button id="buyPhantomBtn" style="width:100%;background:#f39c12;color:#1a0a00;border:none;border-radius:40px;padding:14px;font-weight:900;font-size:1rem;cursor:pointer;">🛒 Замовити GTR Phantom</button>
+      </div>
+
+      <!-- Шапка підключення -->
       <div style="background:#f5f7f0;border-radius:28px;padding:16px;margin-bottom:20px;display:flex;align-items:center;gap:14px;">
         <div style="width:48px;height:48px;border-radius:50%;background:#1f3b4c;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">📡</div>
         <div style="flex:1;">
@@ -9311,11 +9368,18 @@ function renderAlarm() {
       </div>
 
       <!-- Не підключено -->
-      <div id="gtrDisconnected" style="text-align:center;padding:32px 20px;color:#aaa;">
+      <div id="gtrDisconnected" style="text-align:center;padding:24px 20px;color:#aaa;">
         <div style="font-size:3.5rem;margin-bottom:12px;">📡</div>
         <div style="font-size:1rem;font-weight:700;color:#555;margin-bottom:6px;">Пристрій не підключено</div>
         <div style="font-size:0.85rem;">Увімкніть GTR Phantom і натисніть «Підключити»</div>
-        <div style="margin-top:16px;font-size:0.75rem;color:#bbb;">Підтримується: GTR Phantom · GTR Mini · GTR Pro</div>
+        <div style="margin-top:8px;font-size:0.75rem;color:#bbb;">Підтримується: GTR Phantom · GTR Mini · GTR Pro</div>
+        <div style="margin-top:24px;border-top:1px solid #eee;padding-top:20px;">
+          <div style="font-size:0.85rem;font-weight:700;color:#1f3b4c;margin-bottom:12px;">🛒 Аксесуари GTR</div>
+          <div style="display:flex;gap:10px;">
+            <button onclick="showGTRCases()" style="flex:1;background:#3b82f6;color:#fff;border:none;border-radius:16px;padding:14px 8px;font-weight:700;font-size:0.85rem;cursor:pointer;">📦 Чохли<br><span style="font-size:0.72rem;font-weight:400;opacity:0.9;">від ₴249</span></button>
+            <button onclick="showGTRBackpacks()" style="flex:1;background:#10b981;color:#fff;border:none;border-radius:16px;padding:14px 8px;font-weight:700;font-size:0.85rem;cursor:pointer;">🎒 Рюкзаки<br><span style="font-size:0.72rem;font-weight:400;opacity:0.9;">від ₴549</span></button>
+          </div>
+        </div>
       </div>
 
       <!-- Підключено -->
@@ -9447,6 +9511,10 @@ function renderAlarm() {
             }
         }, 5000);
     }
+
+    document.getElementById('buyPhantomBtn').addEventListener('click', function() {
+        showOrderForm('GTR Phantom BLE 4.0', 1890);
+    });
 
     document.getElementById('gtrApiBtn').addEventListener('click', function() {
         openModal('<h3 style="color:#0d47a1;">📶 GTR Phantom BLE 4.0 — API</h3>' +
