@@ -1270,9 +1270,20 @@ function renderLogin() {
       </div>
 
       <div style="padding:20px 24px 24px;">
-        <!-- Фічі -->
-        <div style="background:#f5f7f0;border-radius:24px;padding:14px 16px;margin-bottom:20px;font-size:0.88rem;line-height:2;color:#2c3e2f;">
-          ${txt.features.join('<br>')}
+        <!-- Фічі — сітка як у головному меню -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+          <div style="background:#f5f7fa;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#2c3e2f;">🗺️<br><b>Водойми</b><br><span style="font-size:0.72rem;color:#888;">клює/не клює</span></div>
+          <div style="background:#f5f7fa;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#2c3e2f;">🔮<br><b>Прогноз клеву</b><br><span style="font-size:0.72rem;color:#888;">за координатами</span></div>
+          <div style="background:#f5f7fa;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#2c3e2f;">🏨<br><b>Бази відпочинку</b><br><span style="font-size:0.72rem;color:#888;">траси М06, М07</span></div>
+          <div style="background:#f5f7fa;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#2c3e2f;">🏕️<br><b>Кемпінги</b><br><span style="font-size:0.72rem;color:#888;">біля водойм</span></div>
+          <div style="background:#e8f5e9;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#2c3e2f;border:1.5px solid #c8e6c9;">🚌<br><b>Тури по Україні</b><br><span style="font-size:0.72rem;color:#888;">маршрути</span></div>
+          <div style="background:#e8f5e9;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#2c3e2f;border:1.5px solid #c8e6c9;">📢<br><b>Дошка оголошень</b><br><span style="font-size:0.72rem;color:#888;">б/у снасті</span></div>
+          <div style="background:#f5f7fa;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#2c3e2f;">🏪<br><b>Магазини</b><br><span style="font-size:0.72rem;color:#888;">рибальські</span></div>
+          <div style="background:#f5f7fa;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#2c3e2f;">📰<br><b>Новини</b><br><span style="font-size:0.72rem;color:#888;">рибальські</span></div>
+          <div style="background:#f5f7fa;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#2c3e2f;">💬<br><b>Форум</b><br><span style="font-size:0.72rem;color:#888;">спільнота</span></div>
+          <div style="background:#c62828;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#fff;">🆘<br><b>SOS</b><br><span style="font-size:0.72rem;opacity:0.85;">екстрена допомога</span></div>
+          <div style="background:#1a237e;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#fff;">📡<br><b>GTR Alarm</b><br><span style="font-size:0.72rem;opacity:0.85;">сигналізатор</span></div>
+          <div style="background:#e8f5e9;border-radius:18px;padding:14px 10px;text-align:center;font-size:0.82rem;color:#2c3e2f;border:1.5px solid #c8e6c9;">🏆<br><b>Турніри</b><br><span style="font-size:0.72rem;color:#888;">рибальські</span></div>
         </div>
 
         <!-- Кнопки входу -->
@@ -2801,12 +2812,6 @@ function renderWaterbodies() {
         </div>
         <button id="getLocationBtn" class="btn btn-location btn-block">📍 Визначити моє місце</button>
         <div id="locationStatus" style="margin-bottom:12px;font-size:0.85rem;color:#888;"></div>
-        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-            <button id="waterSortNearby" class="btn btn-secondary" style="flex:1;min-width:80px;">📍 Поруч</button>
-            <button id="waterFilterAll" class="btn btn-secondary" style="flex:1;min-width:60px;background:#2196F3;color:#fff;">🗺️ Всі</button>
-            <button id="waterFilterFree" class="btn btn-secondary" style="flex:1;min-width:80px;">🎣 Безкоштовні</button>
-            <button id="waterFilterPaid" class="btn btn-secondary" style="flex:1;min-width:60px;">💰 Платні</button>
-        </div>
         <div id="waterMap" class="map-container"></div>
         <div id="waterList"></div>
     </div>`;
@@ -2816,19 +2821,7 @@ function renderWaterbodies() {
         document.getElementById('locationStatus').innerHTML = currentLocation ? `✅ ${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)}${acc}` : '❌ Місце не визначено';
         const listDiv = document.getElementById('waterList');
         listDiv.innerHTML = '';
-        // Фільтрація і сортування
-        let displayList = [...waterbodies];
-        if (typeof waterFilter !== 'undefined') {
-            if (waterFilter === 'free') displayList = displayList.filter(w => !w.paid);
-            if (waterFilter === 'paid') displayList = displayList.filter(w =>  w.paid);
-        }
-        if (typeof waterSortNearby !== 'undefined' && waterSortNearby && currentLocation) {
-            displayList.sort((a,b) => getDistance(currentLocation.lat,currentLocation.lng,a.lat,a.lng) - getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng));
-        }
-        if (displayList.length === 0) {
-            listDiv.innerHTML = '<div style="text-align:center;padding:24px;color:#888;">Нічого не знайдено за вибраним фільтром</div>';
-        }
-        displayList.forEach(water => {
+        waterbodies.forEach(water => {
             const statusClass = water.status==='biting'?'status-biting':water.status==='not_biting'?'status-not-biting':'status-unknown';
             const statusText = water.status==='biting'?'🟢 Клює!':water.status==='not_biting'?'🔴 Не клює':'⚪ Немає даних';
             const crowns = '👑'.repeat(Math.min(water.crown||0,5))+(water.crown>5?`+${water.crown-5}`:'');
@@ -2870,45 +2863,6 @@ function renderWaterbodies() {
         setTimeout(() => { if(mapWater) mapWater.invalidateSize(); }, 300);
     }
     document.getElementById('getLocationBtn').onclick = () => getUserLocation(()=>renderWaterCards());
-
-    // --- Стан фільтрів водойм ---
-    let waterFilter = 'all'; // all | free | paid
-    let waterSortNearby = false;
-
-    function updateFilterButtons() {
-        const btnAll   = document.getElementById('waterFilterAll');
-        const btnFree  = document.getElementById('waterFilterFree');
-        const btnPaid  = document.getElementById('waterFilterPaid');
-        const btnNear  = document.getElementById('waterSortNearby');
-        if (!btnAll) return;
-        [btnAll, btnFree, btnPaid].forEach(b => { b.style.background=''; b.style.color=''; });
-        const active = waterFilter==='free' ? btnFree : waterFilter==='paid' ? btnPaid : btnAll;
-        active.style.background = '#2196F3';
-        active.style.color = '#fff';
-        btnNear.style.background = waterSortNearby ? '#4CAF50' : '';
-        btnNear.style.color      = waterSortNearby ? '#fff'    : '';
-    }
-
-    document.getElementById('waterFilterAll').onclick = () => {
-        waterFilter = 'all'; waterSortNearby = false;
-        updateFilterButtons(); renderWaterCards();
-    };
-    document.getElementById('waterFilterFree').onclick = () => {
-        waterFilter = 'free'; updateFilterButtons(); renderWaterCards();
-    };
-    document.getElementById('waterFilterPaid').onclick = () => {
-        waterFilter = 'paid'; updateFilterButtons(); renderWaterCards();
-    };
-    document.getElementById('waterSortNearby').onclick = () => {
-        if (!currentLocation) {
-            getUserLocation(() => { waterSortNearby = true; updateFilterButtons(); renderWaterCards(); });
-            return;
-        }
-        waterSortNearby = !waterSortNearby;
-        updateFilterButtons(); renderWaterCards();
-    };
-
-    updateFilterButtons();
     renderWaterCards();
 }
 function showWaterDetails(water) {
