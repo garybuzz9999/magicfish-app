@@ -2900,6 +2900,12 @@ function renderWaterbodies() {
         </div>
         <button id="getLocationBtn" class="btn btn-location btn-block">📍 Визначити моє місце</button>
         <div id="locationStatus" style="margin-bottom:12px;font-size:0.85rem;color:#888;"></div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <button id="waterSortNearby" class="btn btn-secondary" style="flex:1;min-width:80px;">📍 Поруч</button>
+            <button id="waterFilterAll"  class="btn btn-secondary" style="flex:1;min-width:60px;">🗺️ Всі</button>
+            <button id="waterFilterFree" class="btn btn-secondary" style="flex:1;min-width:80px;">🎣 Безкоштовні</button>
+            <button id="waterFilterPaid" class="btn btn-secondary" style="flex:1;min-width:60px;">💰 Платні</button>
+        </div>
         <div id="waterMap" class="map-container"></div>
         <div id="waterList"></div>
     </div>`;
@@ -2907,9 +2913,20 @@ function renderWaterbodies() {
     function renderWaterCards() {
         const acc = currentLocation?.accuracy ? ` (±${Math.round(currentLocation.accuracy)}м)` : '';
         document.getElementById('locationStatus').innerHTML = currentLocation ? `✅ ${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)}${acc}` : '❌ Місце не визначено';
-        const listDiv = document.getElementById('waterList');
+        var listDiv = document.getElementById('waterList');
         listDiv.innerHTML = '';
-        waterbodies.forEach(water => {
+        var displayList = waterbodies.slice();
+        if (typeof waterFilter !== 'undefined') {
+            if (waterFilter === 'free') displayList = displayList.filter(function(w){ return !w.paid; });
+            if (waterFilter === 'paid') displayList = displayList.filter(function(w){ return  w.paid; });
+        }
+        if (typeof waterSortNearby !== 'undefined' && waterSortNearby && currentLocation) {
+            displayList.sort(function(a,b){ return getDistance(currentLocation.lat,currentLocation.lng,a.lat,a.lng) - getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng); });
+        }
+        if (displayList.length === 0) {
+            listDiv.innerHTML = '<div style="text-align:center;padding:24px;color:#888;">Нічого не знайдено</div>';
+        }
+        displayList.forEach(water => {
             const statusClass = water.status==='biting'?'status-biting':water.status==='not_biting'?'status-not-biting':'status-unknown';
             const statusText = water.status==='biting'?'🟢 Клює!':water.status==='not_biting'?'🔴 Не клює':'⚪ Немає даних';
             const crowns = '👑'.repeat(Math.min(water.crown||0,5))+(water.crown>5?`+${water.crown-5}`:'');
@@ -2950,7 +2967,44 @@ function renderWaterbodies() {
         // Фікс для планшету — карта не рендерилась в прихованому контейнері
         setTimeout(() => { if(mapWater) mapWater.invalidateSize(); }, 300);
     }
-    document.getElementById('getLocationBtn').onclick = () => getUserLocation(()=>renderWaterCards());
+    document.getElementById('getLocationBtn').onclick = () => getUserLocation(()=>{ updateWaterFilterButtons(); renderWaterCards(); });
+
+    var waterFilter = 'all';
+    var waterSortNearby = false;
+
+    function updateWaterFilterButtons() {
+        var btnAll  = document.getElementById('waterFilterAll');
+        var btnFree = document.getElementById('waterFilterFree');
+        var btnPaid = document.getElementById('waterFilterPaid');
+        var btnNear = document.getElementById('waterSortNearby');
+        if (!btnAll) return;
+        [btnAll, btnFree, btnPaid].forEach(function(b) { b.style.background=''; b.style.color=''; });
+        var active = waterFilter==='free' ? btnFree : waterFilter==='paid' ? btnPaid : btnAll;
+        active.style.background = '#2196F3';
+        active.style.color = '#fff';
+        btnNear.style.background = waterSortNearby ? '#27ae60' : '';
+        btnNear.style.color      = waterSortNearby ? '#fff'    : '';
+    }
+
+    document.getElementById('waterFilterAll').onclick = function() {
+        waterFilter = 'all'; waterSortNearby = false; updateWaterFilterButtons(); renderWaterCards();
+    };
+    document.getElementById('waterFilterFree').onclick = function() {
+        waterFilter = 'free'; updateWaterFilterButtons(); renderWaterCards();
+    };
+    document.getElementById('waterFilterPaid').onclick = function() {
+        waterFilter = 'paid'; updateWaterFilterButtons(); renderWaterCards();
+    };
+    document.getElementById('waterSortNearby').onclick = function() {
+        if (!currentLocation) {
+            getUserLocation(function() { waterSortNearby = true; updateWaterFilterButtons(); renderWaterCards(); });
+            return;
+        }
+        waterSortNearby = !waterSortNearby;
+        updateWaterFilterButtons(); renderWaterCards();
+    };
+
+    updateWaterFilterButtons();
     renderWaterCards();
 }
 function showWaterDetails(water) {
