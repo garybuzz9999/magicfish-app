@@ -4418,6 +4418,16 @@ function renderAlarm() {
         <button id="gtrConnectBtn" class="btn" style="flex-shrink:0;padding:10px 18px;">🔗 Підключити</button>
       </div>
 
+      <!-- Отримати API GTR Phantom -->
+      <div style="background:#e3f2fd;border-radius:20px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+        <div style="font-size:1.8rem;flex-shrink:0;">📶</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:0.92rem;color:#0d47a1;">GTR Phantom BLE 4.0 — API</div>
+          <div style="font-size:0.78rem;color:#1565c0;margin-top:2px;">Підключіть сигналізатор до MagicFish через офіційний API</div>
+        </div>
+        <button id="gtrApiBtn" style="background:#1976d2;color:#fff;border:none;border-radius:40px;padding:10px 16px;font-weight:700;cursor:pointer;font-size:0.82rem;white-space:nowrap;">📥 Отримати</button>
+      </div>
+
       <!-- Не підключено -->
       <div id="gtrDisconnected" style="text-align:center;padding:32px 20px;color:#aaa;">
         <div style="font-size:3.5rem;margin-bottom:12px;">📡</div>
@@ -4555,6 +4565,22 @@ function renderAlarm() {
             }
         }, 5000);
     }
+
+    document.getElementById('gtrApiBtn').addEventListener('click', function() {
+        openModal('<h3 style="color:#0d47a1;">📶 GTR Phantom BLE 4.0 — API</h3>' +
+            '<p style="font-size:0.88rem;color:#333;line-height:1.6;">Офіційний API дозволяє підключити ваш GTR Phantom до MagicFish для:</p>' +
+            '<ul style="font-size:0.85rem;color:#444;line-height:1.8;padding-left:18px;">' +
+              '<li>📳 Вібро-сповіщення на телефон</li>' +
+              '<li>📊 Статистика клювань в реальному часі</li>' +
+              '<li>🗺️ Прив\'язка до водойми</li>' +
+              '<li>👥 Поширення статусу з рибалками</li>' +
+            '</ul>' +
+            '<p style="font-size:0.82rem;color:#888;">Для отримання API-ключа зверніться до офіційного дистриб\'ютора GTR:</p>' +
+            '<a href="mailto:api@gtrfishing.com" style="display:block;background:#1976d2;color:#fff;text-align:center;padding:12px;border-radius:12px;text-decoration:none;font-weight:700;margin-top:8px;">📧 api@gtrfishing.com</a>' +
+            '<button class="close-modal" style="margin-top:12px;width:100%;">Зрозуміло</button>'
+        );
+        document.querySelector('.close-modal').onclick = function() { document.querySelector('.modal-overlay')?.remove(); };
+    });
 
     document.getElementById('gtrConnectBtn').addEventListener('click', () => {
         gtrConnected = !gtrConnected;
