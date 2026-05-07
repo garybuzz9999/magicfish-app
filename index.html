@@ -874,58 +874,66 @@ function updateSubscriptionStatus() {
     saveAll();
 }
 
-// ========== ОПЛАТИ ==========
-function payBasic() { alert("💳 Демо-оплата 25 грн (одноразово)."); currentUser.hasBasicPaid=true; saveAll(); renderMainMenu(); }
+// ========== БЕЗКОШТОВНА РЕЄСТРАЦІЯ ПАРТНЕРІВ ==========
+function payBasic() { 
+    currentUser.hasBasicPaid=true; 
+    saveAll(); 
+    renderMainMenu(); 
+}
+
 function payStore() {
     const name = prompt("Введіть назву вашого магазину:");
     if (!name || name.trim().length < 2) { alert("Назва магазину обов'язкова."); return; }
-    alert(`💳 Демо-оплата 2000 грн/рік.\nМагазин: "${name.trim()}"`);
+    alert(`✅ Магазин "${name.trim()}" зареєстровано безкоштовно!\n\nТепер ви можете додавати товари в кабінеті.`);
     currentUser.role = 'store';
     currentUser.storeName = name.trim();
     currentUser.storeExpiry = new Date(Date.now()+365*86400000).toISOString();
     saveAll(); renderSection('cabinet');
 }
+
 function payWaterOwner() {
     const waterName = prompt("Введіть назву вашої водойми:");
     if (!waterName || waterName.trim().length < 2) { alert("Назва водойми обов'язкова."); return; }
     const name = waterName.trim();
     if (!currentUser.waterLicenses) currentUser.waterLicenses = [];
     const alreadyHas = currentUser.waterLicenses.find(w => w.name.toLowerCase() === name.toLowerCase());
-    if (alreadyHas) { alert(`❌ Ліцензія на "${name}" вже є.`); return; }
-    alert(`💳 Демо-оплата 2000 грн/рік.\nВодойма: "${name}"\nКожна ліцензія — окрема водойма.`);
+    if (alreadyHas) { alert(`❌ Водойма "${name}" вже зареєстрована.`); return; }
+    alert(`✅ Водойма "${name}" зареєстрована безкоштовно!\n\nДодайте інформацію в кабінеті.`);
     currentUser.waterLicenses.push({ name, expiry: new Date(Date.now()+365*86400000).toISOString() });
     currentUser.role = 'waterowner';
     currentUser.waterOwnerExpiry = new Date(Date.now()+365*86400000).toISOString();
     currentUser.myWaterName = currentUser.waterLicenses[0].name;
     currentUser.activeWaterIdx = 0;
-    // Додаємо водойму в загальний список якщо її ще немає
     if (!waterbodies.find(w => w.name === name)) {
         waterbodies.push({ id: Date.now(), name, lat: 49, lng: 32, paid: true, status: 'unknown', crown: 0, promo: '', price: '', phone: currentUser.phone||'', workingHours: '', services: '', description: '' });
     }
     saveAll(); renderSection('cabinet');
 }
+
 function payManufacturer() {
     const name = prompt("Введіть назву вашої компанії/бренду:");
     if (!name || name.trim().length < 2) { alert("Назва компанії обов'язкова."); return; }
-    alert(`💳 Демо-оплата 5000 грн/рік.\nВиробник: "${name.trim()}"`);
+    alert(`✅ Компанія "${name.trim()}" зареєстрована безкоштовно!\n\nДодавайте товари в кабінеті.`);
     currentUser.role = 'manufacturer';
     currentUser.manufacturerName = name.trim();
     currentUser.manufacturerExpiry = new Date(Date.now()+365*86400000).toISOString();
     saveAll(); renderSection('cabinet');
 }
+
 function payCamping() {
     const name = prompt("Введіть назву вашого кемпінгу:");
     if (!name || name.trim().length < 2) { alert("Назва кемпінгу обов'язкова."); return; }
-    alert(`💳 Демо-оплата 1500 грн/рік.\nКемпінг: "${name.trim()}"`);
+    alert(`✅ Кемпінг "${name.trim()}" зареєстровано безкоштовно!\n\nДодайте деталі в кабінеті.`);
     currentUser.role = 'camping';
     currentUser.campingName = name.trim();
     currentUser.campingExpiry = new Date(Date.now()+365*86400000).toISOString();
     saveAll(); renderSection('cabinet');
 }
+
 function payResort() {
     const name = prompt("Назва вашої бази відпочинку:");
     if (!name || name.trim().length < 2) { alert("Назва обов'язкова."); return; }
-    alert(`💳 Демо-оплата 2500 грн/рік.\nБаза: "${name.trim()}"\nФункціонал як у власника водойми + кемпінгу.`);
+    alert(`✅ База відпочинку "${name.trim()}" зареєстрована безкоштовно!\n\nНалаштуйте все в кабінеті.`);
     if (!currentUser.resortLicenses) currentUser.resortLicenses = [];
     currentUser.resortLicenses.push({ name: name.trim(), expiry: new Date(Date.now()+365*86400000).toISOString() });
     currentUser.role = 'resort';
@@ -933,15 +941,17 @@ function payResort() {
     currentUser.myResortName = name.trim();
     saveAll(); renderSection('cabinet');
 }
+
 function payTravelAgency() {
     const name = prompt("Введіть назву вашого турагентства:");
     if (!name || name.trim().length < 2) { alert("Назва турагентства обов'язкова."); return; }
-    alert(`💳 Демо-оплата 3000 грн/рік.\nТурагентство: "${name.trim()}"\nДо 10 турів, 5 фото кожен, публікація новин.`);
+    alert(`✅ Турагентство "${name.trim()}" зареєстровано безкоштовно!\n\nПублікуйте тури в кабінеті.`);
     currentUser.role = 'travelagency';
     currentUser.agencyName = name.trim();
     currentUser.travelagencyExpiry = new Date(Date.now()+365*86400000).toISOString();
     saveAll(); renderSection('cabinet');
 }
+
 
 // ========== МОДАЛКА ==========
 function openModal(html) {
@@ -2237,12 +2247,12 @@ function renderCabinet() {
     function renderSubscriptionsTab(content) {
         const plans = [
             { id:'basic', title:'🎟️ Базовий доступ', price:'Безкоштовно', period:'назавжди', desc:'✅ Карта водойм та кемпінгів\n✅ Чекіни «клює/не клює»\n✅ SOS виклик\n✅ Дошка оголошень — до 50 оголошень\n✅ Турніри (участь)\n✅ Прогноз кльову\n✅ Бонуси та бали', isActive:true, action:()=>{}, requiredBasic:false },
-            { id:'store',        title:'🏪 Магазин',            price:'2000 грн', period:'рік',    desc:'✅ До 50 оголошень\n✅ Картка на карті з адресою і телефоном\n✅ Посилання на інтернет-магазин\n✅ Геолокація\n❌ Організація турнірів', isActive:role==='store', action:payStore, requiredBasic:true },
-            { id:'waterowner',   title:'💧 Власник водойми',   price:'2000 грн', period:'рік',    desc:'✅ 1 ліцензія = 1 водойма назавжди\n✅ Фото, акції, ціни, телефон\n✅ Геолокація водойми\n✅ Організація турнірів\n✅ До 5 оголошень', isActive:role==='waterowner', action:payWaterOwner, requiredBasic:true },
-            { id:'camping',      title:'🏕️ Власник кемпінгу',  price:'1500 грн', period:'рік',    desc:'✅ Картка кемпінгу на карті\n✅ Фото, опис, послуги, телефон\n✅ Геолокація\n✅ Організація турнірів\n✅ До 3 оголошень', isActive:role==='camping', action:payCamping, requiredBasic:true },
-            { id:'resort',       title:'🏖️ База відпочинку',    price:'2500 грн', period:'рік',    desc:'✅ Картка бази на карті\n✅ До 8 фото\n✅ Акції, ціни, послуги, телефон\n✅ Геолокація\n✅ Організація турнірів\n✅ До 5 оголошень\n✅ Сайт / бронювання онлайн', isActive:role==='resort', action:payResort, requiredBasic:true },
-            { id:'travelagency', title:'🚌 Турагентство',       price:'3000 грн', period:'рік',    desc:'✅ До 10 рибальських турів\n✅ До 5 фото на кожен тур\n✅ Картка агентства з контактами\n✅ Публікація новин та акцій\n✅ Телефон і сайт у профілі\n✅ Організація турнірів\n✅ Пріоритет у розділі «Тури»', isActive:role==='travelagency', action:payTravelAgency, requiredBasic:true },
-            { id:'manufacturer', title:'🏭 Виробник',           price:'5000 грн', period:'рік',    desc:'✅ Розміщення новин і банерів\n✅ Необмежені оголошення\n✅ Сайт / інтернет-магазин у профілі\n✅ Організація турнірів\n✅ Контакти у профілі', isActive:role==='manufacturer', action:payManufacturer, requiredBasic:true }
+            { id:'store',        title:'🏪 Магазин',            price:'Безкоштовно', period:'',    desc:'✅ До 50 оголошень\n✅ Картка на карті з адресою і телефоном\n✅ Посилання на інтернет-магазин\n✅ Геолокація\n❌ Організація турнірів', isActive:role==='store', action:payStore, requiredBasic:true },
+            { id:'waterowner',   title:'💧 Власник водойми',   price:'Безкоштовно', period:'',    desc:'✅ Необмежено водойм\n✅ Фото, акції, ціни, телефон\n✅ Геолокація водойми\n✅ Організація турнірів\n✅ До 5 оголошень', isActive:role==='waterowner', action:payWaterOwner, requiredBasic:true },
+            { id:'camping',      title:'🏕️ Власник кемпінгу',  price:'Безкоштовно', period:'',    desc:'✅ Картка кемпінгу на карті\n✅ Фото, опис, послуги, телефон\n✅ Геолокація\n✅ Організація турнірів\n✅ До 3 оголошень', isActive:role==='camping', action:payCamping, requiredBasic:true },
+            { id:'resort',       title:'🏖️ База відпочинку',    price:'Безкоштовно', period:'',    desc:'✅ Картка бази на карті\n✅ До 8 фото\n✅ Акції, ціни, послуги, телефон\n✅ Геолокація\n✅ Організація турнірів\n✅ До 5 оголошень\n✅ Сайт / бронювання онлайн', isActive:role==='resort', action:payResort, requiredBasic:true },
+            { id:'travelagency', title:'🚌 Турагентство',       price:'Безкоштовно', period:'',    desc:'✅ До 10 рибальських турів\n✅ До 5 фото на кожен тур\n✅ Картка агентства з контактами\n✅ Публікація новин та акцій\n✅ Телефон і сайт у профілі\n✅ Організація турнірів\n✅ Пріоритет у розділі «Тури»', isActive:role==='travelagency', action:payTravelAgency, requiredBasic:true },
+            { id:'manufacturer', title:'🏭 Виробник',           price:'Безкоштовно', period:'',    desc:'✅ Розміщення новин і банерів\n✅ Необмежені оголошення\n✅ Сайт / інтернет-магазин у профілі\n✅ Організація турнірів\n✅ Контакти у профілі', isActive:role==='manufacturer', action:payManufacturer, requiredBasic:true }
         ];
         content.innerHTML = '';
         plans.forEach(p => {
@@ -2269,8 +2279,8 @@ function renderCabinet() {
             <div class="plan-card" style="text-align:center;">
                 <div style="font-size:3rem;margin-bottom:12px;">💧</div>
                 <div style="font-weight:700;font-size:1rem;margin-bottom:8px;">У вас ще немає прив'язаної водойми</div>
-                <div style="font-size:0.85rem;color:#888;margin-bottom:16px;">Купіть ліцензію щоб прив'язати свою водойму до профілю</div>
-                <button id="buyFirstWaterLic" class="btn btn-block">💧 Прив'язати водойму (2000 грн/рік)</button>
+                <div style="font-size:0.85rem;color:#888;margin-bottom:16px;">Додайте свою водойму безкоштовно</div>
+                <button id="buyFirstWaterLic" class="btn btn-block">💧 Додати водойму (Безкоштовно)</button>
             </div>`;
             document.getElementById('buyFirstWaterLic').onclick = () => payWaterOwner();
             return;
@@ -2322,7 +2332,7 @@ function renderCabinet() {
                     <input id="wLng" type="number" step="0.0001" value="${myWater.lng||''}" placeholder="Довгота" style="flex:1;">
                 </div>
                 <button id="saveWaterBtn" class="btn btn-block" style="margin-top:8px;">💾 Зберегти</button>
-                <button id="addWaterLicBtn" class="btn btn-secondary btn-block" style="margin-top:8px;">➕ Купити ліцензію на ще одну водойму (2000 грн/рік)</button>
+                <button id="addWaterLicBtn" class="btn btn-secondary btn-block" style="margin-top:8px;">➕ Додати ще одну водойму (Безкоштовно)</button>
                 ${(myWater.site||currentUser.site)?`<a href="${myWater.site||currentUser.site}" target="_blank" class="btn btn-secondary btn-block" style="display:block;text-align:center;text-decoration:none;margin-top:8px;">🌐 Сайт водойми</a>`:''}
             </div>`;
 
