@@ -1445,13 +1445,95 @@ function renderPickNickname(provider) {
         currentUser.hasBasicPaid = true;
         addPoints('first_login');
         saveAll();
+        renderAskGeolocation();
+    };
+}
+
+// ========== ЗАПИТ ГЕОЛОКАЦІЇ ПІСЛЯ РЕЄСТРАЦІЇ ==========
+function renderAskGeolocation() {
+    const app = document.getElementById('appRoot');
+    app.innerHTML = `
+    <div class="card" style="text-align:center;">
+      <div style="font-size:3.5rem;margin-bottom:8px;">📍</div>
+      <div style="font-size:1.25rem;font-weight:900;color:#1f3b4c;margin-bottom:8px;">Дозвольте визначити ваше місце</div>
+      <div style="font-size:0.88rem;color:#555;margin-bottom:20px;line-height:1.6;">
+        MagicFish використовує геолокацію для:<br>
+        🎣 <b>Водойми поруч</b> — сортування за відстанню<br>
+        🆘 <b>SOS</b> — точні координати для рятувальників<br>
+        📍 <b>Чекіни</b> — підтвердження що ви на місці<br>
+        🏕️ <b>Кемпінги і бази</b> — найближчі до вас
+      </div>
+      <button id="geoAllowBtn" class="btn btn-block" style="margin-bottom:12px;background:#27ae60;font-size:1rem;">
+        📍 Дозволити геолокацію
+      </button>
+      <button id="geoSkipBtn" class="btn btn-block btn-secondary" style="font-size:0.9rem;">
+        ✖ Пропустити
+      </button>
+      <div id="geoStatus" style="margin-top:14px;font-size:0.82rem;color:#888;"></div>
+    </div>`;
+
+    document.getElementById('geoAllowBtn').onclick = () => {
+        const statusDiv = document.getElementById('geoStatus');
+        const allowBtn  = document.getElementById('geoAllowBtn');
+        allowBtn.disabled = true;
+        allowBtn.textContent = '⏳ Визначаємо...';
+        statusDiv.textContent = '';
+        if (!navigator.geolocation) {
+            statusDiv.innerHTML = '❌ Геолокація не підтримується браузером';
+            allowBtn.disabled = false;
+            allowBtn.textContent = '📍 Дозволити геолокацію';
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                currentLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy };
+                currentUser.locationDenied = false;
+                saveAll();
+                statusDiv.innerHTML = \`✅ Визначено: \${pos.coords.latitude.toFixed(4)}, \${pos.coords.longitude.toFixed(4)} (±\${Math.round(pos.coords.accuracy)}м)\`;
+                setTimeout(() => renderMainMenu(), 800);
+            },
+            err => {
+                statusDiv.innerHTML = '⚠️ Не вдалось визначити. Перевірте дозволи браузера.';
+                allowBtn.disabled = false;
+                allowBtn.textContent = '📍 Спробувати ще раз';
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    };
+
+    document.getElementById('geoSkipBtn').onclick = () => {
+        currentUser.locationDenied = true;
+        saveAll();
         renderMainMenu();
+        // Показуємо попередження після переходу
+        setTimeout(() => {
+            const warn = document.createElement('div');
+            warn.id = 'geoWarningBanner';
+            warn.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#e65100;color:#fff;padding:10px 16px;font-size:0.82rem;z-index:9999;display:flex;align-items:center;gap:10px;';
+            warn.innerHTML = \`<span style="flex:1;">⚠️ Геолокація вимкнена — SOS, «Поруч» і чекіни будуть неточними</span>
+              <button onclick="document.getElementById('geoWarningBanner').remove();renderAskGeolocation();" style="background:#fff;color:#e65100;border:none;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;">Увімкнути</button>
+              <button onclick="document.getElementById('geoWarningBanner').remove();" style="background:transparent;color:#fff;border:none;font-size:1.1rem;cursor:pointer;">✕</button>\`;
+            document.body.appendChild(warn);
+        }, 300);
     };
 }
 
 // ========== ГОЛОВНЕ МЕНЮ ==========
 function renderMainMenu() {
     const app = document.getElementById('appRoot');
+    // Показуємо банер якщо геолокація відхилена і ще не визначена
+    if (currentUser?.locationDenied && !currentLocation) {
+        setTimeout(() => {
+            if (document.getElementById('geoWarningBanner')) return;
+            const warn = document.createElement('div');
+            warn.id = 'geoWarningBanner';
+            warn.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#e65100;color:#fff;padding:10px 16px;font-size:0.82rem;z-index:9999;display:flex;align-items:center;gap:10px;';
+            warn.innerHTML = `<span style="flex:1;">⚠️ Геолокація вимкнена — SOS, «Поруч» і чекіни будуть неточними</span>
+              <button onclick="document.getElementById('geoWarningBanner').remove();renderAskGeolocation();" style="background:#fff;color:#e65100;border:none;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;">Увімкнути</button>
+              <button onclick="document.getElementById('geoWarningBanner').remove();" style="background:transparent;color:#fff;border:none;font-size:1.1rem;cursor:pointer;">✕</button>`;
+            document.body.appendChild(warn);
+        }, 400);
+    }
     const activeTCount = getActiveTournamentsCount();
     const totalP = getTotalParticipantsCount();
     const flag = getCountryFlag();
