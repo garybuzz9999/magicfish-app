@@ -1362,7 +1362,7 @@ function renderLogin() {
             { icon:'3️⃣', title:'Оберіть нікнейм', desc:'Придумайте унікальне рибальське ім\'я — так вас будуть знати інші рибалки.' },
             { icon:'4️⃣', title:'Водойми та чекіни', desc:'Знайдіть водойму поруч. Натисніть «Клює» або «Не клює» — і всі рибалки побачать актуальний стан.' },
             { icon:'5️⃣', title:'Прогноз кльову', desc:'Отримайте реальний прогноз на основі погоди, тиску та фази місяця.' },
-            { icon:'6️⃣', title:'SOS', desc:'В разі небезпеки натисніть SOS — координати отримають рибалки в радіусі 5 км і служби порятунку.' },
+            { icon:'6️⃣', title:'SOS', desc:'В разі небезпеки натисніть SOS — координати отримають рибалки в радіусі 10 км і служби порятунку.' },
             { icon:'7️⃣', title:'Дошка оголошень', desc:'Розміщуйте рекламні оголошення. 14 категорій — від гачків до катерів.' },
             { icon:'8️⃣', title:'Турніри і тури', desc:'Беріть участь у рибальських змаганнях та турах по Україні.' },
         ] : [
@@ -1855,9 +1855,7 @@ function renderSOS() {
             items: [
                 { value:'fuel',    label:'⛽ Закінчився бензин / пальне' },
                 { value:'engine',  label:'🔧 Поломка мотора або човна' },
-                { value:'oar',     label:'🚣 Втрачено весло / руль' },
                 { value:'hole',    label:'🌀 Пробоїна — човен тоне' },
-                { value:'anchor',  label:'⚓ Заклинило якір / гвинт' },
                 { value:'battery', label:'🔋 Розрядився акумулятор' },
             ]
         },
@@ -1868,8 +1866,6 @@ function renderSOS() {
             items: [
                 { value:'lost_water', label:'🌊 Заблукав на воді / в тумані' },
                 { value:'lost_forest',label:'🌲 Заблукав у лісі / болоті' },
-                { value:'lost_dark',  label:'🌑 Застряг вночі без світла' },
-                { value:'no_signal',  label:'📵 Немає зв\'язку, потрібна допомога' },
             ]
         },
         {
@@ -1878,12 +1874,9 @@ function renderSOS() {
             bg: '#fdf0f0',
             items: [
                 { value:'drowning',  label:'🌊 Людина тоне / впала у воду' },
-                { value:'heart',     label:'❤️ Серцевий напад / біль у грудях' },
+                { value:'medical',   label:'🩺 Потрібен лікар з аптечкою', isMedical: true },
                 { value:'trauma',    label:'🩹 Травма / перелом / рана' },
-                { value:'allergy',   label:'💉 Алергічна реакція / укус' },
                 { value:'hypo',      label:'🥶 Переохолодження / гіпотермія' },
-                { value:'heat',      label:'🥵 Тепловий удар / непритомність' },
-                { value:'poison',    label:'☠️ Отруєння / вживання токсину' },
             ]
         },
         {
@@ -1893,9 +1886,8 @@ function renderSOS() {
             items: [
                 { value:'storm',    label:'⛈️ Шторм / сильний вітер' },
                 { value:'flood',    label:'🌊 Підйом води / підтоплення' },
-                { value:'fire',     label:'🔥 Пожежа на березі / в лісі' },
+                { value:'fire',     label:'🔥 Пожежа на березі / в лісі', isFire: true },
                 { value:'ice',      label:'🧊 Провалились під лід' },
-                { value:'lightning',label:'⚡ Удар блискавки поруч' },
             ]
         },
         {
@@ -1903,7 +1895,6 @@ function renderSOS() {
             color: '#555',
             bg: '#f5f5f5',
             items: [
-                { value:'fight',   label:'⚠️ Конфлікт / загроза безпеці' },
                 { value:'missing', label:'👤 Зникла людина' },
                 { value:'other',   label:'📢 Інша надзвичайна ситуація' },
             ]
@@ -1973,6 +1964,22 @@ function renderSOS() {
                 btn.style.borderColor = cat.color;
                 btn.style.fontWeight = '900';
                 selectedSOS = item;
+                // Одразу пропонуємо дзвінок для пожежі
+                if (item.isFire) {
+                    if (confirm('🔥 Пожежа! Зателефонувати 101 — Пожежна?')) {
+                        window.location.href = 'tel:101';
+                    }
+                }
+                // Для медичної — лікар + 103
+                if (item.isMedical) {
+                    openModal('<h3 style="color:#e74c3c;">🩺 Медична допомога</h3>' +
+                        '<p style="font-size:0.9rem;margin-bottom:16px;">Вашу заявку отримають рибалки в радіусі 10 км з аптечкою та медичною підготовкою.</p>' +
+                        '<p style="font-size:0.88rem;color:#555;margin-bottom:16px;">Також рекомендуємо одразу викликати швидку:</p>' +
+                        '<a href="tel:103" style="display:block;background:#e74c3c;color:#fff;text-align:center;padding:14px;border-radius:14px;text-decoration:none;font-weight:900;font-size:1.1rem;margin-bottom:10px;">🚑 Зателефонувати 103 — Швидка</a>' +
+                        '<button class="close-modal" style="width:100%;">Закрити</button>'
+                    );
+                    document.querySelector('.close-modal').onclick = function() { document.querySelector('.modal-overlay')?.remove(); };
+                }
             };
             grid.appendChild(btn);
         });
@@ -2004,7 +2011,7 @@ function renderSOS() {
         modal.querySelector('#sendSOSConfirm').onclick = () => {
             const comment = document.getElementById('sosComment').value.trim();
             const locationStr = loc.city ? `${loc.city}, ${loc.region}` : `${loc.lat.toFixed(5)}, ${loc.lng.toFixed(5)}`;
-            alert(`🚨 SOS НАДІСЛАНО!\n\n📍 ${locationStr}\n📋 ${selectedSOS ? selectedSOS.label : 'Не вказано'}\n💬 ${comment || '—'}\n\n✅ Рибалки в радіусі 5 км отримали сповіщення.`);
+            alert(`🚨 SOS НАДІСЛАНО!\n\n📍 ${locationStr}\n📋 ${selectedSOS ? selectedSOS.label : 'Не вказано'}\n💬 ${comment || '—'}\n\n✅ Рибалки в радіусі 10 км отримали сповіщення.`);
             modal.remove();
         };
     };
