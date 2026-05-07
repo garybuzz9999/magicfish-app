@@ -5059,8 +5059,13 @@ function renderSection(section) {
 
 // ========== СТАРТ ==========
 loadAll();
-if (currentUser) { updateSubscriptionStatus(); renderMainMenu(); }
-else renderLogin();
+// ТЕСТ-РЕЖИМ: вхід пропущено
+if (!currentUser) {
+    currentUser = { nickname:'Тест', email:'test@test.com', role:'user', hasBasicPaid:true, lang:'uk', country:'UA', currency:'UAH' };
+    saveAll();
+}
+updateSubscriptionStatus();
+renderMainMenu();
 </script>
 </body>
 </html>
