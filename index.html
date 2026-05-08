@@ -3134,6 +3134,113 @@ function showWaterDetails(water) {
 }
 
 // ========== МАГАЗИНИ ==========
+// ========== GTR SHOP ==========
+var gtrShopProducts = JSON.parse(localStorage.getItem('gtr_shop_products') || 'null') || [
+    { id:1, name:'GTR Phantom BLE 4.0', desc:'Сигналізатор клювання · Bluetooth · IPX6', price:1890, emoji:'📡', available:true },
+    { id:2, name:'GTR Case S', desc:'Водонепроникний чохол · Смартфон до 6.5"', price:299, emoji:'📱', available:true },
+    { id:3, name:'GTR Case M', desc:'Водонепроникний чохол · Смартфон до 7" + гаманець', price:399, emoji:'📲', available:true },
+    { id:4, name:'GTR Case XL', desc:'Водонепроникний чохол · Планшет до 10"', price:599, emoji:'💻', available:true },
+    { id:5, name:'GTR Arm Band', desc:'Нарукавний чохол · IPX4', price:249, emoji:'💪', available:true },
+    { id:6, name:'GTR Float Case', desc:'Плавучий чохол · IPX8', price:499, emoji:'🟠', available:true },
+    { id:7, name:'GTR Sport Case', desc:'Спортивний чохол · IPX7', price:449, emoji:'🏃', available:true },
+    { id:8, name:'GTR Dry Pack 20L', desc:'Водонепроникний рюкзак 20л', price:899, emoji:'🎒', available:true },
+    { id:9, name:'GTR Dry Pack 30L', desc:'Водонепроникний рюкзак 30л', price:1199, emoji:'🎒', available:true },
+    { id:10, name:'GTR Fishing Pack 40L', desc:'Рибальський рюкзак 40л', price:1599, emoji:'🎣', available:true },
+    { id:11, name:'GTR Waist Pack', desc:'Поясна сумка · Водонепроникна', price:549, emoji:'👜', available:true },
+];
+
+var GTR_ADMIN_PASS = localStorage.getItem('gtr_admin_pass') || 'gtr2024';
+
+function saveGTRProducts() {
+    localStorage.setItem('gtr_shop_products', JSON.stringify(gtrShopProducts));
+}
+
+function renderGTRShop() {
+    var el = document.getElementById('gtrShopContent');
+    if (!el) return;
+    var isAdmin = sessionStorage.getItem('gtr_admin') === '1';
+
+    var html = '<div style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">' +
+        '<div style="font-weight:900;font-size:1rem;color:#1f3b4c;">🛒 GTR — офіційний магазин</div>' +
+        (isAdmin
+            ? '<span style="background:#27ae60;color:#fff;padding:4px 12px;border-radius:40px;font-size:0.72rem;font-weight:700;">👑 Адмін</span>'
+            : '<button id="gtrAdminLoginBtn" style="background:transparent;border:none;color:#bbb;font-size:0.72rem;cursor:pointer;">⚙️</button>'
+        ) +
+    '</div>';
+
+    gtrShopProducts.forEach(function(p) {
+        html += '<div style="background:#fff;border-radius:20px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);' + (!p.available ? 'opacity:0.5;' : '') + '">' +
+            '<div style="display:flex;align-items:center;gap:12px;">' +
+                '<div style="font-size:2rem;flex-shrink:0;">' + p.emoji + '</div>' +
+                '<div style="flex:1;">' +
+                    '<div style="font-weight:700;font-size:0.92rem;">' + p.name + '</div>' +
+                    '<div style="font-size:0.78rem;color:#888;margin-top:2px;">' + p.desc + '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">' +
+                '<div style="font-size:1.2rem;font-weight:900;color:#f39c12;">&#x20B4;' + p.price + '</div>' +
+                '<div style="display:flex;gap:8px;">' +
+                    (isAdmin ? '<button onclick="gtrEditProduct(' + p.id + ')" style="background:#eee;border:none;border-radius:40px;padding:8px 12px;font-size:0.78rem;cursor:pointer;">✏️ Ред.</button>' : '') +
+                    (p.available
+                        ? '<button onclick="showOrderForm('' + p.name + '',' + p.price + ')" style="background:#1f3b4c;color:#fff;border:none;border-radius:40px;padding:8px 16px;font-weight:700;font-size:0.82rem;cursor:pointer;">🛒 Замовити</button>'
+                        : '<span style="color:#bbb;font-size:0.78rem;">Немає в наявності</span>'
+                    ) +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    });
+
+    if (isAdmin) {
+        html += '<button onclick="gtrAddProduct()" style="width:100%;background:#27ae60;color:#fff;border:none;border-radius:16px;padding:14px;font-weight:700;font-size:0.9rem;cursor:pointer;margin-top:4px;">+ Додати товар</button>';
+        html += '<button onclick="sessionStorage.removeItem('gtr_admin');renderGTRShop();" style="width:100%;background:#eee;border:none;border-radius:16px;padding:12px;font-size:0.82rem;cursor:pointer;margin-top:8px;">Вийти з адміну</button>';
+    }
+
+    el.innerHTML = html;
+
+    if (!isAdmin) {
+        var adminBtn = document.getElementById('gtrAdminLoginBtn');
+        if (adminBtn) adminBtn.onclick = function() {
+            var pass = prompt('Пароль адміністратора:');
+            if (pass === GTR_ADMIN_PASS) {
+                sessionStorage.setItem('gtr_admin', '1');
+                renderGTRShop();
+            } else if (pass !== null) {
+                alert('Невірний пароль');
+            }
+        };
+    }
+}
+
+function gtrEditProduct(id) {
+    var p = gtrShopProducts.find(function(x) { return x.id === id; });
+    if (!p) return;
+    var name  = prompt('Назва:', p.name);
+    if (name === null) return;
+    var desc  = prompt('Опис:', p.desc);
+    if (desc === null) return;
+    var price = prompt('Ціна (грн):', p.price);
+    if (price === null) return;
+    var avail = confirm('Є в наявності?');
+    p.name = name;
+    p.desc = desc;
+    p.price = parseInt(price) || p.price;
+    p.available = avail;
+    saveGTRProducts();
+    renderGTRShop();
+}
+
+function gtrAddProduct() {
+    var name  = prompt('Назва товару:');
+    if (!name) return;
+    var desc  = prompt('Опис:');
+    var price = prompt('Ціна (грн):');
+    var emoji = prompt('Емодзі:', '📦');
+    var newId = Math.max.apply(null, gtrShopProducts.map(function(x){return x.id;})) + 1;
+    gtrShopProducts.push({ id: newId, name: name, desc: desc || '', price: parseInt(price) || 0, emoji: emoji || '📦', available: true });
+    saveGTRProducts();
+    renderGTRShop();
+}
+
 function renderStores() {
     ensureLeafletFallback();
     const app = document.getElementById('appRoot');
@@ -3158,8 +3265,9 @@ function renderStores() {
 
       <!-- Перемикач вигляду -->
       <div style="display:flex;gap:0;margin:0;border-bottom:1px solid #eee;">
-        <button id="viewMapBtn" style="flex:1;padding:12px;border:none;background:#1f3b4c;color:white;font-weight:700;cursor:pointer;font-size:0.88rem;">🗺️ Карта магазинів</button>
-        <button id="viewCatBtn" style="flex:1;padding:12px;border:none;background:#eee;color:#333;font-weight:600;cursor:pointer;font-size:0.88rem;">📋 Каталог товарів</button>
+        <button id="viewMapBtn" style="flex:1;padding:12px;border:none;background:#1f3b4c;color:white;font-weight:700;cursor:pointer;font-size:0.82rem;">🗺️ Карта</button>
+        <button id="viewCatBtn" style="flex:1;padding:12px;border:none;background:#eee;color:#333;font-weight:600;cursor:pointer;font-size:0.82rem;">📋 Каталог</button>
+        <button id="viewGTRBtn" style="flex:1;padding:12px;border:none;background:#f39c12;color:#1a0a00;font-weight:700;cursor:pointer;font-size:0.82rem;">🛒 GTR Shop</button>
       </div>
 
       <div id="storeMapView" style="padding:16px;">
@@ -3180,22 +3288,40 @@ function renderStores() {
         </div>
         <div id="catalogContent"></div>
       </div>
+
+      <!-- GTR Shop вкладка -->
+      <div id="storeGTRView" style="display:none;padding:16px;">
+        <div id="gtrShopContent"></div>
+      </div>
+
     </div>`;
 
     document.getElementById('backStores').onclick = () => renderMainMenu();
 
     // ---- Перемикач ----
-    document.getElementById('viewMapBtn').onclick = () => {
-        document.getElementById('storeMapView').style.display = 'block';
-        document.getElementById('storeCatalogView').style.display = 'none';
-        document.getElementById('viewMapBtn').style.background = '#1f3b4c';
-        document.getElementById('viewMapBtn').style.color = 'white';
-        document.getElementById('viewCatBtn').style.background = '#eee';
-        document.getElementById('viewCatBtn').style.color = '#333';
-    };
+    function setTab(active) {
+        var tabs = {
+            map:  { el: document.getElementById('storeMapView'),     btn: document.getElementById('viewMapBtn'),  bg:'#1f3b4c', color:'white' },
+            cat:  { el: document.getElementById('storeCatalogView'), btn: document.getElementById('viewCatBtn'),  bg:'#1f3b4c', color:'white' },
+            gtr:  { el: document.getElementById('storeGTRView'),     btn: document.getElementById('viewGTRBtn'),  bg:'#f39c12', color:'#1a0a00' }
+        };
+        Object.keys(tabs).forEach(function(k) {
+            tabs[k].el.style.display = 'none';
+            tabs[k].btn.style.background = '#eee';
+            tabs[k].btn.style.color = '#333';
+        });
+        tabs[active].el.style.display = 'block';
+        tabs[active].btn.style.background = tabs[active].bg;
+        tabs[active].btn.style.color = tabs[active].color;
+        if (active === 'gtr') renderGTRShop();
+    }
+    document.getElementById('viewMapBtn').onclick = () => setTab('map');
+    document.getElementById('viewCatBtn').onclick  = () => { setTab('cat'); };
+    document.getElementById('viewGTRBtn').onclick  = () => setTab('gtr');
     document.getElementById('viewCatBtn').onclick = () => {
         document.getElementById('storeMapView').style.display = 'none';
         document.getElementById('storeCatalogView').style.display = 'block';
+        document.getElementById('storeGTRView').style.display = 'none';
         document.getElementById('viewCatBtn').style.background = '#1f3b4c';
         document.getElementById('viewCatBtn').style.color = 'white';
         document.getElementById('viewMapBtn').style.background = '#eee';
@@ -7959,8 +8085,9 @@ function renderStores() {
 
       <!-- Перемикач вигляду -->
       <div style="display:flex;gap:0;margin:0;border-bottom:1px solid #eee;">
-        <button id="viewMapBtn" style="flex:1;padding:12px;border:none;background:#1f3b4c;color:white;font-weight:700;cursor:pointer;font-size:0.88rem;">🗺️ Карта магазинів</button>
-        <button id="viewCatBtn" style="flex:1;padding:12px;border:none;background:#eee;color:#333;font-weight:600;cursor:pointer;font-size:0.88rem;">📋 Каталог товарів</button>
+        <button id="viewMapBtn" style="flex:1;padding:12px;border:none;background:#1f3b4c;color:white;font-weight:700;cursor:pointer;font-size:0.82rem;">🗺️ Карта</button>
+        <button id="viewCatBtn" style="flex:1;padding:12px;border:none;background:#eee;color:#333;font-weight:600;cursor:pointer;font-size:0.82rem;">📋 Каталог</button>
+        <button id="viewGTRBtn" style="flex:1;padding:12px;border:none;background:#f39c12;color:#1a0a00;font-weight:700;cursor:pointer;font-size:0.82rem;">🛒 GTR Shop</button>
       </div>
 
       <div id="storeMapView" style="padding:16px;">
@@ -7981,22 +8108,40 @@ function renderStores() {
         </div>
         <div id="catalogContent"></div>
       </div>
+
+      <!-- GTR Shop вкладка -->
+      <div id="storeGTRView" style="display:none;padding:16px;">
+        <div id="gtrShopContent"></div>
+      </div>
+
     </div>`;
 
     document.getElementById('backStores').onclick = () => renderMainMenu();
 
     // ---- Перемикач ----
-    document.getElementById('viewMapBtn').onclick = () => {
-        document.getElementById('storeMapView').style.display = 'block';
-        document.getElementById('storeCatalogView').style.display = 'none';
-        document.getElementById('viewMapBtn').style.background = '#1f3b4c';
-        document.getElementById('viewMapBtn').style.color = 'white';
-        document.getElementById('viewCatBtn').style.background = '#eee';
-        document.getElementById('viewCatBtn').style.color = '#333';
-    };
+    function setTab(active) {
+        var tabs = {
+            map:  { el: document.getElementById('storeMapView'),     btn: document.getElementById('viewMapBtn'),  bg:'#1f3b4c', color:'white' },
+            cat:  { el: document.getElementById('storeCatalogView'), btn: document.getElementById('viewCatBtn'),  bg:'#1f3b4c', color:'white' },
+            gtr:  { el: document.getElementById('storeGTRView'),     btn: document.getElementById('viewGTRBtn'),  bg:'#f39c12', color:'#1a0a00' }
+        };
+        Object.keys(tabs).forEach(function(k) {
+            tabs[k].el.style.display = 'none';
+            tabs[k].btn.style.background = '#eee';
+            tabs[k].btn.style.color = '#333';
+        });
+        tabs[active].el.style.display = 'block';
+        tabs[active].btn.style.background = tabs[active].bg;
+        tabs[active].btn.style.color = tabs[active].color;
+        if (active === 'gtr') renderGTRShop();
+    }
+    document.getElementById('viewMapBtn').onclick = () => setTab('map');
+    document.getElementById('viewCatBtn').onclick  = () => { setTab('cat'); };
+    document.getElementById('viewGTRBtn').onclick  = () => setTab('gtr');
     document.getElementById('viewCatBtn').onclick = () => {
         document.getElementById('storeMapView').style.display = 'none';
         document.getElementById('storeCatalogView').style.display = 'block';
+        document.getElementById('storeGTRView').style.display = 'none';
         document.getElementById('viewCatBtn').style.background = '#1f3b4c';
         document.getElementById('viewCatBtn').style.color = 'white';
         document.getElementById('viewMapBtn').style.background = '#eee';
