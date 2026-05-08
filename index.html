@@ -1891,6 +1891,80 @@ function handleGTRAdClick() {
     renderGTRProducts();
 }
 
+
+function renderGTRAdmin() {
+    var app = document.getElementById('appRoot');
+    app.innerHTML = '';
+    var wrapper = document.createElement('div');
+    wrapper.innerHTML = '<div class="nickname-header">👤 ' + (currentUser ? currentUser.nickname : '') + '</div>';
+    var card = document.createElement('div');
+    card.className = 'card';
+    var hdr = document.createElement('div');
+    hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;';
+    hdr.innerHTML = '<h1 style="margin:0;font-size:1.3rem;">👑 GTR Адмін</h1>';
+    var backBtn = document.createElement('button');
+    backBtn.className = 'back-btn';
+    backBtn.textContent = '← Назад';
+    backBtn.onclick = function() { renderGTRProducts(); };
+    hdr.appendChild(backBtn);
+    card.appendChild(hdr);
+    var listEl = document.createElement('div');
+    listEl.id = 'gtrAdminList';
+    card.appendChild(listEl);
+    var addBtn = document.createElement('button');
+    addBtn.textContent = '+ Додати товар';
+    addBtn.style.cssText = 'width:100%;background:#27ae60;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;cursor:pointer;margin-top:8px;';
+    addBtn.onclick = function() {
+        var n=prompt('Назва:'); if(!n) return;
+        var d=prompt('Опис:')||'';
+        var pr=prompt('Ціна (грн):')||'0';
+        var em=prompt('Емодзі:','📦')||'📦';
+        var newId=gtrShopProducts.length?Math.max.apply(null,gtrShopProducts.map(function(x){return x.id;}))+1:1;
+        gtrShopProducts.push({id:newId,name:n,desc:d,price:parseInt(pr)||0,emoji:em,available:true});
+        saveGTRProducts(); buildAdminList(); alert('✅ Товар додано!');
+    };
+    card.appendChild(addBtn);
+    wrapper.appendChild(card);
+    app.appendChild(wrapper);
+
+    function buildAdminList() {
+        listEl.innerHTML = '';
+        gtrShopProducts.forEach(function(p) {
+            var row = document.createElement('div');
+            row.style.cssText = 'background:#f9f9f9;border-radius:14px;padding:12px;margin-bottom:10px;';
+            row.innerHTML = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+                '<span style="font-size:1.8rem;">' + p.emoji + '</span>' +
+                '<div><div style="font-weight:700;">' + p.name + '</div>' +
+                '<div style="font-size:0.78rem;color:#888;">₴' + p.price + ' · ' + (p.available?'✅ є':'❌ немає') + '</div></div></div>';
+            var btnRow = document.createElement('div');
+            btnRow.style.cssText = 'display:flex;gap:8px;';
+            var eBtn = document.createElement('button');
+            eBtn.textContent = '✏️ Редагувати';
+            eBtn.style.cssText = 'flex:1;background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:10px;cursor:pointer;font-weight:600;';
+            eBtn.onclick = (function(pid) { return function() {
+                var prod=gtrShopProducts.find(function(x){return x.id===pid;});
+                if(!prod) return;
+                var n=prompt('Назва:',prod.name); if(n===null) return;
+                var d=prompt('Опис:',prod.desc); if(d===null) return;
+                var pr=prompt('Ціна:',prod.price); if(pr===null) return;
+                var av=confirm('Є в наявності?');
+                prod.name=n; prod.desc=d; prod.price=parseInt(pr)||prod.price; prod.available=av;
+                saveGTRProducts(); buildAdminList(); alert('✅ Збережено!');
+            }; })(p.id);
+            var dBtn = document.createElement('button');
+            dBtn.textContent = '🗑️';
+            dBtn.style.cssText = 'background:#e74c3c;color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer;';
+            dBtn.onclick = (function(pid) { return function() {
+                if(!confirm('Видалити?')) return;
+                gtrShopProducts=gtrShopProducts.filter(function(x){return x.id!==pid;});
+                saveGTRProducts(); buildAdminList();
+            }; })(p.id);
+            btnRow.appendChild(eBtn); btnRow.appendChild(dBtn);
+            row.appendChild(btnRow); listEl.appendChild(row);
+        });
+    }
+    buildAdminList();
+}
 function renderGTRProducts() {
     const app = document.getElementById('appRoot');
     const lang = currentUser?.lang === 'uk' || localStorage.getItem('mf_lang') === 'uk' || !localStorage.getItem('mf_lang');
@@ -1974,79 +2048,6 @@ function renderGTRProducts() {
         renderGTRAdmin();
     };
 
-    function renderGTRAdmin() {
-    var app = document.getElementById('appRoot');
-    app.innerHTML = '';
-    var wrapper = document.createElement('div');
-    wrapper.innerHTML = '<div class="nickname-header">👤 ' + (currentUser ? currentUser.nickname : '') + '</div>';
-    var card = document.createElement('div');
-    card.className = 'card';
-    var hdr = document.createElement('div');
-    hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;';
-    hdr.innerHTML = '<h1 style="margin:0;font-size:1.3rem;">👑 GTR Адмін</h1>';
-    var backBtn = document.createElement('button');
-    backBtn.className = 'back-btn';
-    backBtn.textContent = '← Назад';
-    backBtn.onclick = function() { renderGTRProducts(); };
-    hdr.appendChild(backBtn);
-    card.appendChild(hdr);
-    var listEl = document.createElement('div');
-    listEl.id = 'gtrAdminList';
-    card.appendChild(listEl);
-    var addBtn = document.createElement('button');
-    addBtn.textContent = '+ Додати товар';
-    addBtn.style.cssText = 'width:100%;background:#27ae60;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;cursor:pointer;margin-top:8px;';
-    addBtn.onclick = function() {
-        var n=prompt('Назва:'); if(!n) return;
-        var d=prompt('Опис:')||'';
-        var pr=prompt('Ціна (грн):')||'0';
-        var em=prompt('Емодзі:','📦')||'📦';
-        var newId=gtrShopProducts.length?Math.max.apply(null,gtrShopProducts.map(function(x){return x.id;}))+1:1;
-        gtrShopProducts.push({id:newId,name:n,desc:d,price:parseInt(pr)||0,emoji:em,available:true});
-        saveGTRProducts(); buildAdminList(); alert('✅ Товар додано!');
-    };
-    card.appendChild(addBtn);
-    wrapper.appendChild(card);
-    app.appendChild(wrapper);
-
-    function buildAdminList() {
-        listEl.innerHTML = '';
-        gtrShopProducts.forEach(function(p) {
-            var row = document.createElement('div');
-            row.style.cssText = 'background:#f9f9f9;border-radius:14px;padding:12px;margin-bottom:10px;';
-            row.innerHTML = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
-                '<span style="font-size:1.8rem;">' + p.emoji + '</span>' +
-                '<div><div style="font-weight:700;">' + p.name + '</div>' +
-                '<div style="font-size:0.78rem;color:#888;">₴' + p.price + ' · ' + (p.available?'✅ є':'❌ немає') + '</div></div></div>';
-            var btnRow = document.createElement('div');
-            btnRow.style.cssText = 'display:flex;gap:8px;';
-            var eBtn = document.createElement('button');
-            eBtn.textContent = '✏️ Редагувати';
-            eBtn.style.cssText = 'flex:1;background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:10px;cursor:pointer;font-weight:600;';
-            eBtn.onclick = (function(pid) { return function() {
-                var prod=gtrShopProducts.find(function(x){return x.id===pid;});
-                if(!prod) return;
-                var n=prompt('Назва:',prod.name); if(n===null) return;
-                var d=prompt('Опис:',prod.desc); if(d===null) return;
-                var pr=prompt('Ціна:',prod.price); if(pr===null) return;
-                var av=confirm('Є в наявності?');
-                prod.name=n; prod.desc=d; prod.price=parseInt(pr)||prod.price; prod.available=av;
-                saveGTRProducts(); buildAdminList(); alert('✅ Збережено!');
-            }; })(p.id);
-            var dBtn = document.createElement('button');
-            dBtn.textContent = '🗑️';
-            dBtn.style.cssText = 'background:#e74c3c;color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer;';
-            dBtn.onclick = (function(pid) { return function() {
-                if(!confirm('Видалити?')) return;
-                gtrShopProducts=gtrShopProducts.filter(function(x){return x.id!==pid;});
-                saveGTRProducts(); buildAdminList();
-            }; })(p.id);
-            btnRow.appendChild(eBtn); btnRow.appendChild(dBtn);
-            row.appendChild(btnRow); listEl.appendChild(row);
-        });
-    }
-    buildAdminList();
-}
 
 function renderGTRAdminBarContent() {
         var bar = document.getElementById('gtrAdminBarDyn');
