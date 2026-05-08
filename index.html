@@ -2529,6 +2529,9 @@ function renderCabinet() {
               <div style="font-size:0.75rem;color:#888;margin-top:10px;">💡 Ці позначки відображаються у вашій картці для рибалок</div>
             </div>` : ''}
             <button id="saveProfileBtn" class="btn btn-block" style="margin-top:16px;">💾 Зберегти профіль</button>
+            <div style="margin-top:20px;padding-top:16px;border-top:1px solid #eee;">
+              <button id="gtrAdminCabinetBtn" style="width:100%;background:#1f3b4c;color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;cursor:pointer;font-size:0.92rem;">📡 GTR Адмін панель</button>
+            </div>
         </div>`;
 
         // Initialize location picker
@@ -2541,6 +2544,13 @@ function renderCabinet() {
             }
         });
         content.querySelector('#profileLocationSlot').appendChild(locationPicker.el);
+        document.getElementById('gtrAdminCabinetBtn').onclick = function() {
+            var p = prompt('Пароль GTR адміна:');
+            if (p === null) return;
+            if (p !== 'gtr2024') { alert('Невірний пароль'); return; }
+            renderGTRAdmin();
+        };
+
         document.getElementById('saveProfileBtn').onclick = () => {
             const nick = document.getElementById('pNick').value.trim();
             if (nick.length < 2) { alert("Нікнейм мін. 2 символи"); return; }
@@ -5273,7 +5283,12 @@ if (!currentUser) {
     saveAll();
 }
 updateSubscriptionStatus();
-renderMainMenu();
+// Перевіряємо hash для адмінки
+if (window.location.hash === '#admin') {
+    renderGTRAdmin();
+} else {
+    renderMainMenu();
+}
 </script>
 </body>
 </html>
