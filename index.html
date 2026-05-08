@@ -3298,6 +3298,12 @@ function renderStores() {
     </div>`;
 
     document.getElementById('backStores').onclick = () => renderMainMenu();
+    // Якщо відкрита GTR вкладка — одразу рендеримо
+    setTimeout(function() {
+        if (document.getElementById('storeGTRView') && document.getElementById('storeGTRView').style.display !== 'none') {
+            renderGTRShop();
+        }
+    }, 100);
 
     // ---- Перемикач ----
     function setTab(active) {
@@ -3314,7 +3320,7 @@ function renderStores() {
         tabs[active].el.style.display = 'block';
         tabs[active].btn.style.background = tabs[active].bg;
         tabs[active].btn.style.color = tabs[active].color;
-        if (active === 'gtr') renderGTRShop();
+        if (active === 'gtr') setTimeout(renderGTRShop, 50);
     }
     document.getElementById('viewMapBtn').onclick = () => setTab('map');
     document.getElementById('viewCatBtn').onclick  = () => { setTab('cat'); };
@@ -8134,7 +8140,7 @@ function renderStores() {
         tabs[active].el.style.display = 'block';
         tabs[active].btn.style.background = tabs[active].bg;
         tabs[active].btn.style.color = tabs[active].color;
-        if (active === 'gtr') renderGTRShop();
+        if (active === 'gtr') setTimeout(renderGTRShop, 50);
     }
     document.getElementById('viewMapBtn').onclick = () => setTab('map');
     document.getElementById('viewCatBtn').onclick  = () => { setTab('cat'); };
