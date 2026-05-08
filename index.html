@@ -1963,10 +1963,12 @@ function renderGTRProducts() {
     if (adminBtn) adminBtn.onclick = function() {
         var pass = prompt('Пароль адміністратора:');
         if (pass === null) return;
-        if (pass !== GTR_ADMIN_PASS) { alert('Невірний пароль'); return; }
-        sessionStorage.setItem('gtr_admin','1');
+        if (pass !== 'gtr2024') { alert('Невірний пароль. Введено: ' + pass); return; }
         var bar = document.getElementById('gtrAdminBar');
-        if (bar) { bar.style.display = 'block'; renderGTRAdminBarContent(); }
+        if (!bar) { alert('Панель не знайдена!'); return; }
+        bar.style.display = 'block';
+        renderGTRAdminBarContent();
+        alert('Адмін режим увімкнено!');
     };
 
     function renderGTRAdminBarContent() {
@@ -7046,10 +7048,12 @@ function renderGTRProducts() {
     if (adminBtn) adminBtn.onclick = function() {
         var pass = prompt('Пароль адміністратора:');
         if (pass === null) return;
-        if (pass !== GTR_ADMIN_PASS) { alert('Невірний пароль'); return; }
-        sessionStorage.setItem('gtr_admin','1');
+        if (pass !== 'gtr2024') { alert('Невірний пароль. Введено: ' + pass); return; }
         var bar = document.getElementById('gtrAdminBar');
-        if (bar) { bar.style.display = 'block'; renderGTRAdminBarContent(); }
+        if (!bar) { alert('Панель не знайдена!'); return; }
+        bar.style.display = 'block';
+        renderGTRAdminBarContent();
+        alert('Адмін режим увімкнено!');
     };
 
     function renderGTRAdminBarContent() {
