@@ -1961,18 +1961,20 @@ function renderGTRProducts() {
     // Адмін кнопка
     var adminBtn = document.getElementById('gtrAdminOpenBtn');
     if (adminBtn) adminBtn.onclick = function() {
-        var pass = prompt('Пароль адміністратора:');
+        var pass = prompt('Пароль:');
         if (pass === null) return;
-        if (pass !== 'gtr2024') { alert('Невірний пароль. Введено: ' + pass); return; }
-        var bar = document.getElementById('gtrAdminBar');
-        if (!bar) { alert('Панель не знайдена!'); return; }
-        bar.style.display = 'block';
+        if (pass !== 'gtr2024') { alert('Невірний пароль'); return; }
+        var existing = document.getElementById('gtrAdminBarDyn');
+        if (existing) { existing.remove(); return; }
+        var bar = document.createElement('div');
+        bar.id = 'gtrAdminBarDyn';
+        bar.style.cssText = 'background:#fff3cd;border-radius:14px;padding:12px 14px;margin-bottom:12px;';
+        adminBtn.closest('.card').insertBefore(bar, adminBtn.closest('.card').children[1]);
         renderGTRAdminBarContent();
-        alert('Адмін режим увімкнено!');
     };
 
     function renderGTRAdminBarContent() {
-        var bar = document.getElementById('gtrAdminBar');
+        var bar = document.getElementById('gtrAdminBarDyn');
         if (!bar) return;
 
         // Будуємо весь вміст панелі через DOM
@@ -7065,18 +7067,20 @@ function renderGTRProducts() {
     // Адмін кнопка
     var adminBtn = document.getElementById('gtrAdminOpenBtn');
     if (adminBtn) adminBtn.onclick = function() {
-        var pass = prompt('Пароль адміністратора:');
+        var pass = prompt('Пароль:');
         if (pass === null) return;
-        if (pass !== 'gtr2024') { alert('Невірний пароль. Введено: ' + pass); return; }
-        var bar = document.getElementById('gtrAdminBar');
-        if (!bar) { alert('Панель не знайдена!'); return; }
-        bar.style.display = 'block';
+        if (pass !== 'gtr2024') { alert('Невірний пароль'); return; }
+        var existing = document.getElementById('gtrAdminBarDyn');
+        if (existing) { existing.remove(); return; }
+        var bar = document.createElement('div');
+        bar.id = 'gtrAdminBarDyn';
+        bar.style.cssText = 'background:#fff3cd;border-radius:14px;padding:12px 14px;margin-bottom:12px;';
+        adminBtn.closest('.card').insertBefore(bar, adminBtn.closest('.card').children[1]);
         renderGTRAdminBarContent();
-        alert('Адмін режим увімкнено!');
     };
 
     function renderGTRAdminBarContent() {
-        var bar = document.getElementById('gtrAdminBar');
+        var bar = document.getElementById('gtrAdminBarDyn');
         if (!bar) return;
 
         // Будуємо весь вміст панелі через DOM
