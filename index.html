@@ -1637,6 +1637,7 @@ function showGeoWarningBanner() {
 
 // ========== ГОЛОВНЕ МЕНЮ ==========
 function renderMainMenu() {
+    sessionStorage.removeItem('lastSection');
     const app = document.getElementById('appRoot');
     // Показуємо банер якщо геолокація відхилена і ще не визначена
     if (currentUser?.locationDenied && !currentLocation) {
@@ -10024,6 +10025,7 @@ function getTimeAgo(timestamp) {
 
 // ========== RENDER SECTION ==========
 function renderSection(section) {
+    sessionStorage.setItem('lastSection', section);
     if (section==='waterbodies') renderWaterbodies();
     else if (section==='campings') renderCampings();
     else if (section==='resorts') renderResorts();
@@ -10048,7 +10050,12 @@ if (!currentUser) {
     saveAll();
 }
 updateSubscriptionStatus();
-renderMainMenu();
+var lastSection = sessionStorage.getItem('lastSection');
+if (lastSection) {
+    renderSection(lastSection);
+} else {
+    renderMainMenu();
+}
 </script>
 </body>
 </html>
