@@ -3313,14 +3313,20 @@ function renderStores() {
             gtr:  { el: document.getElementById('storeGTRView'),     btn: document.getElementById('viewGTRBtn'),  bg:'#f39c12', color:'#1a0a00' }
         };
         Object.keys(tabs).forEach(function(k) {
-            tabs[k].el.style.display = 'none';
-            tabs[k].btn.style.background = '#eee';
-            tabs[k].btn.style.color = '#333';
+            if (tabs[k].el) tabs[k].el.style.display = 'none';
+            if (tabs[k].btn) { tabs[k].btn.style.background = '#eee'; tabs[k].btn.style.color = '#333'; }
         });
-        tabs[active].el.style.display = 'block';
-        tabs[active].btn.style.background = tabs[active].bg;
-        tabs[active].btn.style.color = tabs[active].color;
-        if (active === 'gtr') setTimeout(renderGTRShop, 50);
+        if (tabs[active].el) tabs[active].el.style.display = 'block';
+        if (tabs[active].btn) { tabs[active].btn.style.background = tabs[active].bg; tabs[active].btn.style.color = tabs[active].color; }
+        if (active === 'gtr') {
+            // Одразу рендеримо без затримки
+            var gtrEl = document.getElementById('gtrShopContent');
+            if (gtrEl) {
+                renderGTRShop();
+            } else {
+                setTimeout(renderGTRShop, 100);
+            }
+        }
     }
     document.getElementById('viewMapBtn').onclick = () => setTab('map');
     document.getElementById('viewCatBtn').onclick  = () => { setTab('cat'); };
@@ -8133,14 +8139,20 @@ function renderStores() {
             gtr:  { el: document.getElementById('storeGTRView'),     btn: document.getElementById('viewGTRBtn'),  bg:'#f39c12', color:'#1a0a00' }
         };
         Object.keys(tabs).forEach(function(k) {
-            tabs[k].el.style.display = 'none';
-            tabs[k].btn.style.background = '#eee';
-            tabs[k].btn.style.color = '#333';
+            if (tabs[k].el) tabs[k].el.style.display = 'none';
+            if (tabs[k].btn) { tabs[k].btn.style.background = '#eee'; tabs[k].btn.style.color = '#333'; }
         });
-        tabs[active].el.style.display = 'block';
-        tabs[active].btn.style.background = tabs[active].bg;
-        tabs[active].btn.style.color = tabs[active].color;
-        if (active === 'gtr') setTimeout(renderGTRShop, 50);
+        if (tabs[active].el) tabs[active].el.style.display = 'block';
+        if (tabs[active].btn) { tabs[active].btn.style.background = tabs[active].bg; tabs[active].btn.style.color = tabs[active].color; }
+        if (active === 'gtr') {
+            // Одразу рендеримо без затримки
+            var gtrEl = document.getElementById('gtrShopContent');
+            if (gtrEl) {
+                renderGTRShop();
+            } else {
+                setTimeout(renderGTRShop, 100);
+            }
+        }
     }
     document.getElementById('viewMapBtn').onclick = () => setTab('map');
     document.getElementById('viewCatBtn').onclick  = () => { setTab('cat'); };
