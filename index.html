@@ -1637,7 +1637,6 @@ function showGeoWarningBanner() {
 
 // ========== ГОЛОВНЕ МЕНЮ ==========
 function renderMainMenu() {
-    sessionStorage.removeItem('lastSection');
     const app = document.getElementById('appRoot');
     // Показуємо банер якщо геолокація відхилена і ще не визначена
     if (currentUser?.locationDenied && !currentLocation) {
@@ -1691,7 +1690,7 @@ function renderMainMenu() {
             <div class="menu-card" data-section="sos" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:white;font-weight:900;animation:sosGlow 1.5s infinite;border-radius:28px;padding:16px 8px;text-align:center;cursor:pointer;box-shadow:0 4px 20px rgba(231,76,60,0.5);">🆘<br><span>SOS</span></div>
             <div class="menu-card" onclick="handleGTRAdClick()" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:white;position:relative;overflow:visible;cursor:pointer;">
               <div style="font-size:2rem;margin-bottom:4px;">📡</div>
-              <span style="font-weight:700;">GTR Alarm</span>
+              <span style="font-weight:700;">GTR Shop</span>
               
               <!-- Expanded info on hover/click -->
               <div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:16px;width:280px;box-shadow:0 8px 24px rgba(0,0,0,0.5);z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;" class="gtr-popup">
@@ -3154,6 +3153,75 @@ var GTR_ADMIN_PASS = localStorage.getItem('gtr_admin_pass') || 'gtr2024';
 
 function saveGTRProducts() {
     localStorage.setItem('gtr_shop_products', JSON.stringify(gtrShopProducts));
+}
+
+function renderGTRShopInto(el) {
+    if (!el) return;
+    var isAdmin = sessionStorage.getItem('gtr_admin') === '1';
+    var html = '<div style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">' +
+        '<div style="font-weight:900;font-size:1rem;color:#1f3b4c;">🛒 GTR — офіційний магазин</div>' +
+        (isAdmin
+            ? '<span style="background:#27ae60;color:#fff;padding:4px 12px;border-radius:40px;font-size:0.72rem;font-weight:700;">👑 Адмін</span>'
+            : '<button id="gtrAdminBtn2" style="background:transparent;border:none;color:#bbb;font-size:0.72rem;cursor:pointer;">⚙️</button>'
+        ) +
+    '</div>';
+    gtrShopProducts.forEach(function(p) {
+        html += '<div style="background:#f9f9f9;border-radius:20px;padding:14px;margin-bottom:12px;' + (!p.available ? 'opacity:0.5;' : '') + '">' +
+            '<div style="display:flex;align-items:center;gap:12px;">' +
+                '<div style="font-size:2rem;">' + p.emoji + '</div>' +
+                '<div style="flex:1;">' +
+                    '<div style="font-weight:700;font-size:0.92rem;">' + p.name + '</div>' +
+                    '<div style="font-size:0.78rem;color:#888;">' + p.desc + '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">' +
+                '<div style="font-size:1.2rem;font-weight:900;color:#f39c12;">&#x20B4;' + p.price + '</div>' +
+                '<div style="display:flex;gap:8px;">' +
+                    (isAdmin ? '<button onclick="gtrEdit2(' + p.id + ')" style="background:#eee;border:none;border-radius:40px;padding:8px 12px;font-size:0.78rem;cursor:pointer;">✏️</button>' : '') +
+                    (p.available
+                        ? '<button onclick="showOrderForm('' + p.name + '',' + p.price + ')" style="background:#1f3b4c;color:#fff;border:none;border-radius:40px;padding:8px 16px;font-weight:700;font-size:0.82rem;cursor:pointer;">🛒 Замовити</button>'
+                        : '<span style="color:#bbb;font-size:0.78rem;">Немає</span>'
+                    ) +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    });
+    if (isAdmin) {
+        html += '<button onclick="gtrAdd2()" style="width:100%;background:#27ae60;color:#fff;border:none;border-radius:16px;padding:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">+ Додати товар</button>';
+        html += '<button onclick="sessionStorage.removeItem('gtr_admin');renderGTRShopInto(document.getElementById('gtrShopContent2'));" style="width:100%;background:#eee;border:none;border-radius:16px;padding:12px;font-size:0.82rem;cursor:pointer;">Вийти з адміну</button>';
+    }
+    el.innerHTML = html;
+    if (!isAdmin) {
+        var ab = document.getElementById('gtrAdminBtn2');
+        if (ab) ab.onclick = function() {
+            var p = prompt('Пароль:');
+            if (p === GTR_ADMIN_PASS) { sessionStorage.setItem('gtr_admin','1'); renderGTRShopInto(el); }
+            else if (p !== null) alert('Невірний пароль');
+        };
+    }
+}
+
+function gtrEdit2(id) {
+    var p = gtrShopProducts.find(function(x){return x.id===id;});
+    if (!p) return;
+    var n = prompt('Назва:', p.name); if (n===null) return;
+    var d = prompt('Опис:', p.desc); if (d===null) return;
+    var pr = prompt('Ціна:', p.price); if (pr===null) return;
+    var av = confirm('Є в наявності?');
+    p.name=n; p.desc=d; p.price=parseInt(pr)||p.price; p.available=av;
+    saveGTRProducts();
+    renderGTRShopInto(document.getElementById('gtrShopContent2'));
+}
+
+function gtrAdd2() {
+    var n = prompt('Назва:'); if (!n) return;
+    var d = prompt('Опис:') || '';
+    var pr = prompt('Ціна:') || '0';
+    var em = prompt('Емодзі:') || '📦';
+    var newId = Math.max.apply(null, gtrShopProducts.map(function(x){return x.id;})) + 1;
+    gtrShopProducts.push({id:newId,name:n,desc:d,price:parseInt(pr),emoji:em,available:true});
+    saveGTRProducts();
+    renderGTRShopInto(document.getElementById('gtrShopContent2'));
 }
 
 function renderGTRShop() {
@@ -4716,11 +4784,16 @@ function renderAlarm() {
     document.getElementById('appRoot').innerHTML = `
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <h1>📡 GTR</h1>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h1>🛒 GTR Shop</h1>
         <button id="backGTR" class="back-btn">← Назад</button>
       </div>
-
+      <!-- Вкладки -->
+      <div style="display:flex;gap:0;margin:0 0 16px;border-bottom:2px solid #eee;">
+        <button id="gtrTabDevice" style="flex:1;padding:11px;border:none;background:#1f3b4c;color:white;font-weight:700;cursor:pointer;font-size:0.82rem;border-radius:0;">📡 Пристрій</button>
+        <button id="gtrTabShop"   style="flex:1;padding:11px;border:none;background:#eee;color:#333;font-weight:600;cursor:pointer;font-size:0.82rem;border-radius:0;">🛒 Магазин</button>
+      </div>
+      <div id="gtrDeviceSection">
       <!-- Банер купівлі GTR Phantom -->
       <div style="background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:24px;padding:18px;margin-bottom:16px;color:white;">
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
@@ -4836,9 +4909,36 @@ function renderAlarm() {
         <div id="gtrLog" style="display:flex;flex-direction:column;gap:6px;"></div>
 
       </div>
-    </div>`;
+    
+
+      <!-- Магазин GTR -->
+      <div id="gtrShopSection" style="display:none;"><div id="gtrShopContent2"></div></div>
+</div>`;
 
     document.getElementById('backGTR').onclick = () => { clearInterval(gtrSimTimer); renderMainMenu(); };
+
+    // Вкладки GTR Shop
+    function gtrSetTab(tab) {
+        var dev  = document.getElementById('gtrDeviceSection');
+        var shop = document.getElementById('gtrShopSection');
+        var btnD = document.getElementById('gtrTabDevice');
+        var btnS = document.getElementById('gtrTabShop');
+        if (!dev || !shop) return;
+        if (tab === 'device') {
+            dev.style.display  = 'block'; shop.style.display = 'none';
+            btnD.style.background = '#1f3b4c'; btnD.style.color = 'white';
+            btnS.style.background = '#eee';    btnS.style.color = '#333';
+        } else {
+            dev.style.display  = 'none'; shop.style.display = 'block';
+            btnS.style.background = '#f39c12'; btnS.style.color = '#1a0a00';
+            btnD.style.background = '#eee';    btnD.style.color = '#333';
+            // Рендеримо магазин
+            var el = document.getElementById('gtrShopContent2');
+            if (el) renderGTRShopInto(el);
+        }
+    }
+    document.getElementById('gtrTabDevice').onclick = function() { gtrSetTab('device'); };
+    document.getElementById('gtrTabShop').onclick   = function() { gtrSetTab('shop'); };
 
     function renderChannels() {
         const list = document.getElementById('gtrChannelList');
@@ -6616,7 +6716,7 @@ function renderMainMenu() {
             <div class="menu-card" data-section="sos" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:white;font-weight:900;animation:sosGlow 1.5s infinite;border-radius:28px;padding:16px 8px;text-align:center;cursor:pointer;box-shadow:0 4px 20px rgba(231,76,60,0.5);">🆘<br><span>SOS</span></div>
             <div class="menu-card" onclick="handleGTRAdClick()" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:white;position:relative;overflow:visible;cursor:pointer;">
               <div style="font-size:2rem;margin-bottom:4px;">📡</div>
-              <span style="font-weight:700;">GTR Alarm</span>
+              <span style="font-weight:700;">GTR Shop</span>
               
               <!-- Expanded info on hover/click -->
               <div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:16px;width:280px;box-shadow:0 8px 24px rgba(0,0,0,0.5);z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;" class="gtr-popup">
@@ -9455,11 +9555,16 @@ function renderAlarm() {
     document.getElementById('appRoot').innerHTML = `
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <h1>📡 GTR</h1>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h1>🛒 GTR Shop</h1>
         <button id="backGTR" class="back-btn">← Назад</button>
       </div>
-
+      <!-- Вкладки -->
+      <div style="display:flex;gap:0;margin:0 0 16px;border-bottom:2px solid #eee;">
+        <button id="gtrTabDevice" style="flex:1;padding:11px;border:none;background:#1f3b4c;color:white;font-weight:700;cursor:pointer;font-size:0.82rem;border-radius:0;">📡 Пристрій</button>
+        <button id="gtrTabShop"   style="flex:1;padding:11px;border:none;background:#eee;color:#333;font-weight:600;cursor:pointer;font-size:0.82rem;border-radius:0;">🛒 Магазин</button>
+      </div>
+      <div id="gtrDeviceSection">
       <!-- Банер купівлі GTR Phantom -->
       <div style="background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:24px;padding:18px;margin-bottom:16px;color:white;">
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
@@ -10015,7 +10120,6 @@ function getTimeAgo(timestamp) {
 
 // ========== RENDER SECTION ==========
 function renderSection(section) {
-    sessionStorage.setItem('lastSection', section);
     if (section==='waterbodies') renderWaterbodies();
     else if (section==='campings') renderCampings();
     else if (section==='resorts') renderResorts();
@@ -10040,12 +10144,7 @@ if (!currentUser) {
     saveAll();
 }
 updateSubscriptionStatus();
-var lastSection = sessionStorage.getItem('lastSection');
-if (lastSection) {
-    renderSection(lastSection);
-} else {
-    renderMainMenu();
-}
+renderMainMenu();
 </script>
 </body>
 </html>
