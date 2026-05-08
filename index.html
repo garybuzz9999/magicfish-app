@@ -3266,9 +3266,8 @@ function renderStores() {
 
       <!-- Перемикач вигляду -->
       <div style="display:flex;gap:0;margin:0;border-bottom:1px solid #eee;">
-        <button id="viewMapBtn" style="flex:1;padding:12px;border:none;background:#1f3b4c;color:white;font-weight:700;cursor:pointer;font-size:0.82rem;">🗺️ Карта</button>
-        <button id="viewCatBtn" style="flex:1;padding:12px;border:none;background:#eee;color:#333;font-weight:600;cursor:pointer;font-size:0.82rem;">📋 Каталог</button>
-        <button id="viewGTRBtn" style="flex:1;padding:12px;border:none;background:#f39c12;color:#1a0a00;font-weight:700;cursor:pointer;font-size:0.82rem;">🛒 GTR Shop</button>
+        <button id="viewMapBtn" style="flex:1;padding:12px;border:none;background:#1f3b4c;color:white;font-weight:700;cursor:pointer;font-size:0.88rem;">🗺️ Карта магазинів</button>
+        <button id="viewCatBtn" style="flex:1;padding:12px;border:none;background:#eee;color:#333;font-weight:600;cursor:pointer;font-size:0.88rem;">📋 Каталог товарів</button>
       </div>
 
       <div id="storeMapView" style="padding:16px;">
@@ -3290,10 +3289,6 @@ function renderStores() {
         <div id="catalogContent"></div>
       </div>
 
-      <!-- GTR Shop вкладка -->
-      <div id="storeGTRView" style="display:none;padding:16px;">
-        <div id="gtrShopContent"></div>
-      </div>
 
     </div>`;
 
@@ -3306,31 +3301,22 @@ function renderStores() {
     }, 100);
 
     // ---- Перемикач ----
-    function setTab(active) {
-        var tabs = {
-            map:  { el: document.getElementById('storeMapView'),     btn: document.getElementById('viewMapBtn'),  bg:'#1f3b4c', color:'white' },
-            cat:  { el: document.getElementById('storeCatalogView'), btn: document.getElementById('viewCatBtn'),  bg:'#1f3b4c', color:'white' },
-            gtr:  { el: document.getElementById('storeGTRView'),     btn: document.getElementById('viewGTRBtn'),  bg:'#f39c12', color:'#1a0a00' }
-        };
-        Object.keys(tabs).forEach(function(k) {
-            if (tabs[k].el) tabs[k].el.style.display = 'none';
-            if (tabs[k].btn) { tabs[k].btn.style.background = '#eee'; tabs[k].btn.style.color = '#333'; }
-        });
-        if (tabs[active].el) tabs[active].el.style.display = 'block';
-        if (tabs[active].btn) { tabs[active].btn.style.background = tabs[active].bg; tabs[active].btn.style.color = tabs[active].color; }
-        if (active === 'gtr') {
-            // Одразу рендеримо без затримки
-            var gtrEl = document.getElementById('gtrShopContent');
-            if (gtrEl) {
-                renderGTRShop();
-            } else {
-                setTimeout(renderGTRShop, 100);
-            }
-        }
-    }
-    document.getElementById('viewMapBtn').onclick = () => setTab('map');
-    document.getElementById('viewCatBtn').onclick  = () => { setTab('cat'); };
-    document.getElementById('viewGTRBtn').onclick  = () => setTab('gtr');
+    document.getElementById('viewMapBtn').onclick = () => {
+        document.getElementById('storeMapView').style.display = 'block';
+        document.getElementById('storeCatalogView').style.display = 'none';
+        document.getElementById('viewMapBtn').style.background = '#1f3b4c';
+        document.getElementById('viewMapBtn').style.color = 'white';
+        document.getElementById('viewCatBtn').style.background = '#eee';
+        document.getElementById('viewCatBtn').style.color = '#333';
+    };
+    document.getElementById('viewCatBtn').onclick = () => {
+        document.getElementById('storeMapView').style.display = 'none';
+        document.getElementById('storeCatalogView').style.display = 'block';
+        document.getElementById('viewCatBtn').style.background = '#1f3b4c';
+        document.getElementById('viewCatBtn').style.color = 'white';
+        document.getElementById('viewMapBtn').style.background = '#eee';
+        document.getElementById('viewMapBtn').style.color = '#333';
+    };
     document.getElementById('viewCatBtn').onclick = () => {
         document.getElementById('storeMapView').style.display = 'none';
         document.getElementById('storeCatalogView').style.display = 'block';
@@ -8098,9 +8084,8 @@ function renderStores() {
 
       <!-- Перемикач вигляду -->
       <div style="display:flex;gap:0;margin:0;border-bottom:1px solid #eee;">
-        <button id="viewMapBtn" style="flex:1;padding:12px;border:none;background:#1f3b4c;color:white;font-weight:700;cursor:pointer;font-size:0.82rem;">🗺️ Карта</button>
-        <button id="viewCatBtn" style="flex:1;padding:12px;border:none;background:#eee;color:#333;font-weight:600;cursor:pointer;font-size:0.82rem;">📋 Каталог</button>
-        <button id="viewGTRBtn" style="flex:1;padding:12px;border:none;background:#f39c12;color:#1a0a00;font-weight:700;cursor:pointer;font-size:0.82rem;">🛒 GTR Shop</button>
+        <button id="viewMapBtn" style="flex:1;padding:12px;border:none;background:#1f3b4c;color:white;font-weight:700;cursor:pointer;font-size:0.88rem;">🗺️ Карта магазинів</button>
+        <button id="viewCatBtn" style="flex:1;padding:12px;border:none;background:#eee;color:#333;font-weight:600;cursor:pointer;font-size:0.88rem;">📋 Каталог товарів</button>
       </div>
 
       <div id="storeMapView" style="padding:16px;">
@@ -8122,41 +8107,28 @@ function renderStores() {
         <div id="catalogContent"></div>
       </div>
 
-      <!-- GTR Shop вкладка -->
-      <div id="storeGTRView" style="display:none;padding:16px;">
-        <div id="gtrShopContent"></div>
-      </div>
 
     </div>`;
 
     document.getElementById('backStores').onclick = () => renderMainMenu();
 
     // ---- Перемикач ----
-    function setTab(active) {
-        var tabs = {
-            map:  { el: document.getElementById('storeMapView'),     btn: document.getElementById('viewMapBtn'),  bg:'#1f3b4c', color:'white' },
-            cat:  { el: document.getElementById('storeCatalogView'), btn: document.getElementById('viewCatBtn'),  bg:'#1f3b4c', color:'white' },
-            gtr:  { el: document.getElementById('storeGTRView'),     btn: document.getElementById('viewGTRBtn'),  bg:'#f39c12', color:'#1a0a00' }
-        };
-        Object.keys(tabs).forEach(function(k) {
-            if (tabs[k].el) tabs[k].el.style.display = 'none';
-            if (tabs[k].btn) { tabs[k].btn.style.background = '#eee'; tabs[k].btn.style.color = '#333'; }
-        });
-        if (tabs[active].el) tabs[active].el.style.display = 'block';
-        if (tabs[active].btn) { tabs[active].btn.style.background = tabs[active].bg; tabs[active].btn.style.color = tabs[active].color; }
-        if (active === 'gtr') {
-            // Одразу рендеримо без затримки
-            var gtrEl = document.getElementById('gtrShopContent');
-            if (gtrEl) {
-                renderGTRShop();
-            } else {
-                setTimeout(renderGTRShop, 100);
-            }
-        }
-    }
-    document.getElementById('viewMapBtn').onclick = () => setTab('map');
-    document.getElementById('viewCatBtn').onclick  = () => { setTab('cat'); };
-    document.getElementById('viewGTRBtn').onclick  = () => setTab('gtr');
+    document.getElementById('viewMapBtn').onclick = () => {
+        document.getElementById('storeMapView').style.display = 'block';
+        document.getElementById('storeCatalogView').style.display = 'none';
+        document.getElementById('viewMapBtn').style.background = '#1f3b4c';
+        document.getElementById('viewMapBtn').style.color = 'white';
+        document.getElementById('viewCatBtn').style.background = '#eee';
+        document.getElementById('viewCatBtn').style.color = '#333';
+    };
+    document.getElementById('viewCatBtn').onclick = () => {
+        document.getElementById('storeMapView').style.display = 'none';
+        document.getElementById('storeCatalogView').style.display = 'block';
+        document.getElementById('viewCatBtn').style.background = '#1f3b4c';
+        document.getElementById('viewCatBtn').style.color = 'white';
+        document.getElementById('viewMapBtn').style.background = '#eee';
+        document.getElementById('viewMapBtn').style.color = '#333';
+    };
     document.getElementById('viewCatBtn').onclick = () => {
         document.getElementById('storeMapView').style.display = 'none';
         document.getElementById('storeCatalogView').style.display = 'block';
