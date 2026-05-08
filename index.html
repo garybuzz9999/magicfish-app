@@ -1892,6 +1892,25 @@ function handleGTRAdClick() {
 }
 
 
+// ========== GTR SHOP PRODUCTS ==========
+var gtrShopProducts = JSON.parse(localStorage.getItem('gtr_shop_products') || 'null') || [
+    { id:1,  name:'GTR Phantom BLE 4.0',      desc:'Сигналізатор клювання · Bluetooth · IPX6', price:1890, emoji:'📡', available:true },
+    { id:2,  name:'GTR Case S',               desc:'Водонепроникний чохол · Смартфон до 6.5"', price:299,  emoji:'📱', available:true },
+    { id:3,  name:'GTR Case M',               desc:'Водонепроникний чохол · Смартфон до 7"',   price:399,  emoji:'📲', available:true },
+    { id:4,  name:'GTR Case XL',              desc:'Водонепроникний чохол · Планшет до 10"',   price:599,  emoji:'💻', available:true },
+    { id:5,  name:'GTR Arm Band',             desc:'Нарукавний чохол · IPX4',                  price:249,  emoji:'💪', available:true },
+    { id:6,  name:'GTR Float Case',           desc:'Плавучий чохол · IPX8',                    price:499,  emoji:'🟠', available:true },
+    { id:7,  name:'GTR Sport Case',           desc:'Спортивний чохол · IPX7',                  price:449,  emoji:'🏃', available:true },
+    { id:8,  name:'GTR Dry Pack 20L',         desc:'Водонепроникний рюкзак 20л',               price:899,  emoji:'🎒', available:true },
+    { id:9,  name:'GTR Dry Pack 30L',         desc:'Водонепроникний рюкзак 30л',               price:1199, emoji:'🎒', available:true },
+    { id:10, name:'GTR Fishing Pack 40L',     desc:'Рибальський рюкзак 40л',                   price:1599, emoji:'🎣', available:true },
+    { id:11, name:'GTR Waist Pack',           desc:'Поясна сумка · Водонепроникна',            price:549,  emoji:'👜', available:true },
+];
+
+function saveGTRProducts() {
+    localStorage.setItem('gtr_shop_products', JSON.stringify(gtrShopProducts));
+}
+
 function renderGTRAdmin() {
     var app = document.getElementById('appRoot');
     app.innerHTML = '';
