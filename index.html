@@ -3238,37 +3238,7 @@ function renderWaterbodies() {
         mapWater = L.map(mapDiv, { zoomControl: true }).setView([49,32],6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(mapWater);
 
-        // OpenSeaMap глибини
-        const depthLayer = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
-            attribution: '🌊 <a href="https://www.openseamap.org">OpenSeaMap</a>', opacity:0.8
-        });
-        let depthActive = false;
-        var depthBtn = document.getElementById('waterDepthBtn');
-        if (depthBtn) depthBtn.onclick = function() {
-            depthActive = !depthActive;
-            if (depthActive) {
-                depthLayer.addTo(mapWater);
-                depthBtn.style.background = '#0284c7';
-                depthBtn.style.color = '#fff';
-                depthBtn.textContent = '🌊 Глибини ✓';
-                var tip = document.getElementById('depthTip');
-                if (!tip) {
-                    tip = document.createElement('div');
-                    tip.id = 'depthTip';
-                    tip.style.cssText = 'background:#e0f2fe;border-radius:12px;padding:10px 14px;margin:8px 0;font-size:0.82rem;color:#0369a1;';
-                    tip.innerHTML = '🌊 <b>Карта глибин OpenSeaMap</b> — дані для великих річок: Дніпро, Десна, Дністер, Південний Буг та водосховища';
-                    var wmap = document.getElementById('waterMap');
-                    if (wmap) wmap.parentNode.insertBefore(tip, wmap.nextSibling);
-                }
-            } else {
-                depthLayer.remove();
-                depthBtn.style.background = '#0ea5e9';
-                depthBtn.style.color = '#fff';
-                depthBtn.textContent = '🌊 Глибини';
-                var t = document.getElementById('depthTip');
-                if (t) t.remove();
-            }
-        };
+
         waterbodies.forEach(w => {
             const icon = L.divIcon({ html: w.status==='biting'?'🟢':w.status==='not_biting'?'🔴':'⚪', className:'', iconSize:[24,24] });
             const wStatusText = w.status==='biting'?'🟢 Клює':w.status==='not_biting'?'🔴 Не клює':'⚪ Невідомо';
@@ -3296,6 +3266,24 @@ function renderWaterbodies() {
         btnNear.style.background = waterSortNearby ? '#27ae60' : '';
         btnNear.style.color      = waterSortNearby ? '#fff'    : '';
     }
+
+    document.getElementById('waterDepthBtn').onclick = function() {
+        openModal(
+            '<h3 style="color:#0369a1;">🌊 Карта глибин</h3>' +
+            '<div style="text-align:center;padding:12px 0;">' +
+                '<div style="font-size:3rem;margin-bottom:12px;">🚧</div>' +
+                '<div style="font-weight:700;margin-bottom:8px;">Розробляється</div>' +
+                '<div style="font-size:0.85rem;color:#555;line-height:1.6;">Після запуску повної версії рибалки зможуть:<br>' +
+                '📍 Додавати глибину у своєму місці<br>' +
+                '🗺️ Бачити глибини від інших рибалок<br>' +
+                '🐟 Знаходити ями та перепади дна</div>' +
+            '</div>' +
+            '<button class="close-modal" style="width:100%;margin-top:12px;">Зрозуміло</button>'
+        );
+        document.querySelector('.close-modal').onclick = function() {
+            document.querySelector('.modal-overlay').remove();
+        };
+    };
 
     document.getElementById('waterFilterAll').onclick = function() {
         waterFilter = 'all'; waterSortNearby = false; updateWaterFilterButtons(); renderWaterCards();
