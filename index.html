@@ -5453,6 +5453,21 @@ function renderReports() {
 }
 
 // ========== РЕЙТИНГ СПОРЯДЖЕННЯ ==========
+// Завантажуємо збережені користувацькі снасті
+function loadCustomRatingItems() {
+    var customItems = JSON.parse(localStorage.getItem('mf_custom_items') || '{}');
+    Object.keys(customItems).forEach(function(catId) {
+        var cat = ratingCategories.find(function(c){ return c.id === catId; });
+        if (cat) {
+            customItems[catId].forEach(function(item) {
+                if (!cat.items.find(function(i){ return i.id === item.id; })) {
+                    cat.items.push(item);
+                }
+            });
+        }
+    });
+}
+
 var ratingCategories = [
     {
         id: 'lures', name: 'Приманки', emoji: '🎣',
@@ -5554,6 +5569,9 @@ var ratingCategories = [
     },
 ];
 
+// Завантажуємо при першому виклику
+loadCustomRatingItems();
+
 function renderLureRating() {
     var app = document.getElementById('appRoot');
     var selectedCat = localStorage.getItem('mf_rating_cat') || 'lures';
@@ -5627,6 +5645,9 @@ function renderLureRating() {
         html += '</div>';
     });
 
+    // Кнопка додати свою снасть
+    html += '<button id="addCustomItemBtn" style="width:100%;background:#f5f7f0;border:2px dashed #c8e6c9;border-radius:16px;padding:14px;color:#27ae60;font-weight:700;font-size:0.92rem;cursor:pointer;margin-top:4px;">➕ Додати свою снасть</button>';
+
     html += '</div>';
     app.innerHTML = html;
 
@@ -5671,6 +5692,105 @@ function renderLureRating() {
             }; })(l.id, l.name);
         }
     });
+
+    // Кнопка Додати свою снасть
+    var addBtn = document.getElementById('addCustomItemBtn');
+    if (addBtn) addBtn.onclick = function() {
+        showAddCustomItem(selectedCat, cat.name);
+    };
+}
+
+function showAddCustomItem(catId, catName) {
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:#fff;border-radius:24px;padding:20px;width:100%;max-width:420px;';
+
+    modal.innerHTML =
+        '<h3 style="margin:0 0 6px;color:#1f3b4c;">➕ Додати снасть</h3>' +
+        '<div style="font-size:0.82rem;color:#888;margin-bottom:14px;">Категорія: ' + catName + '</div>' +
+        '<input id="customName" type="text" placeholder="Назва снасті *" style="margin-bottom:8px;">' +
+        '<input id="customCat" type="text" placeholder="Підкатегорія (напр. Воблери, Джиг...)" style="margin-bottom:8px;">' +
+        '<input id="customEmoji" type="text" placeholder="Емодзі (напр. 🎣)" maxlength="4" style="margin-bottom:8px;width:80px;">' +
+        '<div style="font-size:0.82rem;font-weight:700;color:#1f3b4c;margin-bottom:8px;">Ваш відгук:</div>' +
+        '<div style="display:flex;gap:10px;margin-bottom:10px;">' +
+            '<button id="addVoteUp" style="flex:1;background:#e8f5e9;color:#27ae60;border:1px solid #27ae60;border-radius:12px;padding:10px;cursor:pointer;">👍 Рекомендую</button>' +
+            '<button id="addVoteDown" style="flex:1;background:#fde8e8;color:#e74c3c;border:1px solid #e74c3c;border-radius:12px;padding:10px;cursor:pointer;">👎 Не раджу</button>' +
+        '</div>' +
+        '<textarea id="customReview" placeholder="Ваш відгук (необовязково)..." style="width:100%;border-radius:14px;padding:10px;border:1px solid #ddd;font-size:0.9rem;margin-bottom:12px;box-sizing:border-box;min-height:70px;"></textarea>' +
+        '<button id="customSubmit" style="width:100%;background:#27ae60;color:#fff;border:none;border-radius:40px;padding:13px;font-weight:700;cursor:pointer;margin-bottom:8px;">✅ Додати та оцінити</button>' +
+        '<button id="customCancel" style="width:100%;background:#eee;border:none;border-radius:40px;padding:11px;cursor:pointer;">Скасувати</button>';
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    var selectedVote = null;
+    modal.querySelector('#addVoteUp').onclick = function() {
+        selectedVote = 'up';
+        this.style.background = '#27ae60'; this.style.color = '#fff';
+        modal.querySelector('#addVoteDown').style.background = '#fde8e8';
+        modal.querySelector('#addVoteDown').style.color = '#e74c3c';
+    };
+    modal.querySelector('#addVoteDown').onclick = function() {
+        selectedVote = 'down';
+        this.style.background = '#e74c3c'; this.style.color = '#fff';
+        modal.querySelector('#addVoteUp').style.background = '#e8f5e9';
+        modal.querySelector('#addVoteUp').style.color = '#27ae60';
+    };
+    modal.querySelector('#customCancel').onclick = function() { overlay.remove(); };
+
+    modal.querySelector('#customSubmit').onclick = function() {
+        var name  = modal.querySelector('#customName').value.trim();
+        var cat   = modal.querySelector('#customCat').value.trim() || catName;
+        var emoji = modal.querySelector('#customEmoji').value.trim() || '🎣';
+        var review = modal.querySelector('#customReview').value.trim();
+
+        if (!name) { alert('Введіть назву снасті'); return; }
+        if (!selectedVote) { alert('Оберіть 👍 або 👎'); return; }
+
+        // Генеруємо унікальний id
+        var newId = 'custom_' + Date.now();
+
+        // Додаємо в категорію
+        var cat_obj = ratingCategories.find(function(c){ return c.id === catId; });
+        if (cat_obj) {
+            cat_obj.items.push({ id: newId, name: name, emoji: emoji, cat: cat });
+        }
+
+        // Зберігаємо голос
+        var allVotes = JSON.parse(localStorage.getItem('mf_rating_votes') || '{}');
+        var myVotes = JSON.parse(localStorage.getItem('mf_my_votes') || '{}');
+        if (!allVotes[catId]) allVotes[catId] = {};
+        allVotes[catId][newId] = { up: selectedVote==='up'?1:0, down: selectedVote==='down'?1:0 };
+        myVotes[catId+':'+newId] = selectedVote;
+        localStorage.setItem('mf_rating_votes', JSON.stringify(allVotes));
+        localStorage.setItem('mf_my_votes', JSON.stringify(myVotes));
+
+        // Зберігаємо відгук якщо є
+        if (review) {
+            var allComments = JSON.parse(localStorage.getItem('mf_rating_comments') || '{}');
+            if (!allComments[catId]) allComments[catId] = {};
+            if (!allComments[catId][newId]) allComments[catId][newId] = [];
+            allComments[catId][newId].push({
+                vote: selectedVote, text: review,
+                author: currentUser ? currentUser.nickname : 'Гість',
+                date: new Date().toLocaleDateString('uk-UA')
+            });
+            localStorage.setItem('mf_rating_comments', JSON.stringify(allComments));
+        }
+
+        // Зберігаємо користувацькі снасті
+        var customItems = JSON.parse(localStorage.getItem('mf_custom_items') || '{}');
+        if (!customItems[catId]) customItems[catId] = [];
+        customItems[catId].push({ id: newId, name: name, emoji: emoji, cat: cat,
+            author: currentUser ? currentUser.nickname : 'Гість' });
+        localStorage.setItem('mf_custom_items', JSON.stringify(customItems));
+
+        addPoints('add_item');
+        overlay.remove();
+        renderLureRating();
+        alert('✅ Снасть додано! Дякуємо за відгук.');
+    };
 }
 
 function showRatingCommentForm(itemId, itemName, catId) {
