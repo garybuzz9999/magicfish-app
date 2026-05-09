@@ -1677,53 +1677,31 @@ function renderMainMenu() {
 
     if (currentUser.hasBasicPaid) {
         menuHtml += `
-            <div class="menu-card" data-section="waterbodies">🗺️<br><span>Водойми</span></div>
-            <div class="menu-card" data-section="forecast">🔮<br><span>Прогноз клеву</span></div>
-            <div class="menu-card" data-section="resorts">🏖️<br><span>Бази відпочинку</span></div>
-            <div class="menu-card" data-section="campings">🏕️<br><span>Кемпінги</span></div>
-            <div class="menu-card" data-section="tours" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:2px solid #27ae60;">🚌<br><span>Тури по Україні</span></div>
-            <div class="menu-card" data-section="marketplace" style="background:linear-gradient(135deg,#f0fdf4,#d4f7e0);border:2px solid #27ae60;">📢<br><span>Дошка оголошень</span></div>
-            <div class="menu-card" data-section="stores">🏪<br><span>Магазини</span></div>
-            <div class="menu-card" data-section="news">📰<br><span>Новини</span></div>
-            <div class="menu-card" data-section="forum">💬<br><span>Форум</span></div>
-            <div class="menu-card" data-section="sos" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:white;font-weight:900;animation:sosGlow 1.5s infinite;border-radius:28px;padding:16px 8px;text-align:center;cursor:pointer;box-shadow:0 4px 20px rgba(231,76,60,0.5);">🆘<br><span>SOS</span></div>
-            <div class="menu-card" onclick="handleGTRAdClick()" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:white;position:relative;overflow:visible;cursor:pointer;">
-              <div style="font-size:2rem;margin-bottom:4px;">📡</div>
-              <span style="font-weight:700;">GTR Shop</span>
-              
-              <!-- Expanded info on hover/click -->
-              <div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:16px;width:280px;box-shadow:0 8px 24px rgba(0,0,0,0.5);z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;" class="gtr-popup">
-                <div style="font-size:1.2rem;font-weight:900;letter-spacing:2px;margin-bottom:12px;">GTR PHANTOM</div>
-                <div id="gtrPopupSubtitle" style="font-size:0.7rem;opacity:0.8;margin-bottom:12px;">Універсальний сигналізатор клювання</div>
-                <div style="display:flex;flex-direction:column;gap:8px;font-size:0.65rem;">
-                  <div style="display:flex;gap:8px;align-items:start;">
-                    <span style="font-size:1rem;">📶</span>
-                    <div><strong>Bluetooth 4.0</strong><br><span id="gtrF1" style="opacity:0.7;">До 100м</span></div>
-                  </div>
-                  <div style="display:flex;gap:8px;align-items:start;">
-                    <span style="font-size:1rem;">💧</span>
-                    <div><strong>IPX6</strong><br><span id="gtrF2" style="opacity:0.7;">Захист від води</span></div>
-                  </div>
-                  <div style="display:flex;gap:8px;align-items:start;">
-                    <span style="font-size:1rem;">🔋</span>
-                    <div><strong id="gtrF3">До 120 днів</strong><br><span id="gtrF3s" style="opacity:0.7;">Низьке споживання</span></div>
-                  </div>
-                </div>
-                <button style="background:#f39c12;color:white;border:none;border-radius:20px;padding:8px 16px;font-weight:700;width:100%;margin-top:12px;cursor:pointer;">🛒 Каталог</button>
-              </div>
-            </div>
-            <div class="menu-card" data-section="cabinet" style="background:#f0fdf4;border:2px solid #27ae60;">👤<br><span>Кабінет</span></div>
-            <div class="menu-card" data-section="reports">🐟<br><span>Звіти</span></div>
-            <div class="menu-card" data-section="lure_rating">⭐<br><span>Рейтинг</span></div>
-            <div class="menu-card" data-section="workshop">🔧<br><span>Майстерня</span></div>
-            <div class="menu-card" data-section="fishing_plans">📋<br><span>Плани</span></div>
+            <div class="menu-card" data-section="waterbodies" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🗺️<br><span>Водойми</span></div>
+            <div class="menu-card" data-section="forecast" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔮<br><span>Прогноз клеву</span></div>
+            <div class="menu-card" data-section="resorts" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🏖️<br><span>Бази відпочинку</span></div>
+            <div class="menu-card" data-section="campings" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🏕️<br><span>Кемпінги</span></div>
+            <div class="menu-card" data-section="tours" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🚌<br><span>Тури по Україні</span></div>
+            <div class="menu-card" data-section="marketplace" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📢<br><span>Дошка оголошень</span></div>
+            <div class="menu-card" data-section="stores" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🏪<br><span>Магазини</span></div>
+            <div class="menu-card" data-section="news" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📰<br><span>Новини</span></div>
+            <div class="menu-card" data-section="forum" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">💬<br><span>Форум</span></div>
+            <div class="menu-card" data-section="cabinet" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">👤<br><span>Кабінет</span></div>
+            <div class="menu-card" data-section="reports" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🐟<br><span>Звіти</span></div>
+            <div class="menu-card" data-section="lure_rating" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">⭐<br><span>Рейтинг</span></div>
+            <div class="menu-card" data-section="workshop" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔧<br><span>Майстерня</span></div>
+            <div class="menu-card" data-section="fishing_plans" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📋<br><span>Плани</span></div>
+            <div class="menu-card" data-section="sos" style="background:#e74c3c;color:white;border:none;">🆘<br><span>SOS</span></div>
+            <div class="menu-card" data-section="alarm" style="background:#1a1a2e;color:white;border:none;">📡<br><span>GTR Shop</span></div>
         `;
     } else {
-        menuHtml += `<div class="menu-card" data-section="cabinet" style="background:#f0fdf4;border:2px solid #27ae60;">👤<br><span>Кабінет</span></div>
-            <div class="menu-card" data-section="reports">🐟<br><span>Звіти</span></div>
-            <div class="menu-card" data-section="lure_rating">⭐<br><span>Рейтинг</span></div>
-            <div class="menu-card" data-section="workshop">🔧<br><span>Майстерня</span></div>
-            <div class="menu-card" data-section="fishing_plans">📋<br><span>Плани</span></div>`;
+        menuHtml += `<div class="menu-card" data-section="cabinet" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">👤<br><span>Кабінет</span></div>
+            <div class="menu-card" data-section="reports" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🐟<br><span>Звіти</span></div>
+            <div class="menu-card" data-section="lure_rating" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">⭐<br><span>Рейтинг</span></div>
+            <div class="menu-card" data-section="workshop" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔧<br><span>Майстерня</span></div>
+            <div class="menu-card" data-section="fishing_plans" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📋<br><span>Плани</span></div>
+            <div class="menu-card" data-section="sos" style="background:#e74c3c;color:white;border:none;">🆘<br><span>SOS</span></div>
+            <div class="menu-card" data-section="alarm" style="background:#1a1a2e;color:white;border:none;">📡<br><span>GTR Shop</span></div>`;
     }
 
     menuHtml += `</div>
