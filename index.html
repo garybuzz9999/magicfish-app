@@ -5452,92 +5452,303 @@ function renderReports() {
     };
 }
 
-// ========== РЕЙТИНГ ПРИМАНОК ==========
+// ========== РЕЙТИНГ СПОРЯДЖЕННЯ ==========
+var ratingCategories = [
+    {
+        id: 'lures', name: 'Приманки', emoji: '🎣',
+        items: [
+            {id:'twister', name:'Твістер', emoji:'🪱', cat:'Силікон'},
+            {id:'vibrohvost', name:'Віброхвіст', emoji:'🐠', cat:'Силікон'},
+            {id:'worm', name:'Червяк', emoji:'🪱', cat:'Силікон'},
+            {id:'wobbler', name:'Воблер', emoji:'🐟', cat:'Воблери'},
+            {id:'popper', name:'Поппер', emoji:'💦', cat:'Воблери'},
+            {id:'minnow', name:'Мінноу', emoji:'🐡', cat:'Воблери'},
+            {id:'spinner', name:'Блесна вертушка', emoji:'⚙️', cat:'Блесни'},
+            {id:'kastmaster', name:'Кастмастер', emoji:'🔩', cat:'Блесни'},
+            {id:'jig', name:'Джиг-головка', emoji:'⚓', cat:'Джиг'},
+            {id:'mandula', name:'Мандула', emoji:'🎨', cat:'Джиг'},
+            {id:'corn', name:'Кукурудза', emoji:'🌽', cat:'Натуральні'},
+            {id:'worm_nat', name:'Червяк живий', emoji:'🪱', cat:'Натуральні'},
+        ]
+    },
+    {
+        id: 'rods', name: 'Вудилища', emoji: '🎿',
+        items: [
+            {id:'rod_shimano', name:'Shimano', emoji:'🎿', cat:'Спінінг'},
+            {id:'rod_daiwa', name:'Daiwa', emoji:'🎿', cat:'Спінінг'},
+            {id:'rod_major', name:'Major Craft', emoji:'🎿', cat:'Спінінг'},
+            {id:'rod_savage', name:'Savage Gear', emoji:'🎿', cat:'Спінінг'},
+            {id:'rod_yamaga', name:'Yamaga Blanks', emoji:'🎿', cat:'Спінінг'},
+            {id:'rod_hearty', name:'Hearty Rise', emoji:'🎿', cat:'Спінінг'},
+            {id:'rod_flagman', name:'Flagman', emoji:'🎿', cat:'Фідер'},
+            {id:'rod_feeder', name:'Browning Xitan', emoji:'🎿', cat:'Фідер'},
+            {id:'rod_generic', name:'Zemex', emoji:'🎿', cat:'Фідер'},
+        ]
+    },
+    {
+        id: 'reels', name: 'Котушки', emoji: '🔄',
+        items: [
+            {id:'reel_shimano', name:'Shimano Stradic', emoji:'🔄', cat:'Безінерційні'},
+            {id:'reel_daiwa', name:'Daiwa Exist', emoji:'🔄', cat:'Безінерційні'},
+            {id:'reel_penn', name:'Penn Battle', emoji:'🔄', cat:'Безінерційні'},
+            {id:'reel_okuma', name:'Okuma Trio', emoji:'🔄', cat:'Безінерційні'},
+            {id:'reel_abu', name:'Abu Garcia Revo', emoji:'🔄', cat:'Мультипліктор'},
+            {id:'reel_lew', name:"Lew's Speed Spool", emoji:'🔄', cat:'Мультипліктор'},
+            {id:'reel_daiwa_m', name:'Daiwa Tatula', emoji:'🔄', cat:'Мультипліктор'},
+        ]
+    },
+    {
+        id: 'lines', name: 'Шнури та волосінь', emoji: '〰️',
+        items: [
+            {id:'line_pe', name:'YGK G-soul', emoji:'〰️', cat:'Плетінка PE'},
+            {id:'line_sunline', name:'Sunline Super PE', emoji:'〰️', cat:'Плетінка PE'},
+            {id:'line_shimano', name:'Shimano Kairiki', emoji:'〰️', cat:'Плетінка PE'},
+            {id:'line_mono', name:'Berkley Trilene', emoji:'〰️', cat:'Монофіл'},
+            {id:'line_fluoro', name:'Seaguar Red Label', emoji:'〰️', cat:'Флюорокарбон'},
+            {id:'line_intech', name:'Intech Invision', emoji:'〰️', cat:'Плетінка PE'},
+        ]
+    },
+    {
+        id: 'boats_rubber', name: 'Гумові човни', emoji: '🚣',
+        items: [
+            {id:'boat_nissamaran', name:'Nissamaran', emoji:'🚣', cat:'ПВХ'},
+            {id:'boat_bark', name:'Bark', emoji:'🚣', cat:'ПВХ'},
+            {id:'boat_intex', name:'Intex Excursion', emoji:'🚣', cat:'ПВХ'},
+            {id:'boat_kolibri', name:'Колібрі', emoji:'🚣', cat:'ПВХ'},
+            {id:'boat_aqua', name:'Aqua Star', emoji:'🚣', cat:'ПВХ'},
+            {id:'boat_zodiac', name:'Zodiac', emoji:'🚣', cat:'Преміум ПВХ'},
+        ]
+    },
+    {
+        id: 'motors', name: 'Мотори', emoji: '⚙️',
+        items: [
+            {id:'motor_tohatsu', name:'Tohatsu', emoji:'⚙️', cat:'Підвісний'},
+            {id:'motor_yamaha', name:'Yamaha', emoji:'⚙️', cat:'Підвісний'},
+            {id:'motor_honda', name:'Honda', emoji:'⚙️', cat:'Підвісний'},
+            {id:'motor_suzuki', name:'Suzuki', emoji:'⚙️', cat:'Підвісний'},
+            {id:'motor_mercury', name:'Mercury', emoji:'⚙️', cat:'Підвісний'},
+            {id:'motor_electric', name:'Minn Kota (електро)', emoji:'⚡', cat:'Електро'},
+        ]
+    },
+    {
+        id: 'echo', name: 'Ехолоти', emoji: '📡',
+        items: [
+            {id:'echo_garmin', name:'Garmin Striker', emoji:'📡', cat:'Ехолот'},
+            {id:'echo_lowrance', name:'Lowrance Hook', emoji:'📡', cat:'Ехолот'},
+            {id:'echo_humminbird', name:'Humminbird Helix', emoji:'📡', cat:'Ехолот'},
+            {id:'echo_practical', name:'Практик', emoji:'📡', cat:'Ехолот'},
+            {id:'echo_deeper', name:'Deeper Pro+', emoji:'📡', cat:'Бездротовий'},
+            {id:'echo_lucky', name:'Lucky FFW718', emoji:'📡', cat:'Бездротовий'},
+        ]
+    },
+    {
+        id: 'clothing', name: 'Одяг та взуття', emoji: '🧥',
+        items: [
+            {id:'cl_daiwa', name:'Daiwa D-Vec', emoji:'🧥', cat:'Костюм'},
+            {id:'cl_shimano', name:'Shimano HFG', emoji:'🧥', cat:'Костюм'},
+            {id:'cl_norfin', name:'Norfin', emoji:'🧥', cat:'Костюм'},
+            {id:'cl_rapala', name:'Rapala', emoji:'🧥', cat:'Костюм'},
+            {id:'cl_waiders', name:'Вейдерси Fox', emoji:'🥾', cat:'Вейдерси'},
+            {id:'cl_simms', name:'Simms Freestone', emoji:'🥾', cat:'Вейдерси'},
+        ]
+    },
+];
+
 function renderLureRating() {
     var app = document.getElementById('appRoot');
-    var votes = JSON.parse(localStorage.getItem('mf_lure_votes') || '{}');
-
-    var lures = [
-        { id:'twister',    name:'Твістер',          emoji:'🪱', cat:'Силікон' },
-        { id:'vibrohvost', name:'Віброхвіст',       emoji:'🐠', cat:'Силікон' },
-        { id:'worm',       name:'Червяк',          emoji:'🪱', cat:'Силікон' },
-        { id:'wobbler',    name:'Воблер',            emoji:'🐟', cat:'Воблери' },
-        { id:'popper',     name:'Поппер',            emoji:'💦', cat:'Воблери' },
-        { id:'minnow',     name:'Мінноу',            emoji:'🐡', cat:'Воблери' },
-        { id:'spinner',    name:'Блесна вертушка',   emoji:'⚙️', cat:'Блесни' },
-        { id:'kastmaster', name:'Кастмастер',        emoji:'🔩', cat:'Блесни' },
-        { id:'jig',        name:'Джиг-головка',      emoji:'⚓', cat:'Джиг' },
-        { id:'mandula',    name:'Мандула',           emoji:'🎨', cat:'Джиг' },
-        { id:'corn',       name:'Кукурудза',         emoji:'🌽', cat:'Натуральні' },
-        { id:'worm_nat',   name:'Червяк живий',     emoji:'🪱', cat:'Натуральні' },
-    ];
-
-    var sorted = lures.map(function(l) {
-        return Object.assign({}, l, { votes: votes[l.id] || 0 });
-    }).sort(function(a,b) { return b.votes - a.votes; });
+    var selectedCat = localStorage.getItem('mf_rating_cat') || 'lures';
+    var cat = ratingCategories.find(function(c){ return c.id === selectedCat; }) || ratingCategories[0];
+    var allVotes = JSON.parse(localStorage.getItem('mf_rating_votes') || '{}');
+    var allComments = JSON.parse(localStorage.getItem('mf_rating_comments') || '{}');
+    var myVotes = JSON.parse(localStorage.getItem('mf_my_votes') || '{}');
+    var votes = allVotes[selectedCat] || {};
+    var comments = allComments[selectedCat] || {};
 
     var html = '<div class="nickname-header">👤 ' + (currentUser ? currentUser.nickname : '') + '</div>';
     html += '<div class="card">';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
-    html += '<h1 style="margin:0;">⭐ Рейтинг приманок</h1>';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
+    html += '<h1 style="margin:0;">⭐ Рейтинг</h1>';
     html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button>';
     html += '</div>';
-    html += '<div style="font-size:0.82rem;color:#888;margin-bottom:14px;">Голосуйте за кращу приманку сезону!</div>';
 
-    var myVote = localStorage.getItem('mf_my_lure_vote');
+    // Вкладки категорій
+    html += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;" id="catTabsContainer"></div>';
+
+    // Список товарів
+    var sorted = cat.items.map(function(l) {
+        var v = votes[l.id] || {up:0, down:0};
+        return Object.assign({}, l, {up: v.up||0, down: v.down||0, score: (v.up||0)-(v.down||0)});
+    }).sort(function(a,b){ return b.score - a.score; });
 
     sorted.forEach(function(l, i) {
-        var isTop = i < 3;
-        var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1) + '.';
-        html += '<div style="background:' + (isTop ? '#fffbeb' : '#f9f9f9') + ';border-radius:14px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">';
-        html += '<div style="font-size:1.3rem;width:28px;text-align:center;">' + medal + '</div>';
-        html += '<div style="font-size:1.5rem;">' + l.emoji + '</div>';
+        var isTop = i < 3 && l.score > 0;
+        var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1)+'.';
+        var myVote = myVotes[selectedCat+':'+l.id] || null;
+        var itemComments = comments[l.id] || [];
+
+        html += '<div style="background:' + (isTop?'#fffbeb':'#f9f9f9') + ';border-radius:16px;padding:12px;margin-bottom:10px;">';
+
+        // Заголовок
+        html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">';
+        html += '<div style="font-size:1.2rem;width:26px;text-align:center;">' + medal + '</div>';
+        html += '<div style="font-size:1.4rem;">' + l.emoji + '</div>';
         html += '<div style="flex:1;"><div style="font-weight:700;font-size:0.9rem;">' + l.name + '</div>';
         html += '<div style="font-size:0.72rem;color:#888;">' + l.cat + '</div></div>';
-        html += '<div style="text-align:right;">';
-        html += '<div style="font-size:1rem;font-weight:900;color:#f39c12;">' + l.votes + '</div>';
-        html += '<div style="font-size:0.7rem;color:#aaa;">голосів</div></div>';
-        if (myVote !== l.id) {
-            var vBtn = document.createElement('button');
-        vBtn.textContent = '👍 За';
-        vBtn.style.cssText = 'background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:0.8rem;white-space:nowrap;';
-        vBtn.setAttribute('data-lid', l.id);
-        vBtn.onclick = (function(lid){ return function(){ voteLure(lid); }; })(l.id);
-        html += '<span id="vbtn_' + l.id + '"></span>';
-        } else {
-            html += '<div style="color:#27ae60;font-size:0.8rem;">✅ Ваш</div>';
+        html += '<div style="text-align:center;margin-right:4px;">';
+        html += '<div style="font-size:1.1rem;font-weight:900;color:' + (l.score>0?'#27ae60':l.score<0?'#e74c3c':'#aaa') + ';">' + (l.score>0?'+':'') + l.score + '</div>';
+        html += '<div style="font-size:0.65rem;color:#aaa;">рейтинг</div></div>';
+        html += '</div>';
+
+        // Кнопки голосування
+        html += '<div style="display:flex;gap:8px;margin-bottom:8px;" id="vote_row_' + selectedCat + '_' + l.id + '">';
+        html += '<span id="upbtn_' + selectedCat + '_' + l.id + '"></span>';
+        html += '<span id="downbtn_' + selectedCat + '_' + l.id + '"></span>';
+        html += '<span style="font-size:0.8rem;color:#888;align-self:center;">👍 ' + l.up + ' · 👎 ' + l.down + '</span>';
+        html += '<button id="commentbtn_' + selectedCat + '_' + l.id + '" style="margin-left:auto;background:transparent;border:1px solid #ddd;border-radius:10px;padding:5px 10px;font-size:0.78rem;cursor:pointer;">💬 Відгук</button>';
+        html += '</div>';
+
+        // Коментарі
+        if (itemComments.length > 0) {
+            html += '<div style="border-top:1px solid #eee;padding-top:8px;">';
+            itemComments.slice(-3).forEach(function(c) {
+                var voteIcon = c.vote === 'up' ? '👍' : '👎';
+                html += '<div style="background:#fff;border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:0.82rem;">';
+                html += '<div style="display:flex;justify-content:space-between;margin-bottom:3px;">';
+                html += '<span style="font-weight:700;color:#1f3b4c;">' + voteIcon + ' ' + (c.author||'Гість') + '</span>';
+                html += '<span style="color:#aaa;font-size:0.7rem;">' + (c.date||'') + '</span>';
+                html += '</div><div style="color:#555;">' + c.text + '</div></div>';
+            });
+            if (itemComments.length > 3) {
+                html += '<div style="font-size:0.75rem;color:#888;text-align:center;">+ ще ' + (itemComments.length-3) + ' відгуків</div>';
+            }
+            html += '</div>';
         }
+
         html += '</div>';
     });
 
     html += '</div>';
     app.innerHTML = html;
 
-    // Додаємо кнопки голосування через DOM
-    sorted.forEach(function(l) {
-        if (myVote !== l.id) {
-            var span = document.getElementById('vbtn_' + l.id);
-            if (span) {
-                var btn = document.createElement('button');
-                btn.textContent = '👍 За';
-                btn.style.cssText = 'background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:0.8rem;';
-                btn.onclick = (function(lid){ return function(){ voteLure(lid); }; })(l.id);
-                span.appendChild(btn);
-            }
-        }
+    // Вкладки категорій через DOM
+    var tabsContainer = document.getElementById('catTabsContainer');
+    ratingCategories.forEach(function(c) {
+        var active = c.id === selectedCat;
+        var btn = document.createElement('button');
+        btn.textContent = c.emoji + ' ' + c.name;
+        btn.style.cssText = 'background:' + (active?'#1f3b4c':'#f0f0f0') + ';color:' + (active?'#fff':'#333') + ';border:none;border-radius:40px;padding:6px 12px;font-size:0.78rem;cursor:pointer;font-weight:' + (active?'700':'400') + ';margin:2px;';
+        btn.onclick = (function(cid){ return function(){ selectRatingCat(cid); }; })(c.id);
+        tabsContainer.appendChild(btn);
     });
 
-    window.voteLure = function(id) {
-        var oldVote = localStorage.getItem('mf_my_lure_vote');
-        if (oldVote === id) return;
-        if (oldVote) { votes[oldVote] = Math.max(0, (votes[oldVote] || 1) - 1); }
-        votes[id] = (votes[id] || 0) + 1;
-        localStorage.setItem('mf_lure_votes', JSON.stringify(votes));
-        localStorage.setItem('mf_my_lure_vote', id);
-        addPoints('vote');
+    // Кнопки голосування і відгуку через DOM
+    sorted.forEach(function(l) {
+        var myVote = myVotes[selectedCat+':'+l.id] || null;
+
+        var upSpan = document.getElementById('upbtn_' + selectedCat + '_' + l.id);
+        var downSpan = document.getElementById('downbtn_' + selectedCat + '_' + l.id);
+        var commentBtn = document.getElementById('commentbtn_' + selectedCat + '_' + l.id);
+
+        if (upSpan) {
+            var upBtn = document.createElement('button');
+            upBtn.textContent = '👍 За';
+            upBtn.style.cssText = 'background:' + (myVote==='up'?'#27ae60':'#e8f5e9') + ';color:' + (myVote==='up'?'#fff':'#27ae60') + ';border:1px solid #27ae60;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:0.82rem;font-weight:' + (myVote==='up'?'700':'400') + ';';
+            if (myVote !== 'up') upBtn.onclick = (function(lid){ return function(){ voteRatingItem(lid,'up'); }; })(l.id);
+            upSpan.appendChild(upBtn);
+        }
+
+        if (downSpan) {
+            var downBtn = document.createElement('button');
+            downBtn.textContent = '👎 Проти';
+            downBtn.style.cssText = 'background:' + (myVote==='down'?'#e74c3c':'#fde8e8') + ';color:' + (myVote==='down'?'#fff':'#e74c3c') + ';border:1px solid #e74c3c;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:0.82rem;font-weight:' + (myVote==='down'?'700':'400') + ';';
+            if (myVote !== 'down') downBtn.onclick = (function(lid){ return function(){ voteRatingItem(lid,'down'); }; })(l.id);
+            downSpan.appendChild(downBtn);
+        }
+
+        if (commentBtn) {
+            commentBtn.onclick = (function(lid, lname){ return function() {
+                showRatingCommentForm(lid, lname, selectedCat);
+            }; })(l.id, l.name);
+        }
+    });
+}
+
+function showRatingCommentForm(itemId, itemName, catId) {
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:#fff;border-radius:24px;padding:20px;width:100%;max-width:420px;';
+    modal.innerHTML =
+        '<h3 style="margin:0 0 14px;color:#1f3b4c;">💬 Відгук: ' + itemName + '</h3>' +
+        '<div style="display:flex;gap:10px;margin-bottom:14px;">' +
+            '<button id="voteUpBtn" style="flex:1;background:#e8f5e9;color:#27ae60;border:1px solid #27ae60;border-radius:12px;padding:10px;cursor:pointer;font-size:0.9rem;">👍 Рекомендую</button>' +
+            '<button id="voteDownBtn" style="flex:1;background:#fde8e8;color:#e74c3c;border:1px solid #e74c3c;border-radius:12px;padding:10px;cursor:pointer;font-size:0.9rem;">👎 Не раджу</button>' +
+        '</div>' +
+        '<textarea id="commentText" placeholder="Ваш відгук (необовязково)..." style="width:100%;border-radius:14px;padding:10px;border:1px solid #ddd;font-size:0.9rem;margin-bottom:12px;box-sizing:border-box;min-height:80px;"></textarea>' +
+        '<button id="submitComment" style="width:100%;background:#1f3b4c;color:#fff;border:none;border-radius:40px;padding:13px;font-weight:700;cursor:pointer;margin-bottom:8px;">Надіслати відгук</button>' +
+        '<button id="cancelComment" style="width:100%;background:#eee;border:none;border-radius:40px;padding:11px;cursor:pointer;">Скасувати</button>';
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    var selectedVote = null;
+    modal.querySelector('#voteUpBtn').onclick = function() {
+        selectedVote = 'up';
+        this.style.background = '#27ae60'; this.style.color = '#fff';
+        modal.querySelector('#voteDownBtn').style.background = '#fde8e8';
+        modal.querySelector('#voteDownBtn').style.color = '#e74c3c';
+    };
+    modal.querySelector('#voteDownBtn').onclick = function() {
+        selectedVote = 'down';
+        this.style.background = '#e74c3c'; this.style.color = '#fff';
+        modal.querySelector('#voteUpBtn').style.background = '#e8f5e9';
+        modal.querySelector('#voteUpBtn').style.color = '#27ae60';
+    };
+    modal.querySelector('#cancelComment').onclick = function() { overlay.remove(); };
+    modal.querySelector('#submitComment').onclick = function() {
+        var text = modal.querySelector('#commentText').value.trim();
+        if (!selectedVote) { alert('Оберіть 👍 або 👎'); return; }
+        voteRatingItem(itemId, selectedVote);
+        if (text) {
+            var allComments = JSON.parse(localStorage.getItem('mf_rating_comments') || '{}');
+            if (!allComments[catId]) allComments[catId] = {};
+            if (!allComments[catId][itemId]) allComments[catId][itemId] = [];
+            allComments[catId][itemId].push({
+                vote: selectedVote, text: text,
+                author: currentUser ? currentUser.nickname : 'Гість',
+                date: new Date().toLocaleDateString('uk-UA')
+            });
+            localStorage.setItem('mf_rating_comments', JSON.stringify(allComments));
+        }
+        overlay.remove();
+        addPoints('review');
         renderLureRating();
     };
 }
+
+window.selectRatingCat = function(catId) {
+    localStorage.setItem('mf_rating_cat', catId);
+    renderLureRating();
+};
+
+window.voteRatingItem = function(itemId, voteType) {
+    var selectedCat = localStorage.getItem('mf_rating_cat') || 'lures';
+    var allVotes = JSON.parse(localStorage.getItem('mf_rating_votes') || '{}');
+    var myVotes = JSON.parse(localStorage.getItem('mf_my_votes') || '{}');
+    if (!allVotes[selectedCat]) allVotes[selectedCat] = {};
+    if (!allVotes[selectedCat][itemId]) allVotes[selectedCat][itemId] = {up:0, down:0};
+    var oldVote = myVotes[selectedCat+':'+itemId];
+    if (oldVote) {
+        allVotes[selectedCat][itemId][oldVote] = Math.max(0, (allVotes[selectedCat][itemId][oldVote]||1)-1);
+    }
+    allVotes[selectedCat][itemId][voteType] = (allVotes[selectedCat][itemId][voteType]||0) + 1;
+    myVotes[selectedCat+':'+itemId] = voteType;
+    localStorage.setItem('mf_rating_votes', JSON.stringify(allVotes));
+    localStorage.setItem('mf_my_votes', JSON.stringify(myVotes));
+    addPoints('vote');
+    renderLureRating();
+};
+
 
 // ========== МАЙСТЕРНЯ ==========
 function renderWorkshop() {
