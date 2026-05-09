@@ -4405,19 +4405,12 @@ async function renderForecast() {
         <button id="backForecast" class="back-btn">← Назад</button>
       </div>
 
-      <!-- Вибір локації — стиль як в Кемпінгах -->
+      <!-- Геолокація -->
       <div style="margin-bottom:16px;">
-        <div style="display:flex;gap:8px;margin-bottom:10px;">
-          <input id="forecastSearch" type="text" placeholder="🔍 Пошук водойми..." style="flex:1;padding:10px 16px;border-radius:40px;border:1px solid #ddd;font-size:0.9rem;">
-          <button id="forecastNearbyBtn" class="btn" style="padding:10px 16px;white-space:nowrap;background:#1f3b4c;color:#fff;">📍 Поруч</button>
-        </div>
         <button id="forecastGeoBtn" class="btn btn-location btn-block" style="margin-bottom:10px;">📍 Визначити моє місце</button>
-        <div id="forecastLocationStatus" style="font-size:0.82rem;color:#888;margin-bottom:8px;"></div>
-        <select id="forecastLocation" style="width:100%;padding:10px;border-radius:40px;border:1px solid #ddd;font-size:0.9rem;margin-bottom:10px;">
-            <option value="geo">📍 Моє поточне місце</option>
-            ${waterbodies.map(w=>`<option value="${w.lat},${w.lng}">${w.name}</option>`).join('')}
-        </select>
+        <div id="forecastLocationStatus" style="font-size:0.82rem;color:#888;margin-bottom:8px;min-height:20px;"></div>
         <div id="forecastMap" class="map-container" style="margin-bottom:10px;"></div>
+        <input type="hidden" id="forecastLocation" value="geo">
         <button id="calcForecastBtn" class="btn btn-block" style="background:#f39c12;color:#1a0a00;font-size:1rem;font-weight:900;">🔮 Розрахувати прогноз</button>
       </div>
 
@@ -4456,47 +4449,39 @@ async function renderForecast() {
             btn.textContent = '📍 Визначити моє місце';
             btn.disabled = false;
             if (currentLocation) {
-                statusEl.innerHTML = '✅ ' + currentLocation.lat.toFixed(4) + ', ' + currentLocation.lng.toFixed(4) + ' (±' + Math.round(currentLocation.accuracy||0) + 'м)';
-                document.getElementById('forecastLocation').value = 'geo';
+                // Знаходимо водойми в радіусі 5км
+                var nearby = waterbodies.filter(function(w) {
+                    return getDistance(currentLocation.lat, currentLocation.lng, w.lat, w.lng) <= 5;
+                });
+                if (nearby.length > 0) {
+                    statusEl.innerHTML = '✅ Знайдено ' + nearby.length + ' водойм у радіусі 5км: ' +
+                        nearby.map(function(w){ return w.name; }).join(', ');
+                } else {
+                    statusEl.innerHTML = '✅ Місце визначено. Водойм у 5км не знайдено — прогноз за координатами.';
+                }
+                if (forecastMap) {
+                    forecastMap.setView([currentLocation.lat, currentLocation.lng], 12);
+                    L.marker([currentLocation.lat, currentLocation.lng])
+                     .addTo(forecastMap).bindPopup('📍 Ви тут').openPopup();
+                    // Коло 5км
+                    L.circle([currentLocation.lat, currentLocation.lng], {
+                        radius: 5000, color:'#3b82f6', fillColor:'#3b82f6', fillOpacity:0.05, weight:2
+                    }).addTo(forecastMap);
+                }
             }
         });
     };
 
-    // Пошук водойми
-    document.getElementById('forecastSearch').oninput = function() {
-        var q = this.value.toLowerCase();
-        var sel = document.getElementById('forecastLocation');
-        Array.from(sel.options).forEach(function(opt) {
-            opt.style.display = !q || opt.text.toLowerCase().includes(q) ? '' : 'none';
+    // Якщо геолокація вже є — одразу показуємо
+    if (currentLocation) {
+        var statusEl = document.getElementById('forecastLocationStatus');
+        var nearby = waterbodies.filter(function(w) {
+            return getDistance(currentLocation.lat, currentLocation.lng, w.lat, w.lng) <= 5;
         });
-    };
-
-    // Кнопка Поруч
-    document.getElementById('forecastNearbyBtn').onclick = function() {
-        if (!currentLocation) {
-            getUserLocation(function() {
-                if (currentLocation) {
-                    var nearest = waterbodies.slice().sort(function(a,b) {
-                        return getDistance(currentLocation.lat,currentLocation.lng,a.lat,a.lng) -
-                               getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng);
-                    })[0];
-                    if (nearest) {
-                        document.getElementById('forecastLocation').value = nearest.lat+','+nearest.lng;
-                        document.getElementById('forecastLocationStatus').innerHTML = '📍 Найближча: ' + nearest.name;
-                    }
-                }
-            });
-            return;
-        }
-        var nearest = waterbodies.slice().sort(function(a,b) {
-            return getDistance(currentLocation.lat,currentLocation.lng,a.lat,a.lng) -
-                   getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng);
-        })[0];
-        if (nearest) {
-            document.getElementById('forecastLocation').value = nearest.lat+','+nearest.lng;
-            document.getElementById('forecastLocationStatus').innerHTML = '📍 Найближча: ' + nearest.name;
-        }
-    };
+        statusEl.innerHTML = nearby.length > 0
+            ? '✅ ' + nearby.length + ' водойм у 5км: ' + nearby.map(function(w){ return w.name; }).join(', ')
+            : '📍 Місце відоме. Прогноз за координатами.';
+    }
 
     // Ініціалізація карти прогнозу
     var fMapDiv = document.getElementById('forecastMap');
@@ -4525,24 +4510,20 @@ async function renderForecast() {
              .addTo(forecastMap).bindPopup('📍 Ви тут');
         }
 
-        // При зміні select — центруємо карту
-        document.getElementById('forecastLocation').onchange = function() {
-            var val = this.value;
-            if (val === 'geo' && currentLocation) {
-                forecastMap.setView([currentLocation.lat, currentLocation.lng], 10);
-            } else if (val !== 'geo') {
-                var parts = val.split(',');
-                if (parts.length === 2) {
-                    forecastMap.setView([parseFloat(parts[0]), parseFloat(parts[1])], 12);
-                }
-            }
-        };
+        // Якщо є геолокація — центруємо і показуємо коло 5км
+        if (currentLocation) {
+            forecastMap.setView([currentLocation.lat, currentLocation.lng], 12);
+            L.marker([currentLocation.lat, currentLocation.lng]).addTo(forecastMap).bindPopup('📍 Ви тут');
+            L.circle([currentLocation.lat, currentLocation.lng], {
+                radius:5000, color:'#3b82f6', fillColor:'#3b82f6', fillOpacity:0.05, weight:2
+            }).addTo(forecastMap);
+        }
     }
 
     document.getElementById('calcForecastBtn').onclick = async () => {
         const btn = document.getElementById('calcForecastBtn');
         const resultDiv = document.getElementById('forecastResult');
-        const locVal = document.getElementById('forecastLocation').value;
+        const locVal = 'geo';
         btn.textContent = '⏳ Завантажуємо погоду...';
         btn.disabled = true;
         resultDiv.innerHTML = '';
