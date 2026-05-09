@@ -541,7 +541,7 @@ const SECONDHAND_CATS = [
     {
         id: 'bait', label: '🪱 Живець та наживка', icon: '🪱',
         sub: [
-            'Черв\'як живий (місцеві продавці)',
+            'Червяк живий (місцеві продавці)',
             'Мотиль (зимова наживка)',
             'Опариш',
             'Рак живий',
@@ -1713,100 +1713,22 @@ function renderMainMenu() {
               </div>
             </div>
             <div class="menu-card" data-section="cabinet" style="background:#f0fdf4;border:2px solid #27ae60;">👤<br><span>Кабінет</span></div>
+            <div class="menu-card" data-section="reports">🐟<br><span>Звіти</span></div>
+            <div class="menu-card" data-section="lure_rating">⭐<br><span>Рейтинг</span></div>
+            <div class="menu-card" data-section="workshop">🔧<br><span>Майстерня</span></div>
+            <div class="menu-card" data-section="fishing_plans">📋<br><span>Плани</span></div>
         `;
     } else {
-        menuHtml += `<div class="menu-card" data-section="cabinet" style="background:#f0fdf4;border:2px solid #27ae60;">👤<br><span>Кабінет</span></div>`;
+        menuHtml += `<div class="menu-card" data-section="cabinet" style="background:#f0fdf4;border:2px solid #27ae60;">👤<br><span>Кабінет</span></div>
+            <div class="menu-card" data-section="reports">🐟<br><span>Звіти</span></div>
+            <div class="menu-card" data-section="lure_rating">⭐<br><span>Рейтинг</span></div>
+            <div class="menu-card" data-section="workshop">🔧<br><span>Майстерня</span></div>
+            <div class="menu-card" data-section="fishing_plans">📋<br><span>Плани</span></div>`;
     }
 
     menuHtml += `</div>
 
       <!-- ПАРТНЕРИ + GTR PHANTOM -->
-      <div style="margin-top:24px;padding-top:20px;border-top:1px solid #eee;">
-        <div style="font-size:0.75rem;font-weight:700;color:#aaa;letter-spacing:1.5px;text-align:center;margin-bottom:14px;">ОФІЦІЙНІ ПАРТНЕРИ</div>
-        
-        <div style="display:grid;grid-template-columns:80px 1fr 80px;gap:12px;height:400px;position:relative;overflow:hidden;">
-          <!-- Left sponsors - scrolling up -->
-          <div style="position:relative;overflow:hidden;background:linear-gradient(180deg,#f8f9fa 0%,#e9ecef 100%);border-radius:12px;padding:8px 0;">
-            <div id="leftSponsors" style="display:flex;flex-direction:column;gap:10px;animation:scrollUp 20s linear infinite;">
-              ${partners.concat(partners).map(p=>`
-                <div style="background:${p.bg};border-radius:8px;padding:8px;text-align:center;border:1px solid ${p.color}22;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                  <span style="font-size:1.3rem;">${p.emoji}</span>
-                  <span style="font-size:0.65rem;font-weight:800;color:${p.color};margin-top:3px;writing-mode:vertical-rl;text-orientation:upright;letter-spacing:-2px;">${p.name}</span>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- Center - GTR Device (embedded design) -->
-          <div id="gtrDeviceContainer" onclick="renderAlarm()" style="background:#0a0a0a;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 8px 24px rgba(0,0,0,0.3);padding:20px;cursor:pointer;" title="Переглянути GTR магазин">
-            <div id="gtrDeviceContent" style="width:100%;max-width:280px;color:white;text-align:left;">
-              <!-- GTR Logo -->
-              <div style="font-size:1.8rem;font-weight:900;letter-spacing:3px;margin-bottom:4px;">GTR</div>
-              <div style="font-size:1rem;font-weight:700;opacity:0.9;margin-bottom:16px;">PHANTOM</div>
-              <div id="gtrDeviceSubtitle" style="font-size:0.75rem;font-weight:600;opacity:0.8;margin-bottom:20px;">УНІВЕРСАЛЬНИЙ ПІДВІСНИЙ СИГНАЛІЗАТОР КЛЮВАННЯ</div>
-              
-              <!-- Features -->
-              <div style="display:flex;flex-direction:column;gap:10px;font-size:0.7rem;">
-                <div style="display:flex;align-items:start;gap:10px;">
-                  <div style="color:#3b82f6;font-size:1.2rem;">📶</div>
-                  <div>
-                    <div style="font-weight:700;">Bluetooth 4.0</div>
-                    <div id="gtrFeature1" style="opacity:0.7;">Стабільне з'єднання до 100 м</div>
-                  </div>
-                </div>
-                <div style="display:flex;align-items:start;gap:10px;">
-                  <div style="color:#06b6d4;font-size:1.2rem;">💧</div>
-                  <div>
-                    <div style="font-weight:700;">IPX6</div>
-                    <div id="gtrFeature2" style="opacity:0.7;">Захист від води та пилу</div>
-                  </div>
-                </div>
-                <div style="display:flex;align-items:start;gap:10px;">
-                  <div style="color:#10b981;font-size:1.2rem;">🔋</div>
-                  <div>
-                    <div id="gtrFeature3" style="font-weight:700;">До 120 днів роботи</div>
-                    <div id="gtrFeature3sub" style="opacity:0.7;">Низьке енергоспоживання</div>
-                  </div>
-                </div>
-                <div style="display:flex;align-items:start;gap:10px;">
-                  <div style="color:#8b5cf6;font-size:1.2rem;">📳</div>
-                  <div>
-                    <div id="gtrFeature4" style="font-weight:700;">Вібро-сповіщення</div>
-                    <div id="gtrFeature4sub" style="opacity:0.7;">Не пропустить клюв на відстані</div>
-                  </div>
-                </div>
-                <div style="display:flex;align-items:start;gap:10px;">
-                  <div style="color:#f59e0b;font-size:1.2rem;">⚡</div>
-                  <div>
-                    <div style="font-weight:700;">USB-C</div>
-                    <div id="gtrFeature5" style="opacity:0.7;">Швидка зарядка</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right sponsors - scrolling down -->
-          <div style="position:relative;overflow:hidden;background:linear-gradient(180deg,#e9ecef 0%,#f8f9fa 100%);border-radius:12px;padding:8px 0;">
-            <div id="rightSponsors" style="display:flex;flex-direction:column;gap:10px;animation:scrollDown 20s linear infinite;">
-              ${partners.concat(partners).map(p=>`
-                <div style="background:${p.bg};border-radius:8px;padding:8px;text-align:center;border:1px solid ${p.color}22;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                  <span style="font-size:1.3rem;">${p.emoji}</span>
-                  <span style="font-size:0.65rem;font-weight:800;color:${p.color};margin-top:3px;writing-mode:vertical-rl;text-orientation:upright;letter-spacing:-2px;">${p.name}</span>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-
-        <div style="text-align:center;margin-top:12px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-            <span style="font-size:0.72rem;color:#bbb;cursor:pointer;text-decoration:underline;" id="becomePartnerBtn">Стати партнером →</span>
-            <button onclick="renderSection('gtr_cases')" style="background:#f39c12;color:#1a0a00;border:none;border-radius:40px;padding:8px 18px;font-weight:800;font-size:0.82rem;cursor:pointer;">🛒 Магазин GTR →</button>
-          </div>
-        </div>
-      </div>
-
     </div>`;
 
     app.innerHTML = menuHtml;
@@ -1891,6 +1813,84 @@ function handleGTRAdClick() {
     renderGTRProducts();
 }
 
+
+// ========== ФОРМА ЗАМОВЛЕННЯ ==========
+function showOrderForm(productName, productPrice) {
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:#fff;border-radius:24px;padding:20px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;';
+    modal.innerHTML =
+        '<h3 style="margin:0 0 12px;color:#1f3b4c;">🛒 Замовлення</h3>' +
+        '<div style="background:#f5f7f0;border-radius:14px;padding:10px 14px;margin-bottom:14px;">' +
+            '<div style="font-weight:700;">' + productName + '</div>' +
+            '<div style="font-size:1.2rem;font-weight:900;color:#f39c12;">&#x20B4;' + productPrice + '</div>' +
+        '</div>' +
+        '<input id="oName" type="text" placeholder="Ваше iмя *" style="margin-bottom:8px;">' +
+        '<input id="oPhone" type="tel" placeholder="Телефон * (+38...)" style="margin-bottom:8px;">' +
+        '<input id="oCity" type="text" placeholder="Мiсто *" style="margin-bottom:8px;">' +
+        '<input id="oNP" type="text" placeholder="Вiддiлення Новоi Пошти *" style="margin-bottom:8px;">' +
+        '<textarea id="oComment" placeholder="Коментар" style="width:100%;border-radius:14px;padding:10px;border:1px solid #ddd;font-size:0.9rem;margin-bottom:12px;box-sizing:border-box;"></textarea>' +
+        '<button id="oSubmit" style="width:100%;background:#1f3b4c;color:#fff;border:none;border-radius:40px;padding:14px;font-weight:700;font-size:1rem;cursor:pointer;margin-bottom:8px;">📦 Підтвердити</button>' +
+        '<button id="oCancel" style="width:100%;background:#eee;border:none;border-radius:40px;padding:12px;cursor:pointer;">Скасувати</button>' +
+        '<div id="oStatus" style="margin-top:8px;font-size:0.82rem;text-align:center;"></div>';
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    document.getElementById('oCancel').onclick = function() { overlay.remove(); };
+    overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+
+    document.getElementById('oSubmit').onclick = async function() {
+        var name  = document.getElementById('oName').value.trim();
+        var phone = document.getElementById('oPhone').value.trim();
+        var city  = document.getElementById('oCity').value.trim();
+        var np    = document.getElementById('oNP').value.trim();
+        var comment = document.getElementById('oComment').value.trim();
+        var status = document.getElementById('oStatus');
+        if (!name || !phone || !city || !np) {
+            status.style.color = '#e74c3c';
+            status.textContent = 'Заповнiть всi поля';
+            return;
+        }
+        var btn = document.getElementById('oSubmit');
+        btn.disabled = true;
+        btn.textContent = 'Вiдправляємо...';
+        try {
+            var res = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    access_key: 'd191f4ae-9d84-43f5-89bc-6df9e989073c',
+                    subject: 'GTR замовлення: ' + productName,
+                    product: productName,
+                    price: productPrice + ' грн',
+                    name: name, phone: phone, city: city,
+                    nova_poshta: np, comment: comment || '-'
+                })
+            });
+            if (res.ok) {
+                modal.innerHTML =
+                    '<div style="text-align:center;padding:20px;">' +
+                    '<div style="font-size:3rem;margin-bottom:12px;">✅</div>' +
+                    '<div style="font-size:1.1rem;font-weight:700;color:#27ae60;margin-bottom:8px;">Замовлення прийнято!</div>' +
+                    '<div style="font-size:0.85rem;color:#555;margin-bottom:16px;">Ми звяжемось з вами найближчим часом</div>' +
+                    '<button id="orderSuccessClose" style="background:#27ae60;color:#fff;border:none;border-radius:40px;padding:12px 30px;font-weight:700;cursor:pointer;">Чудово!</button>' +
+                    '</div>';
+                var closeBtn = modal.querySelector('#orderSuccessClose');
+                if (closeBtn) closeBtn.onclick = function() { overlay.remove(); };
+            } else {
+                throw new Error('error');
+            }
+        } catch(e) {
+            status.style.color = '#e74c3c';
+            status.textContent = 'Помилка. Спробуйте ще раз.';
+            btn.disabled = false;
+            btn.textContent = 'Пiдтвердити';
+        }
+    };
+}
 
 // ========== GTR SHOP PRODUCTS ==========
 var gtrShopProducts = JSON.parse(localStorage.getItem('gtr_shop_products') || 'null') || [
@@ -4381,7 +4381,7 @@ async function renderForecast() {
         { fish:'🐟 Короп',  temp:'18–26°C', time:'Ранок/Вечір', bait:'Бойли, кукурудза, пелети',   months:'Трав–Вер' },
         { fish:'🐬 Щука',   temp:'8–15°C',  time:'Ранок',       bait:'Воблери, блешні, живець',     months:'Бер–Кві, Жов–Лис' },
         { fish:'🐠 Судак',  temp:'12–18°C', time:'Ніч',         bait:'Джиг, твістер',               months:'Кві–Чер, Вер' },
-        { fish:'🐡 Лящ',    temp:'18–24°C', time:'Ранок',       bait:'Черв\'як, опариш',            months:'Чер–Сер' },
+        { fish:'🐡 Лящ',    temp:'18–24°C', time:'Ранок',       bait:'Червяк, опариш',            months:'Чер–Сер' },
         { fish:'🦈 Сом',    temp:'22–28°C', time:'Ніч',         bait:'Живець, квок',                months:'Лип–Сер' },
         { fish:'🐟 Форель', temp:'8–14°C',  time:'Ранок',       bait:'Нахлист, блешня',             months:'Бер–Тра, Вер' },
     ];
@@ -4465,7 +4465,7 @@ async function renderForecast() {
             const temp = weather.temperature;
             let baitRec = [];
             if (temp > 18) baitRec = ['Бойли', 'Кукурудза', 'Воблери поверхневі'];
-            else if (temp > 10) baitRec = ['Джиг', 'Твістер', 'Черв\'як', 'Воблер'];
+            else if (temp > 10) baitRec = ['Джиг', 'Твістер', 'Червяк', 'Воблер'];
             else baitRec = ['Мормишка', 'Мотиль', 'Льодовий джиг'];
 
             // Погодний код → іконка
@@ -5292,6 +5292,10 @@ function renderSection(section) {
     else if (section==='tours') renderTours();
     else if (section==='gtr_cases') renderGTRCases();
     else if (section==='cabinet') renderCabinet();
+    else if (section==='reports') renderReports();
+    else if (section==='lure_rating') renderLureRating();
+    else if (section==='workshop') renderWorkshop();
+    else if (section==='fishing_plans') renderFishingPlans();
     else renderMainMenu();
 }
 
@@ -5309,6 +5313,260 @@ if (window.location.hash === '#admin') {
 } else {
     renderMainMenu();
 }
+
+// ========== ЗВІТИ З РИБАЛКИ ==========
+function renderReports() {
+    var app = document.getElementById('appRoot');
+    var reports = JSON.parse(localStorage.getItem('mf_reports') || '[]');
+
+    var html = '<div class="nickname-header">👤 ' + (currentUser ? currentUser.nickname : '') + '</div>';
+    html += '<div class="card">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<h1 style="margin:0;">🐟 Звіти з рибалки</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button>';
+    html += '</div>';
+
+    // Кнопка додати звіт
+    html += '<button id="addReportBtn" style="width:100%;background:#27ae60;color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;font-size:0.95rem;cursor:pointer;margin-bottom:16px;">+ Додати звіт</button>';
+
+    if (reports.length === 0) {
+        html += '<div style="text-align:center;padding:32px;color:#aaa;"><div style="font-size:3rem;margin-bottom:12px;">🎣</div><div>Поки немає звітів. Будьте першим!</div></div>';
+    } else {
+        reports.slice().reverse().forEach(function(r) {
+            html += '<div style="background:#f9f9f9;border-radius:18px;padding:14px;margin-bottom:12px;">';
+            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
+            html += '<div style="font-size:2rem;">' + (r.fish || '🐟') + '</div>';
+            html += '<div><div style="font-weight:700;font-size:0.95rem;">' + r.title + '</div>';
+            html += '<div style="font-size:0.75rem;color:#888;">' + r.author + ' · ' + r.date + '</div></div></div>';
+            if (r.water) html += '<div style="font-size:0.82rem;margin-bottom:4px;">📍 ' + r.water + '</div>';
+            if (r.lure) html += '<div style="font-size:0.82rem;margin-bottom:4px;">🎣 Приманка: ' + r.lure + '</div>';
+            if (r.weather) html += '<div style="font-size:0.82rem;margin-bottom:4px;">🌤️ ' + r.weather + '</div>';
+            if (r.text) html += '<div style="font-size:0.85rem;color:#555;margin-top:8px;">' + r.text + '</div>';
+            html += '<div style="margin-top:8px;display:flex;gap:12px;font-size:0.82rem;color:#888;">';
+            html += '<span>👍 ' + (r.likes || 0) + '</span>';
+            html += '<span>💬 ' + (r.comments || 0) + '</span>';
+            html += '</div></div>';
+        });
+    }
+
+    html += '</div>';
+    app.innerHTML = html;
+
+    document.getElementById('addReportBtn').onclick = function() {
+        var title   = prompt('Заголовок звіту:'); if (!title) return;
+        var water   = prompt('Водойма:') || '';
+        var lure    = prompt('Приманка:') || '';
+        var weather = prompt('Погода:') || '';
+        var text    = prompt('Опис (що, де, як):') || '';
+        var fish    = prompt('Емодзі риби:', '🐟') || '🐟';
+        var report = {
+            id: Date.now(),
+            title: title, water: water, lure: lure,
+            weather: weather, text: text, fish: fish,
+            author: currentUser ? currentUser.nickname : 'Гість',
+            date: new Date().toLocaleDateString('uk-UA'),
+            likes: 0, comments: 0
+        };
+        reports.push(report);
+        localStorage.setItem('mf_reports', JSON.stringify(reports));
+        renderReports();
+    };
+}
+
+// ========== РЕЙТИНГ ПРИМАНОК ==========
+function renderLureRating() {
+    var app = document.getElementById('appRoot');
+    var votes = JSON.parse(localStorage.getItem('mf_lure_votes') || '{}');
+
+    var lures = [
+        { id:'twister',    name:'Твістер',          emoji:'🪱', cat:'Силікон' },
+        { id:'vibrohvost', name:'Віброхвіст',       emoji:'🐠', cat:'Силікон' },
+        { id:'worm',       name:'Червяк',          emoji:'🪱', cat:'Силікон' },
+        { id:'wobbler',    name:'Воблер',            emoji:'🐟', cat:'Воблери' },
+        { id:'popper',     name:'Поппер',            emoji:'💦', cat:'Воблери' },
+        { id:'minnow',     name:'Мінноу',            emoji:'🐡', cat:'Воблери' },
+        { id:'spinner',    name:'Блесна вертушка',   emoji:'⚙️', cat:'Блесни' },
+        { id:'kastmaster', name:'Кастмастер',        emoji:'🔩', cat:'Блесни' },
+        { id:'jig',        name:'Джиг-головка',      emoji:'⚓', cat:'Джиг' },
+        { id:'mandula',    name:'Мандула',           emoji:'🎨', cat:'Джиг' },
+        { id:'corn',       name:'Кукурудза',         emoji:'🌽', cat:'Натуральні' },
+        { id:'worm_nat',   name:'Червяк живий',     emoji:'🪱', cat:'Натуральні' },
+    ];
+
+    var sorted = lures.map(function(l) {
+        return Object.assign({}, l, { votes: votes[l.id] || 0 });
+    }).sort(function(a,b) { return b.votes - a.votes; });
+
+    var html = '<div class="nickname-header">👤 ' + (currentUser ? currentUser.nickname : '') + '</div>';
+    html += '<div class="card">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<h1 style="margin:0;">⭐ Рейтинг приманок</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button>';
+    html += '</div>';
+    html += '<div style="font-size:0.82rem;color:#888;margin-bottom:14px;">Голосуйте за кращу приманку сезону!</div>';
+
+    var myVote = localStorage.getItem('mf_my_lure_vote');
+
+    sorted.forEach(function(l, i) {
+        var isTop = i < 3;
+        var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1) + '.';
+        html += '<div style="background:' + (isTop ? '#fffbeb' : '#f9f9f9') + ';border-radius:14px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">';
+        html += '<div style="font-size:1.3rem;width:28px;text-align:center;">' + medal + '</div>';
+        html += '<div style="font-size:1.5rem;">' + l.emoji + '</div>';
+        html += '<div style="flex:1;"><div style="font-weight:700;font-size:0.9rem;">' + l.name + '</div>';
+        html += '<div style="font-size:0.72rem;color:#888;">' + l.cat + '</div></div>';
+        html += '<div style="text-align:right;">';
+        html += '<div style="font-size:1rem;font-weight:900;color:#f39c12;">' + l.votes + '</div>';
+        html += '<div style="font-size:0.7rem;color:#aaa;">голосів</div></div>';
+        if (myVote !== l.id) {
+            var vBtn = document.createElement('button');
+        vBtn.textContent = '👍 За';
+        vBtn.style.cssText = 'background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:0.8rem;white-space:nowrap;';
+        vBtn.setAttribute('data-lid', l.id);
+        vBtn.onclick = (function(lid){ return function(){ voteLure(lid); }; })(l.id);
+        html += '<span id="vbtn_' + l.id + '"></span>';
+        } else {
+            html += '<div style="color:#27ae60;font-size:0.8rem;">✅ Ваш</div>';
+        }
+        html += '</div>';
+    });
+
+    html += '</div>';
+    app.innerHTML = html;
+
+    // Додаємо кнопки голосування через DOM
+    sorted.forEach(function(l) {
+        if (myVote !== l.id) {
+            var span = document.getElementById('vbtn_' + l.id);
+            if (span) {
+                var btn = document.createElement('button');
+                btn.textContent = '👍 За';
+                btn.style.cssText = 'background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:0.8rem;';
+                btn.onclick = (function(lid){ return function(){ voteLure(lid); }; })(l.id);
+                span.appendChild(btn);
+            }
+        }
+    });
+
+    window.voteLure = function(id) {
+        var oldVote = localStorage.getItem('mf_my_lure_vote');
+        if (oldVote === id) return;
+        if (oldVote) { votes[oldVote] = Math.max(0, (votes[oldVote] || 1) - 1); }
+        votes[id] = (votes[id] || 0) + 1;
+        localStorage.setItem('mf_lure_votes', JSON.stringify(votes));
+        localStorage.setItem('mf_my_lure_vote', id);
+        addPoints('vote');
+        renderLureRating();
+    };
+}
+
+// ========== МАЙСТЕРНЯ ==========
+function renderWorkshop() {
+    var app = document.getElementById('appRoot');
+    var posts = JSON.parse(localStorage.getItem('mf_workshop') || '[]');
+    var cats = ['Ремонт котушок', 'Ремонт вудилищ', 'Виготовлення приманок', 'Спорядження', 'Човни та мотори', 'Інше'];
+
+    var html = '<div class="nickname-header">👤 ' + (currentUser ? currentUser.nickname : '') + '</div>';
+    html += '<div class="card">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<h1 style="margin:0;">🔧 Майстерня</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button>';
+    html += '</div>';
+    html += '<button id="addWorkshopBtn" style="width:100%;background:#1f3b4c;color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;cursor:pointer;margin-bottom:16px;">+ Нова тема</button>';
+
+    if (posts.length === 0) {
+        html += '<div style="text-align:center;padding:32px;color:#aaa;"><div style="font-size:3rem;">🔧</div><div>Поки немає тем. Поділіться досвідом!</div></div>';
+    } else {
+        posts.slice().reverse().forEach(function(p) {
+            html += '<div style="background:#f9f9f9;border-radius:16px;padding:12px;margin-bottom:10px;">';
+            html += '<div style="display:flex;justify-content:space-between;align-items:start;">';
+            html += '<div><div style="font-weight:700;font-size:0.9rem;">' + p.title + '</div>';
+            html += '<div style="font-size:0.72rem;color:#888;margin-top:3px;">' + p.cat + ' · ' + p.author + ' · ' + p.date + '</div></div>';
+            html += '<span style="background:#e8f4fd;color:#1f3b4c;padding:3px 8px;border-radius:40px;font-size:0.7rem;white-space:nowrap;">' + p.cat + '</span>';
+            html += '</div>';
+            if (p.text) html += '<div style="font-size:0.82rem;color:#555;margin-top:8px;">' + p.text + '</div>';
+            html += '</div>';
+        });
+    }
+    html += '</div>';
+    app.innerHTML = html;
+
+    document.getElementById('addWorkshopBtn').onclick = function() {
+        var catList = cats.map(function(c,i){return (i+1)+'. '+c;}).join(', ');
+        var catIdx = prompt('Категорія: ' + catList);
+        if (!catIdx) return;
+        var cat = cats[parseInt(catIdx)-1] || 'Інше';
+        var title = prompt('Тема:'); if (!title) return;
+        var text  = prompt('Опис або питання:') || '';
+        posts.push({ id:Date.now(), title:title, cat:cat, text:text,
+            author: currentUser ? currentUser.nickname : 'Гість',
+            date: new Date().toLocaleDateString('uk-UA') });
+        localStorage.setItem('mf_workshop', JSON.stringify(posts));
+        renderWorkshop();
+    };
+}
+
+// ========== ПЛАНИ РИБАЛОК ==========
+function renderFishingPlans() {
+    var app = document.getElementById('appRoot');
+    var plans = JSON.parse(localStorage.getItem('mf_plans') || '[]');
+
+    var html = '<div class="nickname-header">👤 ' + (currentUser ? currentUser.nickname : '') + '</div>';
+    html += '<div class="card">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<h1 style="margin:0;">📋 Плани рибалок</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button>';
+    html += '</div>';
+    html += '<div style="font-size:0.82rem;color:#888;margin-bottom:14px;">Організовуйте спільні виїзди на рибалку</div>';
+    html += '<button id="addPlanBtn" style="width:100%;background:#f39c12;color:#1a0a00;border:none;border-radius:14px;padding:13px;font-weight:700;cursor:pointer;margin-bottom:16px;">📅 Запланувати виїзд</button>';
+
+    if (plans.length === 0) {
+        html += '<div style="text-align:center;padding:32px;color:#aaa;"><div style="font-size:3rem;">📋</div><div>Немає запланованих виїздів</div></div>';
+    } else {
+        var now = new Date();
+        plans.sort(function(a,b){ return new Date(a.dateVal) - new Date(b.dateVal); });
+        plans.forEach(function(p) {
+            var isPast = new Date(p.dateVal) < now;
+            html += '<div style="background:' + (isPast ? '#f5f5f5' : '#fff') + ';border-radius:18px;padding:14px;margin-bottom:12px;border:1px solid ' + (isPast ? '#ddd' : '#f39c12') + ';opacity:' + (isPast ? '0.6' : '1') + ';">';
+            html += '<div style="display:flex;justify-content:space-between;align-items:start;">';
+            html += '<div><div style="font-weight:700;font-size:0.95rem;">' + p.title + '</div>';
+            html += '<div style="font-size:0.78rem;color:#888;margin-top:3px;">📅 ' + p.date + ' · 📍 ' + (p.water||'місце не вказано') + '</div></div>';
+            html += '<span style="background:' + (isPast ? '#eee' : '#fff3cd') + ';color:#856404;padding:4px 10px;border-radius:40px;font-size:0.72rem;font-weight:700;">' + (isPast ? 'Минуло' : '👥 ' + (p.members||1)) + '</span>';
+            html += '</div>';
+            if (p.text) html += '<div style="font-size:0.82rem;color:#555;margin-top:8px;">' + p.text + '</div>';
+            if (!isPast) {
+                html += '<button onclick="joinPlan(' + p.id + ')" style="margin-top:10px;background:#27ae60;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:0.82rem;cursor:pointer;font-weight:600;">✋ Я їду!</button>';
+            }
+            html += '</div>';
+        });
+    }
+    html += '</div>';
+    app.innerHTML = html;
+
+    document.getElementById('addPlanBtn').onclick = function() {
+        var title  = prompt('Назва виїзду:'); if (!title) return;
+        var date   = prompt('Дата (напр. 15.06.2025):'); if (!date) return;
+        var water  = prompt('Водойма:') || '';
+        var text   = prompt('Деталі (що ловимо, збір тощо):') || '';
+        var dateVal = date.split('.').reverse().join('-');
+        plans.push({ id:Date.now(), title:title, date:date, dateVal:dateVal,
+            water:water, text:text, members:1,
+            author: currentUser ? currentUser.nickname : 'Гість' });
+        localStorage.setItem('mf_plans', JSON.stringify(plans));
+        renderFishingPlans();
+    };
+
+    window.joinPlan = function(id) {
+        var p = plans.find(function(x){return x.id===id;});
+        if (p) {
+            p.members = (p.members||1) + 1;
+            localStorage.setItem('mf_plans', JSON.stringify(plans));
+            addPoints('join_plan');
+            renderFishingPlans();
+        }
+    };
+}
+
 </script>
 </body>
 </html>
