@@ -3201,10 +3201,11 @@ function renderWaterbodies() {
         <button id="getLocationBtn" class="btn btn-location btn-block">📍 Визначити моє місце</button>
         <div id="locationStatus" style="margin-bottom:12px;font-size:0.85rem;color:#888;"></div>
         <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-            <button id="waterSortNearby" class="btn btn-secondary" style="flex:1;min-width:80px;">📍 Поруч</button>
-            <button id="waterFilterAll"  class="btn btn-secondary" style="flex:1;min-width:60px;">🗺️ Всі</button>
-            <button id="waterFilterFree" class="btn btn-secondary" style="flex:1;min-width:80px;">🎣 Безкоштовні</button>
-            <button id="waterFilterPaid" class="btn btn-secondary" style="flex:1;min-width:60px;">💰 Платні</button>
+            <button id="waterSortNearby" class="btn btn-secondary" style="flex:1;min-width:70px;">📍 Поруч</button>
+            <button id="waterFilterAll"  class="btn btn-secondary" style="flex:1;min-width:50px;">🗺️ Всі</button>
+            <button id="waterFilterFree" class="btn btn-secondary" style="flex:1;min-width:70px;">🎣 Безкоштовні</button>
+            <button id="waterFilterPaid" class="btn btn-secondary" style="flex:1;min-width:50px;">💰 Платні</button>
+            <button id="waterDepthBtn"   class="btn btn-secondary" style="flex:1;min-width:70px;background:#0ea5e9;color:#fff;">🌊 Глибини</button>
         </div>
         <div id="waterMap" class="map-container"></div>
         <div id="waterList"></div>
@@ -3258,6 +3259,38 @@ function renderWaterbodies() {
         if (!mapDiv) return;
         mapWater = L.map(mapDiv, { zoomControl: true }).setView([49,32],6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(mapWater);
+
+        // OpenSeaMap глибини
+        const depthLayer = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
+            attribution: '🌊 <a href="https://www.openseamap.org">OpenSeaMap</a>', opacity:0.8
+        });
+        let depthActive = false;
+        var depthBtn = document.getElementById('waterDepthBtn');
+        if (depthBtn) depthBtn.onclick = function() {
+            depthActive = !depthActive;
+            if (depthActive) {
+                depthLayer.addTo(mapWater);
+                depthBtn.style.background = '#0284c7';
+                depthBtn.style.color = '#fff';
+                depthBtn.textContent = '🌊 Глибини ✓';
+                var tip = document.getElementById('depthTip');
+                if (!tip) {
+                    tip = document.createElement('div');
+                    tip.id = 'depthTip';
+                    tip.style.cssText = 'background:#e0f2fe;border-radius:12px;padding:10px 14px;margin:8px 0;font-size:0.82rem;color:#0369a1;';
+                    tip.innerHTML = '🌊 <b>Карта глибин OpenSeaMap</b> — дані для великих річок: Дніпро, Десна, Дністер, Південний Буг та водосховища';
+                    var wmap = document.getElementById('waterMap');
+                    if (wmap) wmap.parentNode.insertBefore(tip, wmap.nextSibling);
+                }
+            } else {
+                depthLayer.remove();
+                depthBtn.style.background = '#0ea5e9';
+                depthBtn.style.color = '#fff';
+                depthBtn.textContent = '🌊 Глибини';
+                var t = document.getElementById('depthTip');
+                if (t) t.remove();
+            }
+        };
         waterbodies.forEach(w => {
             const icon = L.divIcon({ html: w.status==='biting'?'🟢':w.status==='not_biting'?'🔴':'⚪', className:'', iconSize:[24,24] });
             const wStatusText = w.status==='biting'?'🟢 Клює':w.status==='not_biting'?'🔴 Не клює':'⚪ Невідомо';
