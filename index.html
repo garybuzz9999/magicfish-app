@@ -4417,6 +4417,7 @@ async function renderForecast() {
             <option value="geo">📍 Моє поточне місце</option>
             ${waterbodies.map(w=>`<option value="${w.lat},${w.lng}">${w.name}</option>`).join('')}
         </select>
+        <div id="forecastMap" class="map-container" style="margin-bottom:10px;"></div>
         <button id="calcForecastBtn" class="btn btn-block" style="background:#f39c12;color:#1a0a00;font-size:1rem;font-weight:900;">🔮 Розрахувати прогноз</button>
       </div>
 
@@ -4496,6 +4497,47 @@ async function renderForecast() {
             document.getElementById('forecastLocationStatus').innerHTML = '📍 Найближча: ' + nearest.name;
         }
     };
+
+    // Ініціалізація карти прогнозу
+    var fMapDiv = document.getElementById('forecastMap');
+    var forecastMap = null;
+    if (fMapDiv) {
+        forecastMap = L.map(fMapDiv).setView([49,32],6);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(forecastMap);
+        setTimeout(function(){ if(forecastMap) forecastMap.invalidateSize(); }, 300);
+
+        // Маркери водойм
+        var fMarker = null;
+        waterbodies.forEach(function(w) {
+            L.circleMarker([w.lat,w.lng],{radius:5,color:'#1f3b4c',fillColor:'#3b82f6',fillOpacity:0.8,weight:1})
+             .addTo(forecastMap)
+             .bindPopup('<b>'+w.name+'</b>')
+             .on('click', function() {
+                document.getElementById('forecastLocation').value = w.lat+','+w.lng;
+                document.getElementById('forecastLocationStatus').innerHTML = '📍 Вибрано: ' + w.name;
+             });
+        });
+
+        // Поточна локація
+        if (currentLocation) {
+            forecastMap.setView([currentLocation.lat, currentLocation.lng], 10);
+            L.marker([currentLocation.lat, currentLocation.lng])
+             .addTo(forecastMap).bindPopup('📍 Ви тут');
+        }
+
+        // При зміні select — центруємо карту
+        document.getElementById('forecastLocation').onchange = function() {
+            var val = this.value;
+            if (val === 'geo' && currentLocation) {
+                forecastMap.setView([currentLocation.lat, currentLocation.lng], 10);
+            } else if (val !== 'geo') {
+                var parts = val.split(',');
+                if (parts.length === 2) {
+                    forecastMap.setView([parseFloat(parts[0]), parseFloat(parts[1])], 12);
+                }
+            }
+        };
+    }
 
     document.getElementById('calcForecastBtn').onclick = async () => {
         const btn = document.getElementById('calcForecastBtn');
