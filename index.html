@@ -1691,6 +1691,10 @@ function renderMainMenu() {
             <div class="menu-card" data-section="lure_rating" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">⭐<br><span>Рейтинг</span></div>
             <div class="menu-card" data-section="workshop" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔧<br><span>Майстерня</span></div>
             <div class="menu-card" data-section="fishing_plans" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📋<br><span>Плани</span></div>
+            <div class="menu-card" data-section="winter_fishing" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">❄️<br><span>Зимова</span></div>
+            <div class="menu-card" data-section="fishing_methods" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🎣<br><span>Способи ловлі</span></div>
+            <div class="menu-card" data-section="boats" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🚤<br><span>Човни та мотори</span></div>
+            <div class="menu-card" data-section="underwater" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🤿<br><span>Підводне полювання</span></div>
             <div class="menu-card" data-section="sos" style="background:#e74c3c;color:white;border:none;">🆘<br><span>SOS</span></div>
             <div class="menu-card" data-section="alarm" style="background:#1a1a2e;color:white;border:none;">📡<br><span>GTR Shop</span></div>
         `;
@@ -1700,6 +1704,10 @@ function renderMainMenu() {
             <div class="menu-card" data-section="lure_rating" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">⭐<br><span>Рейтинг</span></div>
             <div class="menu-card" data-section="workshop" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔧<br><span>Майстерня</span></div>
             <div class="menu-card" data-section="fishing_plans" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📋<br><span>Плани</span></div>
+            <div class="menu-card" data-section="winter_fishing" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">❄️<br><span>Зимова</span></div>
+            <div class="menu-card" data-section="fishing_methods" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🎣<br><span>Способи ловлі</span></div>
+            <div class="menu-card" data-section="boats" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🚤<br><span>Човни та мотори</span></div>
+            <div class="menu-card" data-section="underwater" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🤿<br><span>Підводне полювання</span></div>
             <div class="menu-card" data-section="sos" style="background:#e74c3c;color:white;border:none;">🆘<br><span>SOS</span></div>
             <div class="menu-card" data-section="alarm" style="background:#1a1a2e;color:white;border:none;">📡<br><span>GTR Shop</span></div>`;
     }
@@ -5375,6 +5383,10 @@ function renderSection(section) {
     else if (section==='lure_rating') renderLureRating();
     else if (section==='workshop') renderWorkshop();
     else if (section==='fishing_plans') renderFishingPlans();
+    else if (section==='winter_fishing') renderWinterFishing();
+    else if (section==='fishing_methods') renderFishingMethods();
+    else if (section==='boats') renderBoats();
+    else if (section==='underwater') renderUnderwater();
     else renderMainMenu();
 }
 
@@ -6030,6 +6042,274 @@ function renderFishingPlans() {
             addPoints('join_plan');
             renderFishingPlans();
         }
+    };
+}
+
+
+// ========== ЗИМОВА РИБАЛКА ==========
+function renderWinterFishing() {
+    var app = document.getElementById('appRoot');
+    var posts = JSON.parse(localStorage.getItem('mf_winter') || '[]');
+    var cats = ['Мормишка','Балансир','Жерлиці','Блешня','Лід і безпека','Спорядження','Ехолоти для льоду','Інше'];
+
+    var html = '<div class="nickname-header">👤 ' + (currentUser?currentUser.nickname:'') + '</div>';
+    html += '<div class="card">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<h1 style="margin:0;">❄️ Зимова рибалка</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button></div>';
+
+    // Вкладки
+    var selCat = localStorage.getItem('mf_winter_cat') || 'all';
+    html += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;" id="winterCatTabs"></div>';
+    html += '<button id="addWinterBtn" style="width:100%;background:#e3f2fd;border:2px dashed #1976d2;border-radius:14px;padding:13px;color:#1976d2;font-weight:700;cursor:pointer;margin-bottom:14px;">+ Нова тема</button>';
+
+    var filtered = selCat === 'all' ? posts : posts.filter(function(p){ return p.cat === selCat; });
+    if (filtered.length === 0) {
+        html += '<div style="text-align:center;padding:32px;color:#aaa;"><div style="font-size:3rem;">❄️</div><div>Поки немає тем. Будьте першим!</div></div>';
+    } else {
+        filtered.slice().reverse().forEach(function(p) {
+            html += '<div style="background:#f0f7ff;border-radius:16px;padding:12px;margin-bottom:10px;">';
+            html += '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px;">';
+            html += '<div style="font-weight:700;font-size:0.92rem;">' + p.title + '</div>';
+            html += '<span style="background:#bbdefb;color:#1565c0;padding:3px 8px;border-radius:40px;font-size:0.7rem;white-space:nowrap;">' + p.cat + '</span></div>';
+            html += '<div style="font-size:0.72rem;color:#888;margin-bottom:6px;">' + p.author + ' · ' + p.date + '</div>';
+            if (p.text) html += '<div style="font-size:0.83rem;color:#444;">' + p.text + '</div>';
+            html += '</div>';
+        });
+    }
+    html += '</div>';
+    app.innerHTML = html;
+
+    // Вкладки через DOM
+    var tabs = document.getElementById('winterCatTabs');
+    ['all'].concat(cats).forEach(function(c) {
+        var active = c === selCat;
+        var btn = document.createElement('button');
+        btn.textContent = c === 'all' ? '🌐 Всі' : c;
+        btn.style.cssText = 'background:' + (active?'#1976d2':'#f0f0f0') + ';color:' + (active?'#fff':'#333') + ';border:none;border-radius:40px;padding:6px 12px;font-size:0.78rem;cursor:pointer;margin:2px;';
+        btn.onclick = (function(cat){ return function(){ localStorage.setItem('mf_winter_cat', cat); renderWinterFishing(); }; })(c);
+        tabs.appendChild(btn);
+    });
+
+    document.getElementById('addWinterBtn').onclick = function() {
+        var catList = cats.map(function(c,i){ return (i+1)+'. '+c; }).join(', ');
+        var catIdx = prompt('Категорія: ' + catList);
+        if (!catIdx) return;
+        var cat = cats[parseInt(catIdx)-1] || 'Інше';
+        var title = prompt('Тема:'); if (!title) return;
+        var text = prompt('Опис:') || '';
+        posts.push({ id:Date.now(), title:title, cat:cat, text:text,
+            author: currentUser?currentUser.nickname:'Гість',
+            date: new Date().toLocaleDateString('uk-UA') });
+        localStorage.setItem('mf_winter', JSON.stringify(posts));
+        renderWinterFishing();
+    };
+}
+
+// ========== СПОСОБИ ЛОВЛІ ==========
+function renderFishingMethods() {
+    var app = document.getElementById('appRoot');
+    var methods = [
+        { id:'spinning', name:'Спінінг', emoji:'🎣', desc:'Воблери, блесни, силікон на хижака', color:'#1f3b4c' },
+        { id:'feeder', name:'Фідер', emoji:'🪝', desc:'Годівниці, прикормка, мирна риба', color:'#795548' },
+        { id:'fly', name:'Нахлист', emoji:'🪰', desc:'Штучні мухи, форель, хаюс', color:'#2e7d32' },
+        { id:'trolling', name:'Троллінг', emoji:'🚤', desc:'Ловля з човна на ходу', color:'#1565c0' },
+        { id:'jig', name:'Джиг', emoji:'⚓', desc:'Джиг-спінінг, силікон на дні', color:'#6a1b9a' },
+        { id:'carp', name:'Карпфішинг', emoji:'🐠', desc:'Бойли, PVA, волосяна оснастка', color:'#e65100' },
+        { id:'match', name:'Матч / Болонезе', emoji:'🎯', desc:'Поплавець, дальній заброс', color:'#00838f' },
+        { id:'winter', name:'Зимова (підлід)', emoji:'❄️', desc:'Мормишка, балансир, жерлиця', color:'#0277bd' },
+    ];
+
+    var selMethod = localStorage.getItem('mf_method_sel') || null;
+
+    if (selMethod) {
+        var m = methods.find(function(x){ return x.id === selMethod; });
+        if (m) { renderMethodDetail(m); return; }
+    }
+
+    var html = '<div class="nickname-header">👤 ' + (currentUser?currentUser.nickname:'') + '</div>';
+    html += '<div class="card">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<h1 style="margin:0;">🎣 Способи ловлі</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button></div>';
+
+    methods.forEach(function(m) {
+        html += '<div id="method_' + m.id + '" style="background:#f9f9f9;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px;border-left:4px solid ' + m.color + ';">';
+        html += '<div style="font-size:2rem;">' + m.emoji + '</div>';
+        html += '<div><div style="font-weight:700;font-size:0.95rem;">' + m.name + '</div>';
+        html += '<div style="font-size:0.8rem;color:#888;">' + m.desc + '</div></div>';
+        html += '<div style="margin-left:auto;color:#ccc;">›</div></div>';
+    });
+    html += '</div>';
+    app.innerHTML = html;
+
+    methods.forEach(function(m) {
+        var el = document.getElementById('method_' + m.id);
+        if (el) el.onclick = (function(mid){ return function(){ selectMethod(mid); }; })(m.id);
+    });
+
+    window.selectMethod = function(id) {
+        localStorage.setItem('mf_method_sel', id);
+        renderFishingMethods();
+    };
+}
+
+function renderMethodDetail(method) {
+    var app = document.getElementById('appRoot');
+    var posts = JSON.parse(localStorage.getItem('mf_method_' + method.id) || '[]');
+
+    var html = '<div class="nickname-header">👤 ' + (currentUser?currentUser.nickname:'') + '</div>';
+    html += '<div class="card">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<h1 style="margin:0;">' + method.emoji + ' ' + method.name + '</h1>';
+    html += '<button id="methodBackBtn" class="back-btn">← Назад</button></div>';
+    html += '<div style="background:#f0f7ff;border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:0.85rem;color:#555;">' + method.desc + '</div>';
+    html += '<button id="addMethodBtn" style="width:100%;background:#e8f5e9;border:2px dashed ' + method.color + ';border-radius:14px;padding:13px;color:' + method.color + ';font-weight:700;cursor:pointer;margin-bottom:14px;">+ Додати пораду / питання</button>';
+
+    if (posts.length === 0) {
+        html += '<div style="text-align:center;padding:24px;color:#aaa;"><div style="font-size:2.5rem;">' + method.emoji + '</div><div>Поки немає записів</div></div>';
+    } else {
+        posts.slice().reverse().forEach(function(p) {
+            html += '<div style="background:#f9f9f9;border-radius:14px;padding:12px;margin-bottom:8px;">';
+            html += '<div style="font-weight:700;font-size:0.88rem;margin-bottom:4px;">' + p.title + '</div>';
+            html += '<div style="font-size:0.72rem;color:#888;margin-bottom:6px;">' + p.author + ' · ' + p.date + '</div>';
+            if (p.text) html += '<div style="font-size:0.83rem;color:#444;">' + p.text + '</div>';
+            html += '</div>';
+        });
+    }
+    html += '</div>';
+    app.innerHTML = html;
+
+    var backBtn = document.getElementById('methodBackBtn');
+    if (backBtn) backBtn.onclick = function() {
+        localStorage.removeItem('mf_method_sel');
+        renderFishingMethods();
+    };
+
+    document.getElementById('addMethodBtn').onclick = function() {
+        var title = prompt('Тема / питання:'); if (!title) return;
+        var text = prompt('Деталі:') || '';
+        posts.push({ id:Date.now(), title:title, text:text,
+            author: currentUser?currentUser.nickname:'Гість',
+            date: new Date().toLocaleDateString('uk-UA') });
+        localStorage.setItem('mf_method_' + method.id, JSON.stringify(posts));
+        renderMethodDetail(method);
+    };
+}
+
+// ========== ЧОВНИ ТА МОТОРИ ==========
+function renderBoats() {
+    var app = document.getElementById('appRoot');
+    var posts = JSON.parse(localStorage.getItem('mf_boats') || '[]');
+    var cats = ['Гумові човни ПВХ','Алюмінієві човни','Катери','Підвісні мотори','Електромотори','Ехолоти та GPS','Обладнання','Безпека на воді','Інше'];
+
+    var html = '<div class="nickname-header">👤 ' + (currentUser?currentUser.nickname:'') + '</div>';
+    html += '<div class="card">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<h1 style="margin:0;">🚤 Човни та мотори</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button></div>';
+
+    var selCat = localStorage.getItem('mf_boats_cat') || 'all';
+    html += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;" id="boatsCatTabs"></div>';
+    html += '<button id="addBoatBtn" style="width:100%;background:#fff3e0;border:2px dashed #e65100;border-radius:14px;padding:13px;color:#e65100;font-weight:700;cursor:pointer;margin-bottom:14px;">+ Нова тема</button>';
+
+    var filtered = selCat === 'all' ? posts : posts.filter(function(p){ return p.cat === selCat; });
+    if (filtered.length === 0) {
+        html += '<div style="text-align:center;padding:32px;color:#aaa;"><div style="font-size:3rem;">🚤</div><div>Поки немає тем</div></div>';
+    } else {
+        filtered.slice().reverse().forEach(function(p) {
+            html += '<div style="background:#fff8f0;border-radius:16px;padding:12px;margin-bottom:10px;">';
+            html += '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px;">';
+            html += '<div style="font-weight:700;font-size:0.92rem;">' + p.title + '</div>';
+            html += '<span style="background:#ffe0b2;color:#e65100;padding:3px 8px;border-radius:40px;font-size:0.7rem;">' + p.cat + '</span></div>';
+            html += '<div style="font-size:0.72rem;color:#888;margin-bottom:6px;">' + p.author + ' · ' + p.date + '</div>';
+            if (p.text) html += '<div style="font-size:0.83rem;color:#444;">' + p.text + '</div>';
+            html += '</div>';
+        });
+    }
+    html += '</div>';
+    app.innerHTML = html;
+
+    var tabs = document.getElementById('boatsCatTabs');
+    ['all'].concat(cats).forEach(function(c) {
+        var active = c === selCat;
+        var btn = document.createElement('button');
+        btn.textContent = c === 'all' ? '🌐 Всі' : c;
+        btn.style.cssText = 'background:' + (active?'#e65100':'#f0f0f0') + ';color:' + (active?'#fff':'#333') + ';border:none;border-radius:40px;padding:6px 12px;font-size:0.78rem;cursor:pointer;margin:2px;';
+        btn.onclick = (function(cat){ return function(){ localStorage.setItem('mf_boats_cat', cat); renderBoats(); }; })(c);
+        tabs.appendChild(btn);
+    });
+
+    document.getElementById('addBoatBtn').onclick = function() {
+        var catList = cats.map(function(c,i){ return (i+1)+'. '+c; }).join(', ');
+        var catIdx = prompt('Категорія: ' + catList);
+        if (!catIdx) return;
+        var cat = cats[parseInt(catIdx)-1] || 'Інше';
+        var title = prompt('Тема:'); if (!title) return;
+        var text = prompt('Опис:') || '';
+        posts.push({ id:Date.now(), title:title, cat:cat, text:text,
+            author: currentUser?currentUser.nickname:'Гість',
+            date: new Date().toLocaleDateString('uk-UA') });
+        localStorage.setItem('mf_boats', JSON.stringify(posts));
+        renderBoats();
+    };
+}
+
+// ========== ПІДВОДНЕ ПОЛЮВАННЯ ==========
+function renderUnderwater() {
+    var app = document.getElementById('appRoot');
+    var posts = JSON.parse(localStorage.getItem('mf_underwater') || '[]');
+    var cats = ['Рушниці та арбалети','Ласти та маски','Гідрокостюми','Місця і водойми','Техніка і тактика','Безпека','Риба і закон','Інше'];
+
+    var html = '<div class="nickname-header">👤 ' + (currentUser?currentUser.nickname:'') + '</div>';
+    html += '<div class="card">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<h1 style="margin:0;">🤿 Підводне полювання</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button></div>';
+
+    var selCat = localStorage.getItem('mf_under_cat') || 'all';
+    html += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;" id="underCatTabs"></div>';
+    html += '<button id="addUnderBtn" style="width:100%;background:#e0f7fa;border:2px dashed #006064;border-radius:14px;padding:13px;color:#006064;font-weight:700;cursor:pointer;margin-bottom:14px;">+ Нова тема</button>';
+
+    var filtered = selCat === 'all' ? posts : posts.filter(function(p){ return p.cat === selCat; });
+    if (filtered.length === 0) {
+        html += '<div style="text-align:center;padding:32px;color:#aaa;"><div style="font-size:3rem;">🤿</div><div>Поки немає тем</div></div>';
+    } else {
+        filtered.slice().reverse().forEach(function(p) {
+            html += '<div style="background:#e0f7fa;border-radius:16px;padding:12px;margin-bottom:10px;">';
+            html += '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px;">';
+            html += '<div style="font-weight:700;font-size:0.92rem;">' + p.title + '</div>';
+            html += '<span style="background:#b2ebf2;color:#006064;padding:3px 8px;border-radius:40px;font-size:0.7rem;">' + p.cat + '</span></div>';
+            html += '<div style="font-size:0.72rem;color:#888;margin-bottom:6px;">' + p.author + ' · ' + p.date + '</div>';
+            if (p.text) html += '<div style="font-size:0.83rem;color:#444;">' + p.text + '</div>';
+            html += '</div>';
+        });
+    }
+    html += '</div>';
+    app.innerHTML = html;
+
+    var tabs = document.getElementById('underCatTabs');
+    ['all'].concat(cats).forEach(function(c) {
+        var active = c === selCat;
+        var btn = document.createElement('button');
+        btn.textContent = c === 'all' ? '🌐 Всі' : c;
+        btn.style.cssText = 'background:' + (active?'#006064':'#f0f0f0') + ';color:' + (active?'#fff':'#333') + ';border:none;border-radius:40px;padding:6px 12px;font-size:0.78rem;cursor:pointer;margin:2px;';
+        btn.onclick = (function(cat){ return function(){ localStorage.setItem('mf_under_cat', cat); renderUnderwater(); }; })(c);
+        tabs.appendChild(btn);
+    });
+
+    document.getElementById('addUnderBtn').onclick = function() {
+        var catList = cats.map(function(c,i){ return (i+1)+'. '+c; }).join(', ');
+        var catIdx = prompt('Категорія: ' + catList);
+        if (!catIdx) return;
+        var cat = cats[parseInt(catIdx)-1] || 'Інше';
+        var title = prompt('Тема:'); if (!title) return;
+        var text = prompt('Опис:') || '';
+        posts.push({ id:Date.now(), title:title, cat:cat, text:text,
+            author: currentUser?currentUser.nickname:'Гість',
+            date: new Date().toLocaleDateString('uk-UA') });
+        localStorage.setItem('mf_underwater', JSON.stringify(posts));
+        renderUnderwater();
     };
 }
 
