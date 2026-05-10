@@ -5405,61 +5405,243 @@ if (window.location.hash === '#admin') {
     renderMainMenu();
 }
 
-// ========== ЗВІТИ З РИБАЛКИ ==========
+// ========== ЗВІТИ З РИБАЛКИ (Instagram стиль) ==========
 function renderReports() {
     var app = document.getElementById('appRoot');
     var reports = JSON.parse(localStorage.getItem('mf_reports') || '[]');
+    var myLikes = JSON.parse(localStorage.getItem('mf_report_likes') || '{}');
 
-    var html = '<div class="nickname-header">👤 ' + (currentUser ? currentUser.nickname : '') + '</div>';
-    html += '<div class="card">';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
-    html += '<h1 style="margin:0;">🐟 Звіти з рибалки</h1>';
+    var html = '<div class="nickname-header">👤 ' + (currentUser?currentUser.nickname:'') + '</div>';
+    html += '<div class="card" style="padding:0;overflow:hidden;">';
+
+    // Шапка
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 16px 12px;">';
+    html += '<h1 style="margin:0;font-size:1.3rem;">🐟 Звіти з рибалки</h1>';
     html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button>';
     html += '</div>';
 
-    // Кнопка додати звіт
-    html += '<button id="addReportBtn" style="width:100%;background:#27ae60;color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;font-size:0.95rem;cursor:pointer;margin-bottom:16px;">+ Додати звіт</button>';
+    // Кнопка чекіну
+    html += '<div style="padding:0 16px 14px;">';
+    html += '<button id="addReportBtn" style="width:100%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;font-size:0.95rem;cursor:pointer;">📍 Зробити чекін з рибалки</button>';
+    html += '</div>';
 
     if (reports.length === 0) {
-        html += '<div style="text-align:center;padding:32px;color:#aaa;"><div style="font-size:3rem;margin-bottom:12px;">🎣</div><div>Поки немає звітів. Будьте першим!</div></div>';
+        html += '<div style="text-align:center;padding:40px 20px;color:#aaa;">';
+        html += '<div style="font-size:4rem;margin-bottom:12px;">🎣</div>';
+        html += '<div style="font-weight:700;margin-bottom:6px;">Поки немає звітів</div>';
+        html += '<div style="font-size:0.85rem;">Зробіть перший чекін!</div></div>';
     } else {
         reports.slice().reverse().forEach(function(r) {
-            html += '<div style="background:#f9f9f9;border-radius:18px;padding:14px;margin-bottom:12px;">';
-            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
-            html += '<div style="font-size:2rem;">' + (r.fish || '🐟') + '</div>';
-            html += '<div><div style="font-weight:700;font-size:0.95rem;">' + r.title + '</div>';
-            html += '<div style="font-size:0.75rem;color:#888;">' + r.author + ' · ' + r.date + '</div></div></div>';
-            if (r.water) html += '<div style="font-size:0.82rem;margin-bottom:4px;">📍 ' + r.water + '</div>';
-            if (r.lure) html += '<div style="font-size:0.82rem;margin-bottom:4px;">🎣 Приманка: ' + r.lure + '</div>';
-            if (r.weather) html += '<div style="font-size:0.82rem;margin-bottom:4px;">🌤️ ' + r.weather + '</div>';
-            if (r.text) html += '<div style="font-size:0.85rem;color:#555;margin-top:8px;">' + r.text + '</div>';
-            html += '<div style="margin-top:8px;display:flex;gap:12px;font-size:0.82rem;color:#888;">';
-            html += '<span>👍 ' + (r.likes || 0) + '</span>';
-            html += '<span>💬 ' + (r.comments || 0) + '</span>';
-            html += '</div></div>';
+            var liked = myLikes[r.id] || false;
+            html += '<div style="border-top:1px solid #f0f0f0;padding-bottom:4px;">';
+
+            // Шапка поста
+            html += '<div style="display:flex;align-items:center;gap:10px;padding:12px 16px 8px;">';
+            html += '<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">' + (r.fish||'🐟') + '</div>';
+            html += '<div><div style="font-weight:700;font-size:0.9rem;">' + r.author + '</div>';
+            if (r.water) html += '<div style="font-size:0.75rem;color:#888;">📍 ' + r.water + '</div>';
+            html += '</div>';
+            html += '<div style="margin-left:auto;font-size:0.72rem;color:#aaa;">' + r.date + '</div>';
+            html += '</div>';
+
+            // "Фото" — кольоровий блок з емодзі
+            var fishEmojis = ['🐟','🐠','🐡','🦈','🐬','🎣'];
+            var bgColors = ['linear-gradient(135deg,#1a1a2e,#16213e)','linear-gradient(135deg,#1f3b4c,#2a5f7a)','linear-gradient(135deg,#1b4332,#2d6a4f)','linear-gradient(135deg,#3d405b,#6b6d8f)'];
+            var bgIdx = r.id % bgColors.length;
+            html += '<div style="background:' + bgColors[bgIdx] + ';height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;">';
+            html += '<div style="font-size:5rem;margin-bottom:8px;">' + (r.fish||'🐟') + '</div>';
+            if (r.weight) html += '<div style="color:#f39c12;font-weight:900;font-size:1.3rem;">' + r.weight + ' кг</div>';
+            if (r.length) html += '<div style="color:#fff;font-size:0.9rem;opacity:0.8;">' + r.length + ' см</div>';
+            if (r.water) {
+                html += '<div style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,0.5);color:#fff;padding:4px 10px;border-radius:40px;font-size:0.72rem;">📍 ' + r.water + '</div>';
+            }
+            html += '</div>';
+
+            // Кнопки дій
+            html += '<div style="display:flex;align-items:center;gap:4px;padding:10px 16px 6px;">';
+            html += '<span id="like_btn_' + r.id + '"></span>';
+            html += '<span id="comment_btn_' + r.id + '"></span>';
+            html += '<div style="margin-left:auto;font-size:1.4rem;cursor:pointer;">🔖</div>';
+            html += '</div>';
+
+            // Лайки і опис
+            html += '<div style="padding:0 16px 10px;">';
+            html += '<div style="font-weight:700;font-size:0.82rem;margin-bottom:4px;">' + (r.likes||0) + ' вподобань</div>';
+            if (r.title) {
+                html += '<div style="font-size:0.85rem;"><span style="font-weight:700;">' + r.author + '</span> ' + r.title + '</div>';
+            }
+            if (r.lure) html += '<div style="font-size:0.82rem;color:#888;margin-top:2px;">🎣 ' + r.lure + '</div>';
+
+            // Хештеги
+            var tags = [];
+            if (r.fish) tags.push('#' + (r.fish==='🐟'?'риба':r.fishName||'риба'));
+            if (r.water) tags.push('#' + r.water.replace(/\s/g,''));
+            tags.push('#magicfish', '#рибалка');
+            html += '<div style="font-size:0.78rem;color:#3b82f6;margin-top:4px;">' + tags.join(' ') + '</div>';
+
+            if (r.comments && r.comments.length > 0) {
+                html += '<div style="font-size:0.8rem;color:#888;margin-top:4px;">Переглянути всі коментарі (' + r.comments.length + ')</div>';
+                var lastComment = r.comments[r.comments.length-1];
+                html += '<div style="font-size:0.83rem;margin-top:2px;"><span style="font-weight:700;">' + lastComment.author + '</span> ' + lastComment.text + '</div>';
+            }
+            html += '<div style="font-size:0.7rem;color:#aaa;margin-top:6px;text-transform:uppercase;">' + r.date + '</div>';
+            html += '</div>';
+            html += '</div>';
         });
     }
 
     html += '</div>';
     app.innerHTML = html;
 
+    // Кнопки лайків і коментарів через DOM
+    reports.slice().reverse().forEach(function(r) {
+        var likeSpan = document.getElementById('like_btn_' + r.id);
+        var commentSpan = document.getElementById('comment_btn_' + r.id);
+        var liked = myLikes[r.id] || false;
+
+        if (likeSpan) {
+            var likeBtn = document.createElement('div');
+            likeBtn.style.cssText = 'font-size:1.6rem;cursor:pointer;transition:transform 0.1s;';
+            likeBtn.textContent = liked ? '❤️' : '🤍';
+            likeBtn.onclick = (function(rid) { return function() {
+                var likes = JSON.parse(localStorage.getItem('mf_report_likes') || '{}');
+                var reps = JSON.parse(localStorage.getItem('mf_reports') || '[]');
+                var rep = reps.find(function(x){return x.id===rid;});
+                if (!rep) return;
+                if (likes[rid]) {
+                    delete likes[rid];
+                    rep.likes = Math.max(0, (rep.likes||1)-1);
+                } else {
+                    likes[rid] = true;
+                    rep.likes = (rep.likes||0)+1;
+                    addPoints('like');
+                }
+                localStorage.setItem('mf_report_likes', JSON.stringify(likes));
+                localStorage.setItem('mf_reports', JSON.stringify(reps));
+                renderReports();
+            }; })(r.id);
+            likeSpan.appendChild(likeBtn);
+        }
+
+        if (commentSpan) {
+            var comBtn = document.createElement('div');
+            comBtn.style.cssText = 'font-size:1.5rem;cursor:pointer;margin-left:4px;';
+            comBtn.textContent = '💬';
+            comBtn.onclick = (function(rid) { return function() {
+                var text = prompt('Ваш коментар:');
+                if (!text) return;
+                var reps = JSON.parse(localStorage.getItem('mf_reports') || '[]');
+                var rep = reps.find(function(x){return x.id===rid;});
+                if (!rep) return;
+                if (!rep.comments) rep.comments = [];
+                rep.comments.push({
+                    author: currentUser?currentUser.nickname:'Гість',
+                    text: text,
+                    date: new Date().toLocaleDateString('uk-UA')
+                });
+                localStorage.setItem('mf_reports', JSON.stringify(reps));
+                addPoints('comment');
+                renderReports();
+            }; })(r.id);
+            commentSpan.appendChild(comBtn);
+        }
+    });
+
+    // Кнопка чекіну
     document.getElementById('addReportBtn').onclick = function() {
-        var title   = prompt('Заголовок звіту:'); if (!title) return;
-        var water   = prompt('Водойма:') || '';
-        var lure    = prompt('Приманка:') || '';
-        var weather = prompt('Погода:') || '';
-        var text    = prompt('Опис (що, де, як):') || '';
-        var fish    = prompt('Емодзі риби:', '🐟') || '🐟';
+        showCheckinForm();
+    };
+}
+
+function showCheckinForm() {
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:flex-end;';
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:#fff;border-radius:24px 24px 0 0;padding:20px;width:100%;max-height:90vh;overflow-y:auto;';
+
+    modal.innerHTML =
+        '<div style="width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 16px;"></div>' +
+        '<h3 style="margin:0 0 16px;color:#1f3b4c;">📍 Чекін з рибалки</h3>' +
+
+        '<div style="display:flex;gap:10px;margin-bottom:12px;">' +
+            '<div style="flex:1;">' +
+                '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Що спіймали</div>' +
+                '<select id="ci_fish" style="width:100%;padding:10px;border-radius:12px;border:1px solid #ddd;font-size:1.2rem;">' +
+                    '<option value="🐟">🐟 Риба</option>' +
+                    '<option value="🐠">🐠 Окунь</option>' +
+                    '<option value="🦈">🦈 Щука</option>' +
+                    '<option value="🐡">🐡 Карась</option>' +
+                    '<option value="🎣">🎣 Судак</option>' +
+                    '<option value="🐬">🐬 Сом</option>' +
+                    '<option value="🦐">🦐 Короп</option>' +
+                '</select>' +
+            '</div>' +
+            '<div style="flex:1;">' +
+                '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Вага (кг)</div>' +
+                '<input id="ci_weight" type="number" step="0.1" placeholder="0.0" style="padding:10px;border-radius:12px;border:1px solid #ddd;font-size:1rem;width:100%;box-sizing:border-box;">' +
+            '</div>' +
+            '<div style="flex:1;">' +
+                '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Довж. (см)</div>' +
+                '<input id="ci_length" type="number" placeholder="0" style="padding:10px;border-radius:12px;border:1px solid #ddd;font-size:1rem;width:100%;box-sizing:border-box;">' +
+            '</div>' +
+        '</div>' +
+
+        '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Водойма</div>' +
+        '<input id="ci_water" type="text" placeholder="Назва водойми..." style="margin-bottom:10px;">' +
+
+        '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Приманка</div>' +
+        '<input id="ci_lure" type="text" placeholder="Чим ловили..." style="margin-bottom:10px;">' +
+
+        '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Опис</div>' +
+        '<textarea id="ci_text" placeholder="Розкажіть про рибалку..." style="width:100%;border-radius:12px;padding:10px;border:1px solid #ddd;font-size:0.9rem;margin-bottom:14px;box-sizing:border-box;min-height:70px;"></textarea>' +
+
+        '<div id="ci_geo_status" style="font-size:0.78rem;color:#888;margin-bottom:10px;"></div>' +
+
+        '<button id="ci_submit" style="width:100%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:40px;padding:14px;font-weight:700;font-size:1rem;cursor:pointer;margin-bottom:8px;">📍 Опублікувати чекін</button>' +
+        '<button id="ci_cancel" style="width:100%;background:#eee;border:none;border-radius:40px;padding:12px;cursor:pointer;">Скасувати</button>';
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Автоматично визначаємо геолокацію
+    if (currentLocation) {
+        document.getElementById('ci_geo_status').innerHTML = '✅ Геолокація: ' + currentLocation.lat.toFixed(4) + ', ' + currentLocation.lng.toFixed(4);
+    } else {
+        document.getElementById('ci_geo_status').textContent = '📍 Геолокація не визначена';
+    }
+
+    modal.querySelector('#ci_cancel').onclick = function() { overlay.remove(); };
+    overlay.onclick = function(e) { if (e.target===overlay) overlay.remove(); };
+
+    modal.querySelector('#ci_submit').onclick = function() {
+        var water = document.getElementById('ci_water').value.trim();
+        var fish  = document.getElementById('ci_fish').value;
+        var weight = document.getElementById('ci_weight').value;
+        var length = document.getElementById('ci_length').value;
+        var lure  = document.getElementById('ci_lure').value.trim();
+        var text  = document.getElementById('ci_text').value.trim();
+
         var report = {
             id: Date.now(),
-            title: title, water: water, lure: lure,
-            weather: weather, text: text, fish: fish,
-            author: currentUser ? currentUser.nickname : 'Гість',
+            fish: fish,
+            water: water,
+            weight: weight || null,
+            length: length || null,
+            lure: lure,
+            title: text,
+            author: currentUser?currentUser.nickname:'Гість',
             date: new Date().toLocaleDateString('uk-UA'),
-            likes: 0, comments: 0
+            likes: 0,
+            comments: [],
+            lat: currentLocation?currentLocation.lat:null,
+            lng: currentLocation?currentLocation.lng:null
         };
+
+        var reports = JSON.parse(localStorage.getItem('mf_reports') || '[]');
         reports.push(report);
         localStorage.setItem('mf_reports', JSON.stringify(reports));
+        addPoints('checkin');
+        overlay.remove();
         renderReports();
     };
 }
