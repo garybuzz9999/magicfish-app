@@ -1821,6 +1821,30 @@ function renderMainMenu() {
 
     menuHtml += `</div>
 
+      <!-- Рекламні банери -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
+
+        <!-- Банер 1 -->
+        <div id="banner1" style="border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;">
+          <div style="color:rgba(255,255,255,0.3);font-size:0.7rem;position:absolute;top:8px;left:10px;">РЕКЛАМА</div>
+          <div style="font-size:2rem;margin-bottom:6px;">🎣</div>
+          <div style="color:#fff;font-weight:700;font-size:0.85rem;text-align:center;padding:0 8px;">Ваша реклама тут</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:4px;">magicfish.club</div>
+        </div>
+
+        <!-- Банер 2 -->
+        <div id="banner2" style="border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#2e7d32,#1b5e20);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;">
+          <div style="color:rgba(255,255,255,0.3);font-size:0.7rem;position:absolute;top:8px;left:10px;">РЕКЛАМА</div>
+          <div style="font-size:2rem;margin-bottom:6px;">🏪</div>
+          <div style="color:#fff;font-weight:700;font-size:0.85rem;text-align:center;padding:0 8px;">Ваша реклама тут</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:4px;">magicfish.club</div>
+        </div>
+
+      </div>
+      <div style="text-align:center;margin-top:8px;margin-bottom:4px;">
+        <a href="mailto:ckbbuild@gmail.com" style="font-size:0.72rem;color:#aaa;text-decoration:none;">📧 Розмістити рекламу → ckbbuild@gmail.com</a>
+      </div>
+
       <!-- ПАРТНЕРИ + GTR PHANTOM -->
     </div>`;
 
@@ -1870,6 +1894,12 @@ function renderMainMenu() {
             searchInput.focus();
         };
     }
+
+    // Банери onclick
+    var b1 = document.getElementById('banner1');
+    var b2 = document.getElementById('banner2');
+    if (b1) b1.onclick = function() { window.location.href = 'mailto:ckbbuild@gmail.com?subject=Реклама на MagicFish'; };
+    if (b2) b2.onclick = function() { window.location.href = 'mailto:ckbbuild@gmail.com?subject=Реклама на MagicFish'; };
 
     app.querySelectorAll('[data-section]').forEach(c => c.addEventListener('click', () => {
         const s = c.dataset.section;
