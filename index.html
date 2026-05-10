@@ -2050,6 +2050,103 @@ function saveGTRProducts() {
     localStorage.setItem('gtr_shop_products', JSON.stringify(gtrShopProducts));
 }
 
+function showGTREditForm(pid, onSave) {
+    var prod = gtrShopProducts.find(function(x){ return x.id === pid; });
+    if (!prod) return;
+
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:flex-end;';
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:#fff;border-radius:24px 24px 0 0;padding:20px;width:100%;max-height:90vh;overflow-y:auto;';
+
+    // Будуємо фото рядок
+    var photos = prod.photos || [];
+
+    modal.innerHTML =
+        '<div style="width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 16px;"></div>' +
+        '<h3 style="margin:0 0 14px;color:#1f3b4c;">✏️ ' + prod.name + '</h3>' +
+
+        // Фото товару
+        '<div style="font-size:0.82rem;font-weight:700;color:#1f3b4c;margin-bottom:8px;">📷 Фото товару (до 5)</div>' +
+        '<div id="photoRow" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;"></div>' +
+        '<label id="addPhotoLbl" style="display:' + (photos.length < 5 ? 'inline-flex' : 'none') + ';align-items:center;gap:6px;background:#e8f5e9;border:2px dashed #27ae60;border-radius:12px;padding:10px 16px;cursor:pointer;font-size:0.85rem;color:#27ae60;font-weight:700;margin-bottom:14px;">' +
+            '➕ Додати фото<input id="photoFileInput" type="file" accept="image/*" style="display:none;">' +
+        '</label>' +
+
+        '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Назва</div>' +
+        '<input id="ep_name" type="text" value="' + prod.name + '" style="margin-bottom:8px;">' +
+        '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Опис</div>' +
+        '<input id="ep_desc" type="text" value="' + prod.desc + '" style="margin-bottom:8px;">' +
+        '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Ціна (грн)</div>' +
+        '<input id="ep_price" type="number" value="' + prod.price + '" style="margin-bottom:8px;">' +
+        '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Емодзі</div>' +
+        '<input id="ep_emoji" type="text" value="' + prod.emoji + '" maxlength="4" style="margin-bottom:12px;width:80px;">' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">' +
+            '<input type="checkbox" id="ep_avail" ' + (prod.available ? 'checked' : '') + ' style="width:20px;height:20px;">' +
+            '<label for="ep_avail" style="font-size:0.9rem;font-weight:700;">Є в наявності</label>' +
+        '</div>' +
+        '<button id="ep_save" style="width:100%;background:#27ae60;color:#fff;border:none;border-radius:40px;padding:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">✅ Зберегти</button>' +
+        '<button id="ep_cancel" style="width:100%;background:#eee;border:none;border-radius:40px;padding:12px;cursor:pointer;">Скасувати</button>';
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Рендеримо фото
+    function renderPhotos() {
+        var row = modal.querySelector('#photoRow');
+        row.innerHTML = '';
+        photos.forEach(function(src, idx) {
+            var wrap = document.createElement('div');
+            wrap.style.cssText = 'position:relative;width:80px;height:80px;';
+            var img = document.createElement('img');
+            img.src = src;
+            img.style.cssText = 'width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid #eee;';
+            var del = document.createElement('div');
+            del.textContent = '✕';
+            del.style.cssText = 'position:absolute;top:-6px;right:-6px;background:#e74c3c;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;cursor:pointer;font-weight:700;';
+            del.onclick = (function(i){ return function() {
+                photos.splice(i, 1);
+                renderPhotos();
+                modal.querySelector('#addPhotoLbl').style.display = photos.length < 5 ? 'inline-flex' : 'none';
+            }; })(idx);
+            wrap.appendChild(img);
+            wrap.appendChild(del);
+            row.appendChild(wrap);
+        });
+    }
+    renderPhotos();
+
+    // Додати фото
+    modal.querySelector('#photoFileInput').onchange = function(e) {
+        var file = e.target.files[0];
+        if (!file || photos.length >= 5) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+            photos.push(ev.target.result);
+            renderPhotos();
+            modal.querySelector('#addPhotoLbl').style.display = photos.length < 5 ? 'inline-flex' : 'none';
+        };
+        reader.readAsDataURL(file);
+        this.value = '';
+    };
+
+    modal.querySelector('#ep_cancel').onclick = function() { overlay.remove(); };
+    overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+
+    modal.querySelector('#ep_save').onclick = function() {
+        prod.name     = modal.querySelector('#ep_name').value.trim() || prod.name;
+        prod.desc     = modal.querySelector('#ep_desc').value.trim();
+        prod.price    = parseInt(modal.querySelector('#ep_price').value) || prod.price;
+        prod.emoji    = modal.querySelector('#ep_emoji').value.trim() || prod.emoji;
+        prod.available = modal.querySelector('#ep_avail').checked;
+        prod.photos   = photos;
+        saveGTRProducts();
+        overlay.remove();
+        if (onSave) onSave();
+        alert('✅ Збережено!');
+    };
+}
+
 function renderGTRAdmin() {
     var app = document.getElementById('appRoot');
     app.innerHTML = '';
@@ -2100,14 +2197,7 @@ function renderGTRAdmin() {
             eBtn.textContent = '✏️ Редагувати';
             eBtn.style.cssText = 'flex:1;background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:10px;cursor:pointer;font-weight:600;';
             eBtn.onclick = (function(pid) { return function() {
-                var prod=gtrShopProducts.find(function(x){return x.id===pid;});
-                if(!prod) return;
-                var n=prompt('Назва:',prod.name); if(n===null) return;
-                var d=prompt('Опис:',prod.desc); if(d===null) return;
-                var pr=prompt('Ціна:',prod.price); if(pr===null) return;
-                var av=confirm('Є в наявності?');
-                prod.name=n; prod.desc=d; prod.price=parseInt(pr)||prod.price; prod.available=av;
-                saveGTRProducts(); buildAdminList(); alert('✅ Збережено!');
+                showGTREditForm(pid, buildAdminList);
             }; })(p.id);
             var dBtn = document.createElement('button');
             dBtn.textContent = '🗑️';
@@ -4890,8 +4980,19 @@ function showGTRCases() {
     const list = document.getElementById('casesList');
     cases.forEach(c => {
         const div = document.createElement('div');
-        div.style.cssText = 'background:white;border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:0 3px 12px rgba(0,0,0,0.08);';
-        div.innerHTML = `
+        div.style.cssText = 'background:white;border-radius:24px;overflow:hidden;margin-bottom:14px;box-shadow:0 3px 12px rgba(0,0,0,0.08);';
+        // Шукаємо фото в gtrShopProducts
+        const gtrP = gtrShopProducts.find(function(x){ return x.name === c.name; });
+        const photos = gtrP && gtrP.photos && gtrP.photos.length > 0 ? gtrP.photos : null;
+        var photoHtml = '';
+        if (photos) {
+            photoHtml = '<div style="position:relative;">' +
+                '<img src="'+photos[0]+'" style="width:100%;height:200px;object-fit:cover;display:block;">' +
+                (photos.length > 1 ? '<div style="position:absolute;bottom:8px;right:10px;background:rgba(0,0,0,0.5);color:#fff;padding:3px 8px;border-radius:40px;font-size:0.72rem;">1/'+photos.length+'</div>' : '') +
+                '</div>';
+        }
+        div.innerHTML = photoHtml + `
+          <div style="padding:${photos?'12px':'0'} 16px 16px;">
           <div style="display:flex;align-items:flex-start;gap:14px;">
             <div style="font-size:2.5rem;flex-shrink:0;">${c.emoji}</div>
             <div style="flex:1;">
