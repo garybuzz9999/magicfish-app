@@ -2064,8 +2064,8 @@ function renderGTRShopInto(el) {
         adminSpan.innerHTML = '<span style="background:#27ae60;color:#fff;padding:4px 12px;border-radius:40px;font-size:0.72rem;font-weight:700;">👑 Адмін</span>';
     } else {
         var aBtn = document.createElement('button');
-        aBtn.textContent = '⚙️';
-        aBtn.style.cssText = 'background:none;border:none;color:#ccc;font-size:0.9rem;cursor:pointer;';
+        aBtn.textContent = '⚙️ Адмін';
+        aBtn.style.cssText = 'background:#f5f5f5;border:1px solid #ddd;border-radius:40px;padding:5px 12px;color:#888;font-size:0.75rem;cursor:pointer;';
         aBtn.onclick = function() {
             var p = prompt('Пароль:');
             if (p === null) return;
@@ -5327,13 +5327,13 @@ function renderAlarm() {
             if (btnS) { btnS.style.background = '#eee'; btnS.style.color = '#333'; }
         } else {
             dev.style.display = 'none';
-            if (shop) {
-                shop.style.display = 'block';
-                var el = document.getElementById('gtrShopContent3');
-                if (el) renderGTRShopInto(el);
-            }
+            if (shop) shop.style.display = 'block';
             if (btnS) { btnS.style.background = '#f39c12'; btnS.style.color = '#1a0a00'; }
             btnD.style.background = '#eee'; btnD.style.color = '#333';
+            setTimeout(function() {
+                var el = document.getElementById('gtrShopContent3');
+                if (el) renderGTRShopInto(el);
+            }, 50);
         }
     }
     var gtrTabD = document.getElementById('gtrTabDevice');
