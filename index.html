@@ -1635,6 +1635,95 @@ function showGeoWarningBanner() {
 }
 
 // ========== ГОЛОВНЕ МЕНЮ ==========
+// ========== ГЛОБАЛЬНИЙ ПОШУК ==========
+function globalSearch(q) {
+    var results = [];
+
+    // Водойми
+    if (typeof waterbodies !== 'undefined') {
+        waterbodies.forEach(function(w) {
+            if (w.name.toLowerCase().includes(q) || (w.city && w.city.toLowerCase().includes(q))) {
+                results.push({ emoji:'🗺️', title: w.name, subtitle: (w.city||'') + (w.paid ? ' · Платна' : ' · Безкоштовна'), section:'waterbodies' });
+            }
+        });
+    }
+
+    // Магазини
+    if (typeof fishStores !== 'undefined') {
+        fishStores.forEach(function(s) {
+            if (s.name.toLowerCase().includes(q) || (s.city && s.city.toLowerCase().includes(q))) {
+                results.push({ emoji:'🏪', title: s.name, subtitle: s.address || s.city || '', section:'stores' });
+            }
+        });
+    }
+
+    // Кемпінги
+    if (typeof campings !== 'undefined') {
+        campings.forEach(function(c) {
+            if (c.name.toLowerCase().includes(q)) {
+                results.push({ emoji:'🏕️', title: c.name, subtitle: c.region || '', section:'campings' });
+            }
+        });
+    }
+
+    // Бази відпочинку
+    if (typeof resorts !== 'undefined') {
+        resorts.forEach(function(r) {
+            if (r.name.toLowerCase().includes(q)) {
+                results.push({ emoji:'🏖️', title: r.name, subtitle: r.region || '', section:'resorts' });
+            }
+        });
+    }
+
+    // Звіти
+    var reports = JSON.parse(localStorage.getItem('mf_reports') || '[]');
+    reports.forEach(function(r) {
+        if ((r.title && r.title.toLowerCase().includes(q)) ||
+            (r.water && r.water.toLowerCase().includes(q)) ||
+            (r.author && r.author.toLowerCase().includes(q))) {
+            results.push({ emoji:'🐟', title: r.author + ': ' + (r.title||r.water||'Звіт'), subtitle: r.date + (r.water ? ' · ' + r.water : ''), section:'reports' });
+        }
+    });
+
+    // GTR товари
+    if (typeof gtrShopProducts !== 'undefined') {
+        gtrShopProducts.forEach(function(p) {
+            if (p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)) {
+                results.push({ emoji: p.emoji||'📦', title: p.name, subtitle: '₴' + p.price + ' · GTR Shop', section:'alarm' });
+            }
+        });
+    }
+
+    // Розділи сайту
+    var sections = [
+        { emoji:'🗺️', title:'Водойми', subtitle:'Карта та список водойм', section:'waterbodies', keys:['водойм','озер','річк','ставок','водосховищ'] },
+        { emoji:'🔮', title:'Прогноз клювання', subtitle:'Коли краще ловити рибу', section:'forecast', keys:['прогноз','клюв','погод','ловити'] },
+        { emoji:'🏕️', title:'Кемпінги', subtitle:'Місця для відпочинку', section:'campings', keys:['кемпінг','намет','відпочин'] },
+        { emoji:'🏖️', title:'Бази відпочинку', subtitle:'Рибальські бази', section:'resorts', keys:['база','відпочин','котедж'] },
+        { emoji:'⭐', title:'Рейтинг приманок', subtitle:'Голосування за снасті', section:'lure_rating', keys:['рейтинг','приманк','воблер','блесн','силікон'] },
+        { emoji:'🔧', title:'Майстерня', subtitle:'Ремонт та саморобки', section:'workshop', keys:['майстерн','ремонт','саморобк'] },
+        { emoji:'❄️', title:'Зимова рибалка', subtitle:'Мормишка, жерлиці', section:'winter_fishing', keys:['зимов','мормишк','жерлиц','балансир','лід'] },
+        { emoji:'🎣', title:'Способи ловлі', subtitle:'Спінінг, фідер, нахлист', section:'fishing_methods', keys:['спінінг','фідер','нахлист','троллінг','джиг','карп'] },
+        { emoji:'🚤', title:'Човни та мотори', subtitle:'ПВХ, алюміній, мотори', section:'boats', keys:['човен','мотор','катер','пвх','алюмін'] },
+        { emoji:'🤿', title:'Підводне полювання', subtitle:'Рушниці, маски, костюми', section:'underwater', keys:['підводн','рушниц','маска','гідрокостюм'] },
+        { emoji:'📋', title:'Плани рибалок', subtitle:'Спільні виїзди', section:'fishing_plans', keys:['план','виїзд','спільн'] },
+        { emoji:'💬', title:'Форум', subtitle:'Обговорення', section:'forum', keys:['форум','обговор','питанн'] },
+        { emoji:'📢', title:'Дошка оголошень', subtitle:'Купити/продати', section:'marketplace', keys:['оголошен','купити','продати','барахолк'] },
+        { emoji:'🏪', title:'Магазини', subtitle:'Рибальські магазини України', section:'stores', keys:['магазин','купити','снасті'] },
+        { emoji:'🆘', title:'SOS', subtitle:'Екстрена допомога', section:'sos', keys:['sos','допомог','рятувал','екстрен'] },
+    ];
+
+    sections.forEach(function(s) {
+        if (s.title.toLowerCase().includes(q) || s.keys.some(function(k){ return k.includes(q) || q.includes(k); })) {
+            if (!results.find(function(r){ return r.section === s.section && r.title === s.title; })) {
+                results.push(s);
+            }
+        }
+    });
+
+    return results.slice(0, 8);
+}
+
 function renderMainMenu() {
     const app = document.getElementById('appRoot');
     // Показуємо банер якщо геолокація відхилена і ще не визначена
@@ -1673,6 +1762,12 @@ function renderMainMenu() {
     <div class="card">
       <h1>🎣 MagicFish</h1>
       <div class="tagline">Рибальська спільнота</div>
+      <!-- Глобальний пошук -->
+      <div style="position:relative;margin-bottom:14px;">
+        <input id="globalSearch" type="text" placeholder="🔍 Пошук по сайту..." style="width:100%;padding:11px 40px 11px 16px;border-radius:40px;border:1.5px solid #c8e6c9;background:#f8fff8;font-size:0.88rem;box-sizing:border-box;outline:none;">
+        <div id="globalSearchClear" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:#aaa;font-size:1rem;display:none;">✕</div>
+        <div id="globalSearchResults" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:1000;max-height:320px;overflow-y:auto;border:1px solid #eee;"></div>
+      </div>
       <div class="menu-grid">`;
 
     if (currentUser.hasBasicPaid) {
@@ -1730,6 +1825,52 @@ function renderMainMenu() {
     </div>`;
 
     app.innerHTML = menuHtml;
+
+    // ===== ГЛОБАЛЬНИЙ ПОШУК =====
+    var searchInput = document.getElementById('globalSearch');
+    var searchResults = document.getElementById('globalSearchResults');
+    var searchClear = document.getElementById('globalSearchClear');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            var q = this.value.trim().toLowerCase();
+            if (searchClear) searchClear.style.display = q ? 'block' : 'none';
+            if (!q || q.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            var results = globalSearch(q);
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div style="padding:16px;text-align:center;color:#aaa;font-size:0.85rem;">🔍 Нічого не знайдено</div>';
+            } else {
+                searchResults.innerHTML = results.map(function(r) {
+                    return '<div class="sr-item" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;gap:10px;" data-sec="' + r.section + '">' +
+                        '<div style="font-size:1.3rem;flex-shrink:0;">' + r.emoji + '</div>' +
+                        '<div><div style="font-weight:700;font-size:0.88rem;color:#1f3b4c;">' + r.title + '</div>' +
+                        '<div style="font-size:0.73rem;color:#888;">' + r.subtitle + '</div></div>' +
+                        '</div>';
+                }).join('');
+                Array.from(searchResults.querySelectorAll('.sr-item')).forEach(function(el) {
+                    el.onclick = function() {
+                        var sec = this.getAttribute('data-sec');
+                        searchResults.style.display = 'none';
+                        searchInput.value = '';
+                        if (searchClear) searchClear.style.display = 'none';
+                        renderSection(sec);
+                    };
+                });
+            }
+            searchResults.style.display = 'block';
+        });
+
+        if (searchClear) searchClear.onclick = function() {
+            searchInput.value = '';
+            searchResults.style.display = 'none';
+            searchClear.style.display = 'none';
+            searchInput.focus();
+        };
+    }
+
     app.querySelectorAll('[data-section]').forEach(c => c.addEventListener('click', () => {
         const s = c.dataset.section;
         if (s==='tournaments') renderTournaments();
