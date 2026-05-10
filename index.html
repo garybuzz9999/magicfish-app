@@ -5305,39 +5305,37 @@ function renderAlarm() {
       </div>
 
       <!-- Магазин GTR -->
-      <div id="gtrShopSection" style="display:none;">
-        <div id="gtrShopContent3"></div>
-      </div>
+      <div id="gtrShopSection" style="display:none;padding:0 4px;"></div>
 
     </div>`;
 
     document.getElementById('backGTR').onclick = () => { clearInterval(gtrSimTimer); renderMainMenu(); };
 
     // Вкладки GTR
-    function gtrSetTab(tab) {
-        var dev  = document.getElementById('gtrDeviceSection');
-        var shop = document.getElementById('gtrShopSection');
-        var btnD = document.getElementById('gtrTabDevice');
-        var btnS = document.getElementById('gtrTabShop');
-        if (!dev || !btnD) return;
-        if (tab === 'device') {
-            dev.style.display = 'block';
-            if (shop) shop.style.display = 'none';
-            btnD.style.background = '#1f3b4c'; btnD.style.color = 'white';
-            if (btnS) { btnS.style.background = '#eee'; btnS.style.color = '#333'; }
-        } else {
-            dev.style.display = 'none';
-            if (shop) shop.style.display = 'block';
-            if (btnS) { btnS.style.background = '#f39c12'; btnS.style.color = '#1a0a00'; }
-            btnD.style.background = '#eee'; btnD.style.color = '#333';
-            setTimeout(function() {
-                var el = document.getElementById('gtrShopContent3');
-                if (el) renderGTRShopInto(el);
-            }, 50);
-        }
-    }
     var gtrTabD = document.getElementById('gtrTabDevice');
     var gtrTabS = document.getElementById('gtrTabShop');
+    var gtrDevSec = document.getElementById('gtrDeviceSection');
+    var gtrShopSec = document.getElementById('gtrShopSection');
+
+    function gtrSetTab(tab) {
+        if (!gtrDevSec || !gtrTabD) return;
+        if (tab === 'device') {
+            gtrDevSec.style.display = 'block';
+            if (gtrShopSec) gtrShopSec.style.display = 'none';
+            gtrTabD.style.background = '#1f3b4c'; gtrTabD.style.color = 'white';
+            if (gtrTabS) { gtrTabS.style.background = '#eee'; gtrTabS.style.color = '#333'; }
+        } else {
+            gtrDevSec.style.display = 'none';
+            if (gtrTabS) { gtrTabS.style.background = '#f39c12'; gtrTabS.style.color = '#1a0a00'; }
+            gtrTabD.style.background = '#eee'; gtrTabD.style.color = '#333';
+            // Рендеримо магазин прямо зараз
+            if (gtrShopSec) {
+                gtrShopSec.style.display = 'block';
+                gtrShopSec.innerHTML = '';
+                renderGTRShopInto(gtrShopSec);
+            }
+        }
+    }
     if (gtrTabD) gtrTabD.onclick = function() { gtrSetTab('device'); };
     if (gtrTabS) gtrTabS.onclick = function() { gtrSetTab('shop'); };
 
