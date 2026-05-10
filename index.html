@@ -5339,8 +5339,15 @@ function renderAlarm() {
             }
         }
     }
-    if (gtrTabD) gtrTabD.onclick = function() { gtrSetTab('device'); };
-    if (gtrTabS) gtrTabS.onclick = function() { gtrSetTab('shop'); };
+    // Делегування подій — надійніше ніж onclick
+    document.addEventListener('click', function gtrTabHandler(e) {
+        var t = e.target;
+        if (!t) return;
+        if (t.id === 'gtrTabShop') { e.preventDefault(); gtrSetTab('shop'); }
+        else if (t.id === 'gtrTabDevice') { e.preventDefault(); gtrSetTab('device'); }
+        // Видаляємо слухач при поверненні назад
+        if (t.id === 'backGTR') { document.removeEventListener('click', gtrTabHandler); }
+    });
 
     document.getElementById('backGTR').onclick = () => { clearInterval(gtrSimTimer); renderMainMenu(); };
 
