@@ -1687,7 +1687,13 @@ function renderMainMenu() {
             <div class="menu-card" data-section="news" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📰<br><span>Новини</span></div>
             <div class="menu-card" data-section="forum" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">💬<br><span>Форум</span></div>
             <div class="menu-card" data-section="cabinet" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">👤<br><span>Кабінет</span></div>
-            <div class="menu-card" data-section="reports" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🐟<br><span>Звіти</span></div>
+            <div class="menu-card" data-section="reports" style="background:#e8f5e9;border:1.5px solid #c8e6c9;padding:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;">
+              <div style="font-size:0.75rem;font-weight:700;color:#1f3b4c;margin-top:10px;">🐟 Звіти</div>
+              <div style="margin:4px 8px 8px;background:linear-gradient(135deg,#4a7fc1,#2a5298);border-radius:40px;display:flex;align-items:center;gap:0;overflow:hidden;width:90%;">
+                <div style="background:rgba(255,255,255,0.2);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:3px;">📍</div>
+                <div style="color:#fff;font-weight:900;font-size:0.72rem;letter-spacing:1px;padding:0 8px 0 4px;">CHECK IN</div>
+              </div>
+            </div>
             <div class="menu-card" data-section="lure_rating" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">⭐<br><span>Рейтинг</span></div>
             <div class="menu-card" data-section="workshop" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔧<br><span>Майстерня</span></div>
             <div class="menu-card" data-section="fishing_plans" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📋<br><span>Плани</span></div>
@@ -1700,7 +1706,13 @@ function renderMainMenu() {
         `;
     } else {
         menuHtml += `<div class="menu-card" data-section="cabinet" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">👤<br><span>Кабінет</span></div>
-            <div class="menu-card" data-section="reports" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🐟<br><span>Звіти</span></div>
+            <div class="menu-card" data-section="reports" style="background:#e8f5e9;border:1.5px solid #c8e6c9;padding:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;">
+              <div style="font-size:0.75rem;font-weight:700;color:#1f3b4c;margin-top:10px;">🐟 Звіти</div>
+              <div style="margin:4px 8px 8px;background:linear-gradient(135deg,#4a7fc1,#2a5298);border-radius:40px;display:flex;align-items:center;gap:0;overflow:hidden;width:90%;">
+                <div style="background:rgba(255,255,255,0.2);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:3px;">📍</div>
+                <div style="color:#fff;font-weight:900;font-size:0.72rem;letter-spacing:1px;padding:0 8px 0 4px;">CHECK IN</div>
+              </div>
+            </div>
             <div class="menu-card" data-section="lure_rating" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">⭐<br><span>Рейтинг</span></div>
             <div class="menu-card" data-section="workshop" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔧<br><span>Майстерня</span></div>
             <div class="menu-card" data-section="fishing_plans" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📋<br><span>Плани</span></div>
@@ -5444,18 +5456,23 @@ function renderReports() {
             html += '<div style="margin-left:auto;font-size:0.72rem;color:#aaa;">' + r.date + '</div>';
             html += '</div>';
 
-            // "Фото" — кольоровий блок з емодзі
-            var fishEmojis = ['🐟','🐠','🐡','🦈','🐬','🎣'];
-            var bgColors = ['linear-gradient(135deg,#1a1a2e,#16213e)','linear-gradient(135deg,#1f3b4c,#2a5f7a)','linear-gradient(135deg,#1b4332,#2d6a4f)','linear-gradient(135deg,#3d405b,#6b6d8f)'];
-            var bgIdx = r.id % bgColors.length;
-            html += '<div style="background:' + bgColors[bgIdx] + ';height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;">';
-            html += '<div style="font-size:5rem;margin-bottom:8px;">' + (r.fish||'🐟') + '</div>';
-            if (r.weight) html += '<div style="color:#f39c12;font-weight:900;font-size:1.3rem;">' + r.weight + ' кг</div>';
-            if (r.length) html += '<div style="color:#fff;font-size:0.9rem;opacity:0.8;">' + r.length + ' см</div>';
-            if (r.water) {
-                html += '<div style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,0.5);color:#fff;padding:4px 10px;border-radius:40px;font-size:0.72rem;">📍 ' + r.water + '</div>';
+            // Фото або кольоровий блок
+            if (r.photo) {
+                html += '<div style="position:relative;">';
+                html += '<img src="' + r.photo + '" style="width:100%;max-height:300px;object-fit:cover;display:block;">';
+                if (r.water) html += '<div style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,0.6);color:#fff;padding:4px 10px;border-radius:40px;font-size:0.72rem;">📍 ' + r.water + '</div>';
+                if (r.weight) html += '<div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);color:#f39c12;padding:4px 10px;border-radius:40px;font-size:0.82rem;font-weight:700;">' + r.weight + ' кг</div>';
+                html += '</div>';
+            } else {
+                var bgColors = ['linear-gradient(135deg,#1a1a2e,#16213e)','linear-gradient(135deg,#1f3b4c,#2a5f7a)','linear-gradient(135deg,#1b4332,#2d6a4f)','linear-gradient(135deg,#3d405b,#6b6d8f)'];
+                var bgIdx = r.id % bgColors.length;
+                html += '<div style="background:' + bgColors[bgIdx] + ';height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;">';
+                html += '<div style="font-size:5rem;margin-bottom:8px;">' + (r.fish||'🐟') + '</div>';
+                if (r.weight) html += '<div style="color:#f39c12;font-weight:900;font-size:1.3rem;">' + r.weight + ' кг</div>';
+                if (r.length) html += '<div style="color:#fff;font-size:0.9rem;opacity:0.8;">' + r.length + ' см</div>';
+                if (r.water) html += '<div style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,0.5);color:#fff;padding:4px 10px;border-radius:40px;font-size:0.72rem;">📍 ' + r.water + '</div>';
+                html += '</div>';
             }
-            html += '</div>';
 
             // Кнопки дій
             html += '<div style="display:flex;align-items:center;gap:4px;padding:10px 16px 6px;">';
@@ -5586,6 +5603,14 @@ function showCheckinForm() {
             '</div>' +
         '</div>' +
 
+        '<div style="margin-bottom:14px;">' +
+            '<div style="font-size:0.78rem;color:#888;margin-bottom:8px;">Фото улову</div>' +
+            '<label id="ci_photo_label" style="display:block;border:2px dashed #c8e6c9;border-radius:16px;padding:20px;text-align:center;cursor:pointer;background:#f8fff8;">' +
+                '<div id="ci_photo_preview" style="font-size:2.5rem;margin-bottom:6px;">📷</div>' +
+                '<div style="font-size:0.82rem;color:#888;">Натисніть щоб додати фото</div>' +
+                '<input id="ci_photo" type="file" accept="image/*" capture="environment" style="display:none;">' +
+            '</label>' +
+        '</div>' +
         '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Водойма</div>' +
         '<input id="ci_water" type="text" placeholder="Назва водойми..." style="margin-bottom:10px;">' +
 
@@ -5611,6 +5636,27 @@ function showCheckinForm() {
     }
 
     modal.querySelector('#ci_cancel').onclick = function() { overlay.remove(); };
+
+    // Обробник фото
+    var photoData = null;
+    var photoInput = modal.querySelector('#ci_photo');
+    if (photoInput) {
+        photoInput.onchange = function(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+                photoData = ev.target.result;
+                var preview = modal.querySelector('#ci_photo_preview');
+                var label = modal.querySelector('#ci_photo_label');
+                if (preview) {
+                    preview.innerHTML = '<img src="' + photoData + '" style="max-height:150px;border-radius:12px;max-width:100%;">';
+                }
+                if (label) label.style.borderColor = '#27ae60';
+            };
+            reader.readAsDataURL(file);
+        };
+    }
     overlay.onclick = function(e) { if (e.target===overlay) overlay.remove(); };
 
     modal.querySelector('#ci_submit').onclick = function() {
@@ -5629,6 +5675,7 @@ function showCheckinForm() {
             length: length || null,
             lure: lure,
             title: text,
+            photo: photoData || null,
             author: currentUser?currentUser.nickname:'Гість',
             date: new Date().toLocaleDateString('uk-UA'),
             likes: 0,
