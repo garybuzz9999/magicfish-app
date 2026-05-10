@@ -2275,7 +2275,7 @@ function renderGTRProducts() {
         <div style="font-size:0.9rem;opacity:0.9;">${lang ? 'Офіційні продукти GTR для риболовлі та outdoor' : 'Official GTR products for fishing & outdoor'}</div>
         <div style="font-size:0.75rem;opacity:0.6;margin-top:4px;">${lang ? 'Підтримується: GTR Phantom · GTR Mini · GTR Pro' : 'Supported: GTR Phantom · GTR Mini · GTR Pro'}</div>
       </div>
-      <button id="gtrAdminMainBtn" style="width:100%;margin-top:12px;background:#eee;border:none;border-radius:14px;padding:12px;color:#888;font-size:0.82rem;cursor:pointer;">⚙️ Адмін панель</button>
+      <button id="gtrAdminMainBtn" style="width:100%;margin-top:12px;background:#1f3b4c;color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;font-size:0.88rem;cursor:pointer;">⚙️ GTR Адмін панель</button>
     </div>`;
     
     document.getElementById('backGTR').onclick = () => renderMainMenu();
@@ -2811,9 +2811,7 @@ function renderCabinet() {
               <div style="font-size:0.75rem;color:#888;margin-top:10px;">💡 Ці позначки відображаються у вашій картці для рибалок</div>
             </div>` : ''}
             <button id="saveProfileBtn" class="btn btn-block" style="margin-top:16px;">💾 Зберегти профіль</button>
-            <div style="margin-top:20px;padding-top:16px;border-top:1px solid #eee;">
-              <button id="gtrAdminCabinetBtn" style="width:100%;background:#1f3b4c;color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;cursor:pointer;font-size:0.92rem;">📡 GTR Адмін панель</button>
-            </div>
+
         </div>`;
 
         // Initialize location picker
@@ -2826,13 +2824,6 @@ function renderCabinet() {
             }
         });
         content.querySelector('#profileLocationSlot').appendChild(locationPicker.el);
-        document.getElementById('gtrAdminCabinetBtn').onclick = function() {
-            var p = prompt('Пароль GTR адміна:');
-            if (p === null) return;
-            if (p !== 'gtr2024') { alert('Невірний пароль'); return; }
-            renderGTRAdmin();
-        };
-
         document.getElementById('saveProfileBtn').onclick = () => {
             const nick = document.getElementById('pNick').value.trim();
             if (nick.length < 2) { alert("Нікнейм мін. 2 символи"); return; }
