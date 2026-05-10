@@ -2050,6 +2050,105 @@ function saveGTRProducts() {
     localStorage.setItem('gtr_shop_products', JSON.stringify(gtrShopProducts));
 }
 
+function renderGTRShopInto(el) {
+    if (!el) return;
+    var isAdmin = sessionStorage.getItem('gtr_admin') === '1';
+    el.innerHTML = '';
+
+    // Заголовок з кнопкою адміна
+    var hdr = document.createElement('div');
+    hdr.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 0 8px;margin-bottom:8px;';
+    hdr.innerHTML = '<div style="font-weight:900;font-size:1rem;color:#1f3b4c;">🛒 GTR — офіційний магазин</div>';
+    var adminSpan = document.createElement('span');
+    if (isAdmin) {
+        adminSpan.innerHTML = '<span style="background:#27ae60;color:#fff;padding:4px 12px;border-radius:40px;font-size:0.72rem;font-weight:700;">👑 Адмін</span>';
+    } else {
+        var aBtn = document.createElement('button');
+        aBtn.textContent = '⚙️';
+        aBtn.style.cssText = 'background:none;border:none;color:#ccc;font-size:0.9rem;cursor:pointer;';
+        aBtn.onclick = function() {
+            var p = prompt('Пароль:');
+            if (p === null) return;
+            if (p !== 'gtr2024') { alert('Невірний пароль'); return; }
+            sessionStorage.setItem('gtr_admin', '1');
+            renderGTRShopInto(el);
+        };
+        adminSpan.appendChild(aBtn);
+    }
+    hdr.appendChild(adminSpan);
+    el.appendChild(hdr);
+
+    // Товари
+    gtrShopProducts.forEach(function(p) {
+        if (!p.available && !isAdmin) return;
+        var card = document.createElement('div');
+        card.style.cssText = 'background:#f9f9f9;border-radius:20px;margin-bottom:12px;overflow:hidden;' + (!p.available ? 'opacity:0.5;' : '');
+
+        // Фото якщо є
+        if (p.photos && p.photos.length > 0) {
+            var img = document.createElement('img');
+            img.src = p.photos[0];
+            img.style.cssText = 'width:100%;height:180px;object-fit:cover;display:block;';
+            card.appendChild(img);
+        }
+
+        var body = document.createElement('div');
+        body.style.cssText = 'padding:12px;';
+        body.innerHTML = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+            '<span style="font-size:1.8rem;">' + p.emoji + '</span>' +
+            '<div><div style="font-weight:700;font-size:0.92rem;">' + p.name + '</div>' +
+            '<div style="font-size:0.78rem;color:#888;">' + p.desc + '</div></div>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+                '<div style="font-size:1.2rem;font-weight:900;color:#f39c12;">&#x20B4;' + p.price + '</div>' +
+                (isAdmin ? '<button data-edit-id="' + p.id + '" style="background:#3b82f6;color:#fff;border:none;border-radius:40px;padding:7px 14px;font-size:0.78rem;cursor:pointer;">✏️ Ред.</button>' : '') +
+                (p.available && !isAdmin ? '<button data-order-name="' + p.name + '" data-order-price="' + p.price + '" style="background:#1f3b4c;color:#fff;border:none;border-radius:40px;padding:8px 16px;font-weight:700;font-size:0.82rem;cursor:pointer;">🛒 Замовити</button>' : '') +
+                (!p.available ? '<span style="color:#bbb;font-size:0.78rem;">Немає</span>' : '') +
+            '</div>';
+        card.appendChild(body);
+        el.appendChild(card);
+    });
+
+    // Onclick на кнопки редагування
+    Array.from(el.querySelectorAll('[data-edit-id]')).forEach(function(btn) {
+        var pid = parseInt(btn.getAttribute('data-edit-id'));
+        btn.onclick = function() {
+            showGTREditForm(pid, function(){ renderGTRShopInto(el); });
+        };
+    });
+
+    // Onclick на кнопки замовлення
+    Array.from(el.querySelectorAll('[data-order-name]')).forEach(function(btn) {
+        var name  = btn.getAttribute('data-order-name');
+        var price = parseInt(btn.getAttribute('data-order-price'));
+        btn.onclick = function() { showOrderForm(name, price); };
+    });
+
+    // Кнопки адміна
+    if (isAdmin) {
+        var addBtn = document.createElement('button');
+        addBtn.textContent = '+ Додати товар';
+        addBtn.style.cssText = 'width:100%;background:#27ae60;color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;cursor:pointer;margin-bottom:8px;';
+        addBtn.onclick = function() {
+            var n=prompt('Назва:'); if(!n) return;
+            var d=prompt('Опис:')||'';
+            var pr=prompt('Ціна:')||'0';
+            var em=prompt('Емодзі:','📦')||'📦';
+            var newId=gtrShopProducts.length?Math.max.apply(null,gtrShopProducts.map(function(x){return x.id;}))+1:1;
+            gtrShopProducts.push({id:newId,name:n,desc:d,price:parseInt(pr)||0,emoji:em,available:true,photos:[]});
+            saveGTRProducts();
+            renderGTRShopInto(el);
+        };
+        el.appendChild(addBtn);
+
+        var exitBtn = document.createElement('button');
+        exitBtn.textContent = 'Вийти з адміну';
+        exitBtn.style.cssText = 'width:100%;background:#eee;border:none;border-radius:14px;padding:11px;cursor:pointer;font-size:0.85rem;';
+        exitBtn.onclick = function() { sessionStorage.removeItem('gtr_admin'); renderGTRShopInto(el); };
+        el.appendChild(exitBtn);
+    }
+}
+
 function showGTREditForm(pid, onSave) {
     var prod = gtrShopProducts.find(function(x){ return x.id === pid; });
     if (!prod) return;
@@ -5204,9 +5303,43 @@ function renderAlarm() {
         <div id="gtrLog" style="display:flex;flex-direction:column;gap:6px;"></div>
 
       </div>
+
+      <!-- Магазин GTR -->
+      <div id="gtrShopSection" style="display:none;">
+        <div id="gtrShopContent3"></div>
+      </div>
+
     </div>`;
 
     document.getElementById('backGTR').onclick = () => { clearInterval(gtrSimTimer); renderMainMenu(); };
+
+    // Вкладки GTR
+    function gtrSetTab(tab) {
+        var dev  = document.getElementById('gtrDeviceSection');
+        var shop = document.getElementById('gtrShopSection');
+        var btnD = document.getElementById('gtrTabDevice');
+        var btnS = document.getElementById('gtrTabShop');
+        if (!dev || !btnD) return;
+        if (tab === 'device') {
+            dev.style.display = 'block';
+            if (shop) shop.style.display = 'none';
+            btnD.style.background = '#1f3b4c'; btnD.style.color = 'white';
+            if (btnS) { btnS.style.background = '#eee'; btnS.style.color = '#333'; }
+        } else {
+            dev.style.display = 'none';
+            if (shop) {
+                shop.style.display = 'block';
+                var el = document.getElementById('gtrShopContent3');
+                if (el) renderGTRShopInto(el);
+            }
+            if (btnS) { btnS.style.background = '#f39c12'; btnS.style.color = '#1a0a00'; }
+            btnD.style.background = '#eee'; btnD.style.color = '#333';
+        }
+    }
+    var gtrTabD = document.getElementById('gtrTabDevice');
+    var gtrTabS = document.getElementById('gtrTabShop');
+    if (gtrTabD) gtrTabD.onclick = function() { gtrSetTab('device'); };
+    if (gtrTabS) gtrTabS.onclick = function() { gtrSetTab('shop'); };
 
     function renderChannels() {
         const list = document.getElementById('gtrChannelList');
