@@ -3162,6 +3162,689 @@ function getTimeAgo(timestamp) {
     return `${days} дн тому`;
 }
 
+// ========== ТУРИ (дані) ==========
+let tours = [
+    { id:1, title:"Рибалка на Шацьких озерах", agency:"Fishing Ukraine", duration:"3 дні / 2 ночі", price:2800, from:"Київ", dates:["2025-08-10","2025-09-14","2025-10-05"], fish:"Щука, окунь, лящ", includes:"Проїзд, проживання, снасті, інструктор", maxPeople:12, booked:7, phone:"+380661234567", desc:"Незабутня рибалка на найчистіших озерах України. Вілла з сауною на березі Світязя." },
+    { id:2, title:"Карпатська форель", agency:"EkoFish Tour", duration:"2 дні / 1 ніч", price:1900, from:"Львів", dates:["2025-08-03","2025-08-24","2025-09-07"], fish:"Форель, харіус", includes:"Транспорт, намет або будиночок, ліцензія", maxPeople:8, booked:3, phone:"+380671112233", desc:"Лов форелі на гірських потоках Карпат. Нахлист та спінінг." },
+    { id:3, title:"Дніпро — трофейний короп", agency:"Carp Masters", duration:"4 дні / 3 ночі", price:3500, from:"Дніпро", dates:["2025-08-20","2025-09-17"], fish:"Короп, амур до 15 кг", includes:"Проживання, харчування, снасті Daiwa", maxPeople:6, booked:4, phone:"+380501234567", desc:"Спеціалізований карповий тур. Трофеї гарантовані." },
+    { id:4, title:"Морська рибалка — Одеса", agency:"Sea & Fish", duration:"1 день", price:850, from:"Одеса", dates:["2025-08-05","2025-08-12","2025-08-19","2025-08-26"], fish:"Ставрида, кефаль, камбала", includes:"Катер, снасті, наживка, обід", maxPeople:10, booked:6, phone:"+380487778899", desc:"Морська рибалка в Чорному морі. Катер 8м, досвідчений капітан." },
+    { id:5, title:"Зимова рибалка на Десні", agency:"Winter Fish", duration:"2 дні / 1 ніч", price:1600, from:"Чернігів", dates:["2025-12-20","2026-01-10","2026-01-24"], fish:"Окунь, щука (підлід)", includes:"Льодобур, вудки, намет, гарячий обід", maxPeople:8, booked:2, phone:"+380462334455", desc:"Класична зимова рибалка з ночівлею в базі. Лунки, балансири, суп." },
+];
+
+// ========== ВОДОЙМИ ==========
+function renderWaterbodies() {
+    ensureLeafletFallback();
+    const app = document.getElementById('appRoot');
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${currentUser.nickname}</div>
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h1>🗺️ Водойми</h1>
+            <button id="backWater" class="back-btn">← Назад</button>
+        </div>
+        <div class="search-bar">
+            <input id="waterSearch" placeholder="🔍 Пошук водойми, регіону...">
+            <button id="waterSortBtn" class="btn btn-secondary">📍 Поруч</button>
+        </div>
+        <button id="getWaterLocation" class="btn btn-location btn-block">📍 Визначити моє місце</button>
+        <div id="waterLocationStatus" style="margin:8px 0;font-size:0.85rem;color:#888;text-align:center;"></div>
+        <div id="waterMap" class="map-container"></div>
+        <div id="waterList"></div>
+    </div>`;
+
+    document.getElementById('backWater').onclick = () => renderMainMenu();
+    document.getElementById('getWaterLocation').onclick = () => {
+        getUserLocation(ok => {
+            if (ok) {
+                const acc = currentLocation.accuracy ? ` (±${Math.round(currentLocation.accuracy)}м)` : '';
+                document.getElementById('waterLocationStatus').innerHTML = `✅ ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}${acc}`;
+                renderWaterList(true);
+            } else {
+                document.getElementById('waterLocationStatus').innerHTML = '❌ Не вдалося визначити місце';
+            }
+        });
+    };
+    document.getElementById('waterSortBtn').onclick = () => {
+        if (!currentLocation) { alert("❌ Спочатку натисніть 'Визначити моє місце'"); return; }
+        renderWaterList(true);
+    };
+    document.getElementById('waterSearch').oninput = () => renderWaterList(false);
+
+    let wMap = null;
+    function renderWaterList(sortByDist) {
+        const q = document.getElementById('waterSearch').value.toLowerCase();
+        let filtered = waterbodies.filter(w =>
+            w.name.toLowerCase().includes(q) ||
+            (w.region||'').toLowerCase().includes(q) ||
+            (w.city||'').toLowerCase().includes(q)
+        );
+        if (sortByDist && currentLocation) {
+            filtered.sort((a,b) =>
+                getDistance(currentLocation.lat,currentLocation.lng,a.lat,a.lng) -
+                getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng)
+            );
+        }
+        const mapDiv = document.getElementById('waterMap');
+        if (wMap) { try { wMap.remove(); } catch(e){} }
+        wMap = L.map(mapDiv).setView([49,32],6);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(wMap);
+        setTimeout(() => { try { wMap.invalidateSize(); } catch(e){} }, 300);
+        if (currentLocation) {
+            wMap.setView([currentLocation.lat,currentLocation.lng],9);
+            L.marker([currentLocation.lat,currentLocation.lng]).addTo(wMap).bindPopup('📍 Ви тут');
+        }
+        const listDiv = document.getElementById('waterList');
+        listDiv.innerHTML = filtered.map(w => {
+            const dist = currentLocation ? `<span style="color:#27ae60;font-weight:700;font-size:0.82rem;">📏 ${Math.round(getDistance(currentLocation.lat,currentLocation.lng,w.lat,w.lng)/1000)} км</span>` : '';
+            const statusClass = w.status==='biting'?'status-biting':w.status==='not-biting'?'status-not-biting':'status-unknown';
+            const statusText = w.status==='biting'?'✅ Клює!':w.status==='not-biting'?'❌ Не клює':'❓ Невідомо';
+            const priceBadge = w.paid ? `<span class="price-badge">${w.price||'Платна'}</span>` : '<span class="free-badge">Безкоштовна</span>';
+            try { L.marker([w.lat,w.lng]).addTo(wMap).bindPopup(`<b>${w.name}</b><br>${statusText}`); } catch(e){}
+            return `<div class="water-card">
+                <div class="water-header">
+                    <div class="water-name">🗺️ ${w.name} ${priceBadge}</div>
+                    ${dist}
+                </div>
+                <div style="font-size:0.82rem;color:#888;">📍 ${w.region||''} · ${w.city||''}</div>
+                ${w.services?`<div style="font-size:0.82rem;color:#555;margin-top:6px;">🐟 ${w.services}</div>`:''}
+                <div class="status ${statusClass}">${statusText}</div>
+                ${w.promo?`<div class="promo">🎁 ${w.promo}</div>`:''}
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+                    <button class="action-btn" onclick="window.setWaterStatus(${w.id},'biting')" ${canChangeStatus(w.lat,w.lng)?'':'disabled'}>✅ Клює!</button>
+                    <button class="action-btn" style="background:#e74c3c;color:white;" onclick="window.setWaterStatus(${w.id},'not-biting')" ${canChangeStatus(w.lat,w.lng)?'':'disabled'}>❌ Не клює</button>
+                    ${w.phone?`<a href="tel:${w.phone}" style="background:#27ae60;color:white;padding:10px 16px;border-radius:40px;text-decoration:none;font-size:0.82rem;font-weight:700;">📞 Дзвінок</a>`:''}
+                    <button class="action-btn" style="background:#3b82f6;color:white;" onclick="window.open('https://www.google.com/maps?q=${w.lat},${w.lng}','_blank')">🗺️ Карта</button>
+                </div>
+            </div>`;
+        }).join('') || '<div style="text-align:center;padding:40px;color:#aaa;">🔍 Нічого не знайдено</div>';
+    }
+    renderWaterList(false);
+}
+window.setWaterStatus = function(id, status) {
+    const w = waterbodies.find(x=>x.id===id);
+    if (!w) return;
+    if (!canChangeStatus(w.lat,w.lng)) { alert("❌ Потрібно бути в радіусі 300м від водойми."); return; }
+    w.status = status; saveAll(); renderWaterbodies();
+};
+
+// ========== ПРОГНОЗ КЛЮВАННЯ ==========
+function renderForecast() {
+    const app = document.getElementById('appRoot');
+    const now = new Date();
+    const hour = now.getHours();
+    const month = now.getMonth();
+    const timeScore = (hour>=5&&hour<=9)?90:(hour>=17&&hour<=20)?85:(hour>=10&&hour<=16)?65:40;
+    const seasonScore = (month>=3&&month<=5)?90:(month>=8&&month<=10)?85:(month>=6&&month<=7)?70:55;
+    const totalScore = Math.round((timeScore+seasonScore)/2);
+    const scoreColor = totalScore>=75?'#27ae60':totalScore>=50?'#f39c12':'#e74c3c';
+    const scoreLabel = totalScore>=75?'🟢 Відмінно':totalScore>=50?'🟡 Задовільно':'🔴 Погано';
+    const moonPhase = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'][Math.floor((now.getDate()%30)/4)];
+    const tips = [
+        {fish:'🐟 Короп', best:'Ранок 6:00–9:00, вечір 17:00–20:00', bait:'Кукурудза, горох, бойли'},
+        {fish:'🦈 Щука', best:'Ранок до 10:00, хмарна погода', bait:'Воблери, живець, блешні'},
+        {fish:'🐠 Судак', best:'Вечір після 18:00', bait:'Джиг, силікон, живець'},
+        {fish:'🐡 Окунь', best:'Весь день, краще ранок', bait:'Вертушки, мікроджиг'},
+        {fish:'🐟 Лящ', best:'Ранок 5:00–8:00', bait:'Мотиль, опариш, манка'},
+    ];
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${currentUser.nickname}</div>
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h1>🔮 Прогноз клювання</h1>
+            <button id="backForecast" class="back-btn">← Назад</button>
+        </div>
+        <div style="text-align:center;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:28px;padding:24px;color:white;margin-bottom:20px;">
+            <div style="font-size:3.5rem;font-weight:900;color:${scoreColor};">${totalScore}%</div>
+            <div style="font-size:1.1rem;font-weight:700;margin-top:4px;">${scoreLabel} клювання сьогодні</div>
+            <div style="font-size:0.85rem;opacity:0.8;margin-top:8px;">${now.toLocaleDateString('uk-UA',{weekday:'long',day:'numeric',month:'long'})}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+            <div style="background:#f0fdf4;border-radius:20px;padding:14px;text-align:center;">
+                <div style="font-size:1.8rem;">${moonPhase}</div>
+                <div style="font-weight:700;margin-top:4px;">Місяць</div>
+                <div style="font-size:0.8rem;color:#666;">Фаза ${Math.floor((now.getDate()%30)/4)+1}/8</div>
+            </div>
+            <div style="background:#fff3e0;border-radius:20px;padding:14px;text-align:center;">
+                <div style="font-size:1.8rem;">⏰</div>
+                <div style="font-weight:700;margin-top:4px;">Час доби</div>
+                <div style="font-size:0.8rem;color:#666;">${timeScore>=75?'Кращий час':timeScore>=50?'Непоганий':'Не найкращий'}</div>
+            </div>
+            <div style="background:#e8f5e9;border-radius:20px;padding:14px;text-align:center;">
+                <div style="font-size:1.8rem;">🌿</div>
+                <div style="font-weight:700;margin-top:4px;">Сезон</div>
+                <div style="font-size:0.8rem;color:#666;">${seasonScore>=75?'Сприятливий':seasonScore>=50?'Звичайний':'Не сезон'}</div>
+            </div>
+            <div style="background:#e3f2fd;border-radius:20px;padding:14px;text-align:center;">
+                <div style="font-size:1.8rem;">📊</div>
+                <div style="font-weight:700;margin-top:4px;">Активність</div>
+                <div style="font-size:0.8rem;color:#666;">${totalScore>=75?'Висока':totalScore>=50?'Середня':'Низька'}</div>
+            </div>
+        </div>
+        <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:12px;color:#1f3b4c;">🐟 Прогноз по видах риби</h2>
+        ${tips.map(t=>`
+        <div style="background:white;border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);border-left:4px solid #f39c12;">
+            <div style="font-weight:800;font-size:1rem;margin-bottom:4px;">${t.fish}</div>
+            <div style="font-size:0.83rem;color:#555;">⏰ ${t.best}</div>
+            <div style="font-size:0.83rem;color:#555;">🪱 ${t.bait}</div>
+        </div>`).join('')}
+        <div style="background:#fff3cd;border-radius:20px;padding:14px;font-size:0.82rem;color:#856404;margin-top:8px;">
+            ℹ️ Прогноз базується на сезоні та часі доби. Враховуйте також місцеву погоду та атмосферний тиск.
+        </div>
+    </div>`;
+    document.getElementById('backForecast').onclick = () => renderMainMenu();
+}
+
+// ========== КЕМПІНГИ ==========
+function renderCampings() {
+    ensureLeafletFallback();
+    const app = document.getElementById('appRoot');
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${currentUser.nickname}</div>
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h1>🏕️ Кемпінги</h1>
+            <button id="backCampings" class="back-btn">← Назад</button>
+        </div>
+        <div class="search-bar">
+            <input id="campingSearch" placeholder="🔍 Пошук кемпінгу, міста...">
+            <button id="campingSortBtn" class="btn btn-secondary">📍 Поруч</button>
+        </div>
+        <button id="getCampingLocation" class="btn btn-location btn-block">📍 Визначити моє місце</button>
+        <div id="campingLocationStatus" style="margin:8px 0;font-size:0.85rem;color:#888;text-align:center;"></div>
+        <div id="campingMap" class="map-container"></div>
+        <div id="campingList"></div>
+    </div>`;
+    document.getElementById('backCampings').onclick = () => renderMainMenu();
+    document.getElementById('getCampingLocation').onclick = () => {
+        getUserLocation(ok => {
+            if (ok) {
+                document.getElementById('campingLocationStatus').innerHTML = `✅ ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+                renderCampingList(true);
+            } else { document.getElementById('campingLocationStatus').innerHTML = '❌ Не вдалося визначити місце'; }
+        });
+    };
+    document.getElementById('campingSortBtn').onclick = () => {
+        if (!currentLocation) { alert("❌ Спочатку натисніть 'Визначити моє місце'"); return; }
+        renderCampingList(true);
+    };
+    document.getElementById('campingSearch').oninput = () => renderCampingList(false);
+    let cMap = null;
+    function renderCampingList(sortByDist) {
+        const q = document.getElementById('campingSearch').value.toLowerCase();
+        let filtered = campings.filter(c =>
+            c.name.toLowerCase().includes(q) || (c.city||'').toLowerCase().includes(q) || c.services.toLowerCase().includes(q)
+        );
+        if (sortByDist && currentLocation) {
+            filtered.sort((a,b) => getDistance(currentLocation.lat,currentLocation.lng,a.lat,a.lng) - getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng));
+        }
+        const mapDiv = document.getElementById('campingMap');
+        if (cMap) { try { cMap.remove(); } catch(e){} }
+        cMap = L.map(mapDiv).setView([49.5,26],6);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(cMap);
+        setTimeout(() => { try { cMap.invalidateSize(); } catch(e){} }, 300);
+        if (currentLocation) {
+            cMap.setView([currentLocation.lat,currentLocation.lng],9);
+            L.marker([currentLocation.lat,currentLocation.lng]).addTo(cMap).bindPopup('📍 Ви тут');
+        }
+        const listDiv = document.getElementById('campingList');
+        listDiv.innerHTML = filtered.map(c => {
+            const dist = currentLocation ? `<span style="color:#27ae60;font-weight:700;font-size:0.82rem;margin-left:8px;">📏 ${Math.round(getDistance(currentLocation.lat,currentLocation.lng,c.lat,c.lng)/1000)} км</span>` : '';
+            try { L.marker([c.lat,c.lng]).addTo(cMap).bindPopup(`🏕️ <b>${c.name}</b><br>📍 ${c.city}`); } catch(e){}
+            return `<div class="camping-card">
+                <div class="camping-img">🏕️</div>
+                <div class="camping-body">
+                    <div class="camping-title">${c.name} ${dist}</div>
+                    <div style="font-size:0.83rem;color:#888;margin-bottom:8px;">📍 ${c.city}</div>
+                    <div style="font-size:0.83rem;color:#555;margin-bottom:12px;">${c.services}</div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="tel:${c.phone}" style="background:#27ae60;color:white;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:0.82rem;font-weight:700;">📞 ${c.phone}</a>
+                        <button onclick="window.open('https://www.google.com/maps?q=${c.lat},${c.lng}','_blank')" style="background:#3b82f6;color:white;border:none;padding:8px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;cursor:pointer;">🗺️ Карта</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('') || '<div style="text-align:center;padding:40px;color:#aaa;">🔍 Нічого не знайдено</div>';
+    }
+    renderCampingList(false);
+}
+
+// ========== ТУРИ ПО УКРАЇНІ ==========
+function renderTours() {
+    const app = document.getElementById('appRoot');
+    const savedTours = JSON.parse(localStorage.getItem('mf_tours')||'[]');
+    const allTours = savedTours.length ? savedTours : tours;
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${currentUser.nickname}</div>
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h1>🚌 Тури по Україні</h1>
+            <button id="backTours" class="back-btn">← Назад</button>
+        </div>
+        <div style="background:#e8f5e9;border-radius:20px;padding:12px 16px;font-size:0.85rem;color:#2e7d32;margin-bottom:16px;">
+            🎣 Рибальські тури з досвідченими гідами. Все включено!
+        </div>
+        <div id="toursList"></div>
+    </div>`;
+    document.getElementById('backTours').onclick = () => renderMainMenu();
+    const listDiv = document.getElementById('toursList');
+    listDiv.innerHTML = allTours.map(t => {
+        const spotsLeft = t.maxPeople - t.booked;
+        const fillPct = Math.round(t.booked/t.maxPeople*100);
+        return `<div class="tournament-card" style="border-left-color:#27ae60;">
+            <div class="tournament-title">🚌 ${t.title}</div>
+            <div class="tournament-meta">
+                <span class="t-badge t-date">⏱️ ${t.duration}</span>
+                <span class="t-badge t-place">📍 Від ${t.from}</span>
+                <span class="t-badge t-prize">💰 ${t.price} грн</span>
+                <span class="t-badge" style="background:#e8f5e9;color:#2e7d32;">🐟 ${t.fish}</span>
+            </div>
+            <div style="font-size:0.83rem;color:#555;margin-bottom:8px;">${t.desc}</div>
+            <div style="font-size:0.82rem;color:#888;margin-bottom:4px;">✅ Включено: ${t.includes}</div>
+            <div style="font-size:0.82rem;color:#888;margin-bottom:8px;">📅 Дати: ${t.dates.join(', ')}</div>
+            <div class="participants-bar"><div class="participants-fill" style="width:${fillPct}%;"></div></div>
+            <div style="font-size:0.8rem;color:#888;margin-bottom:10px;">${t.booked}/${t.maxPeople} місць · ${spotsLeft>0?`ще ${spotsLeft} вільних`:'⚠️ Заброньовано'}</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <a href="tel:${t.phone}" style="background:#27ae60;color:white;padding:10px 22px;border-radius:40px;text-decoration:none;font-weight:700;font-size:0.9rem;">📞 Забронювати</a>
+                <span style="font-size:0.8rem;color:#888;">Агентство: ${t.agency}</span>
+            </div>
+        </div>`;
+    }).join('') || '<div style="text-align:center;padding:40px;color:#aaa;">🚌 Турів поки немає</div>';
+}
+
+// ========== ДОШКА ОГОЛОШЕНЬ ==========
+function renderMarketplace() {
+    const app = document.getElementById('appRoot');
+    let activeCat = 'all';
+    let searchQ = '';
+    let showUsed = true;
+    function render() {
+        const allItems = showUsed
+            ? listings.filter(l => l.status!=='deleted' && l.status!=='sold')
+            : storeProducts.filter(p => p.inStock);
+        const filtered = allItems.filter(item => {
+            const matchCat = activeCat==='all' || item.category===activeCat;
+            const matchQ = !searchQ || item.title.toLowerCase().includes(searchQ) || (item.desc||'').toLowerCase().includes(searchQ);
+            return matchCat && matchQ;
+        });
+        app.innerHTML = `
+        <div class="nickname-header">👤 ${currentUser.nickname}</div>
+        <div class="card" style="padding:0;overflow:hidden;">
+            <div style="background:linear-gradient(135deg,#1f3b4c,#2a5f7a);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-radius:48px 48px 0 0;">
+                <div style="color:white;font-size:1.3rem;font-weight:900;">📢 Дошка оголошень</div>
+                <button id="backMarket" class="back-btn">← Назад</button>
+            </div>
+            <div style="padding:12px 16px 0;">
+                <div style="display:flex;background:#f5f5f5;border-radius:40px;padding:4px;margin-bottom:12px;">
+                    <button id="tabUsed" style="flex:1;padding:10px;border:none;border-radius:40px;font-weight:700;cursor:pointer;transition:0.2s;${showUsed?'background:white;color:#1f3b4c;box-shadow:0 2px 6px rgba(0,0,0,0.1);':'background:transparent;color:#888;'}">🔄 Б/У снасті</button>
+                    <button id="tabNew" style="flex:1;padding:10px;border:none;border-radius:40px;font-weight:700;cursor:pointer;transition:0.2s;${!showUsed?'background:white;color:#1f3b4c;box-shadow:0 2px 6px rgba(0,0,0,0.1);':'background:transparent;color:#888;'}">🏪 Від магазинів</button>
+                </div>
+                <div style="display:flex;gap:8px;margin-bottom:12px;">
+                    <input id="marketSearch" placeholder="🔍 Пошук..." value="${searchQ}" style="flex:1;margin:0;">
+                    ${canAddListing()?'<button id="addListingBtn" class="btn" style="white-space:nowrap;padding:10px 16px;">+ Додати</button>':''}
+                </div>
+                <div class="category-tabs" style="margin-bottom:12px;">
+                    <button class="category-tab${activeCat==='all'?' active':''}" data-cat="all">Всі</button>
+                    ${SECONDHAND_CATS.map(c=>`<button class="category-tab${activeCat===c.id?' active':''}" data-cat="${c.id}">${c.icon}</button>`).join('')}
+                </div>
+            </div>
+            <div style="padding:0 16px 16px;">
+                ${filtered.length===0 ? '<div style="text-align:center;padding:40px;color:#aaa;">📭 Оголошень не знайдено</div>' :
+                filtered.map(item => {
+                    const isStore = !!item.storeId;
+                    const catIcon = SECONDHAND_CATS.find(c=>c.id===item.category)?.icon||'📦';
+                    return `<div class="listing-card" style="border-left:4px solid ${isStore?'#3b82f6':'#f39c12'};">
+                        <div style="display:flex;gap:12px;">
+                            <div style="width:70px;height:70px;background:#f5f5f5;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;">${catIcon}</div>
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-weight:800;font-size:1rem;color:#1f3b4c;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.title}</div>
+                                <div style="font-size:1.1rem;font-weight:900;color:#f39c12;margin-bottom:4px;">${item.price} грн</div>
+                                <div style="font-size:0.78rem;color:#aaa;">${isStore?`🏪 ${item.storeName}`:`👤 ${item.seller}`}${item.subcategory?' · '+item.subcategory:''}</div>
+                                <div style="font-size:0.82rem;color:#666;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.desc||''}</div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
+        document.getElementById('backMarket').onclick = () => renderMainMenu();
+        document.getElementById('tabUsed').onclick = () => { showUsed=true; render(); };
+        document.getElementById('tabNew').onclick = () => { showUsed=false; render(); };
+        const ms = document.getElementById('marketSearch');
+        if (ms) ms.oninput = e => { searchQ=e.target.value.toLowerCase(); render(); };
+        document.querySelectorAll('.category-tab[data-cat]').forEach(btn => { btn.onclick = () => { activeCat=btn.dataset.cat; render(); }; });
+        const addBtn = document.getElementById('addListingBtn');
+        if (addBtn) addBtn.onclick = () => showAddListingModal();
+    }
+    render();
+}
+function showAddListingModal() {
+    const modal = openModal(`
+        <h2 style="margin-bottom:16px;">📢 Нове оголошення</h2>
+        <div class="input-group"><label>Назва товару</label><input id="newTitle" placeholder="Назва..."></div>
+        <div class="input-group"><label>Категорія</label><select id="newCat">${SECONDHAND_CATS.map(c=>`<option value="${c.id}">${c.label}</option>`).join('')}</select></div>
+        <div class="input-group"><label>Ціна (грн)</label><input id="newPrice" type="number" placeholder="0"></div>
+        <div class="input-group"><label>Опис стану</label><textarea id="newDesc" placeholder="Стан, рік, комплектація..."></textarea></div>
+        <button id="saveListing" class="btn btn-block">✅ Опублікувати</button>
+        <button class="close-modal">Скасувати</button>
+    `);
+    modal.querySelector('.close-modal').onclick = () => modal.remove();
+    modal.querySelector('#saveListing').onclick = () => {
+        const title = modal.querySelector('#newTitle').value.trim();
+        const price = parseInt(modal.querySelector('#newPrice').value)||0;
+        const desc = modal.querySelector('#newDesc').value.trim();
+        const cat = modal.querySelector('#newCat').value;
+        if (!title) { alert('Введіть назву'); return; }
+        listings.push({id:Date.now(),seller:currentUser.nickname,title,price,desc,photo:'',category:cat,subcategory:'',status:'active',views:0,date:new Date().toISOString().slice(0,10)});
+        saveAll(); modal.remove(); renderMarketplace();
+    };
+}
+
+// ========== МАГАЗИНИ ==========
+function renderStores() {
+    ensureLeafletFallback();
+    const app = document.getElementById('appRoot');
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${currentUser.nickname}</div>
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h1>🏪 Магазини</h1>
+            <button id="backStores" class="back-btn">← Назад</button>
+        </div>
+        <div class="search-bar">
+            <input id="storeSearch" placeholder="🔍 Пошук магазину, міста...">
+            <button id="storeSortBtn" class="btn btn-secondary">📍 Поруч</button>
+        </div>
+        <button id="getStoreLocation" class="btn btn-location btn-block">📍 Визначити моє місце</button>
+        <div id="storeLocationStatus" style="margin:8px 0;font-size:0.85rem;color:#888;text-align:center;"></div>
+        <div id="storeMap" class="map-container"></div>
+        <div id="storeList"></div>
+    </div>`;
+    document.getElementById('backStores').onclick = () => renderMainMenu();
+    document.getElementById('getStoreLocation').onclick = () => {
+        getUserLocation(ok => {
+            if (ok) {
+                document.getElementById('storeLocationStatus').innerHTML = `✅ ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+                renderStoreList(true);
+            } else { document.getElementById('storeLocationStatus').innerHTML = '❌ Не вдалося'; }
+        });
+    };
+    document.getElementById('storeSortBtn').onclick = () => {
+        if (!currentLocation) { alert("❌ Спочатку натисніть 'Визначити моє місце'"); return; }
+        renderStoreList(true);
+    };
+    document.getElementById('storeSearch').oninput = () => renderStoreList(false);
+    let sMap = null;
+    function renderStoreList(sortByDist) {
+        const q = document.getElementById('storeSearch').value.toLowerCase();
+        let filtered = stores.filter(s =>
+            s.name.toLowerCase().includes(q) || s.city.toLowerCase().includes(q) ||
+            s.gear.toLowerCase().includes(q) || s.address.toLowerCase().includes(q)
+        );
+        if (sortByDist && currentLocation) {
+            filtered.sort((a,b) => getDistance(currentLocation.lat,currentLocation.lng,a.lat,a.lng) - getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng));
+        }
+        const mapDiv = document.getElementById('storeMap');
+        if (sMap) { try { sMap.remove(); } catch(e){} }
+        sMap = L.map(mapDiv).setView([49.5,32],6);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(sMap);
+        setTimeout(() => { try { sMap.invalidateSize(); } catch(e){} }, 300);
+        if (currentLocation) {
+            sMap.setView([currentLocation.lat,currentLocation.lng],10);
+            L.marker([currentLocation.lat,currentLocation.lng]).addTo(sMap).bindPopup('📍 Ви тут');
+        }
+        const listDiv = document.getElementById('storeList');
+        listDiv.innerHTML = filtered.map(s => {
+            const dist = currentLocation ? `<span class="distance">📏 ${Math.round(getDistance(currentLocation.lat,currentLocation.lng,s.lat,s.lng)/1000)} км від вас</span>` : '';
+            try { L.marker([s.lat,s.lng]).addTo(sMap).bindPopup(`🏪 <b>${s.name}</b><br>📍 ${s.address}`); } catch(e){}
+            return `<div class="store-card">
+                <div style="font-weight:800;font-size:1.05rem;color:#1f3b4c;margin-bottom:4px;">🏪 ${s.name}</div>
+                <div style="font-size:0.83rem;color:#888;margin-bottom:4px;">📍 ${s.address}</div>
+                <div style="font-size:0.82rem;color:#555;margin-bottom:4px;">🕐 ${s.hours}</div>
+                <div style="font-size:0.82rem;color:#555;margin-bottom:10px;">🛒 ${s.gear}</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                    <a href="tel:${s.phone}" style="background:#27ae60;color:white;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:0.82rem;font-weight:700;">📞 ${s.phone}</a>
+                    <button onclick="window.open('https://www.google.com/maps?q=${s.lat},${s.lng}','_blank')" style="background:#3b82f6;color:white;border:none;padding:8px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;cursor:pointer;">🗺️ Карта</button>
+                    ${s.site?`<a href="${s.site}" target="_blank" style="background:#f39c12;color:white;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:0.82rem;font-weight:700;">🌐 Сайт</a>`:''}
+                    ${dist}
+                </div>
+            </div>`;
+        }).join('') || '<div style="text-align:center;padding:40px;color:#aaa;">🔍 Нічого не знайдено</div>';
+    }
+    renderStoreList(false);
+}
+
+// ========== НОВИНИ ==========
+function renderNews() {
+    const app = document.getElementById('appRoot');
+    const isAdmin = currentUser && (currentUser.email==='ckbbuild@gmail.com' || currentUser.role==='admin');
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${currentUser.nickname}</div>
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h1>📰 Новини</h1>
+            <button id="backNews" class="back-btn">← Назад</button>
+        </div>
+        ${isAdmin?'<button id="addNewsBtn" class="btn btn-block" style="margin-bottom:16px;">+ Додати новину</button>':''}
+        <div id="newsList">
+        ${newsItems.length===0?'<div style="text-align:center;padding:40px;color:#aaa;">📭 Новин поки немає</div>':
+        newsItems.map((n,i)=>`
+        <div class="news-item">
+            <div style="font-weight:800;font-size:1rem;color:#1f3b4c;margin-bottom:6px;">📰 ${n.title}</div>
+            <div style="font-size:0.88rem;color:#444;line-height:1.5;margin-bottom:10px;">${n.content}</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                ${n.link&&n.link!=='#'?`<a href="${n.link}" target="_blank" style="color:#1e3a3a;font-size:0.82rem;font-weight:700;">🔗 Читати більше</a>`:''}
+                ${isAdmin?`<button onclick="window.deleteNews(${i})" style="background:#fce4ec;color:#c62828;border:none;padding:4px 12px;border-radius:20px;font-size:0.75rem;cursor:pointer;margin-left:auto;">🗑️ Видалити</button>`:''}
+            </div>
+        </div>`).join('')}
+        </div>
+    </div>`;
+    document.getElementById('backNews').onclick = () => renderMainMenu();
+    const addBtn = document.getElementById('addNewsBtn');
+    if (addBtn) addBtn.onclick = () => {
+        const modal = openModal(`
+            <h2 style="margin-bottom:16px;">📰 Нова новина</h2>
+            <div class="input-group"><label>Заголовок</label><input id="newsTitle" placeholder="Заголовок..."></div>
+            <div class="input-group"><label>Текст</label><textarea id="newsContent" placeholder="Текст новини..."></textarea></div>
+            <div class="input-group"><label>Посилання (необов'язково)</label><input id="newsLink" placeholder="https://..."></div>
+            <button id="saveNews" class="btn btn-block">✅ Опублікувати</button>
+            <button class="close-modal">Скасувати</button>
+        `);
+        modal.querySelector('.close-modal').onclick = () => modal.remove();
+        modal.querySelector('#saveNews').onclick = () => {
+            const title = modal.querySelector('#newsTitle').value.trim();
+            const content = modal.querySelector('#newsContent').value.trim();
+            if (!title||!content) { alert('Заповніть заголовок і текст'); return; }
+            newsItems.unshift({title,content,link:modal.querySelector('#newsLink').value.trim()||'#',date:new Date().toISOString().slice(0,10)});
+            saveAll(); modal.remove(); renderNews();
+        };
+    };
+}
+window.deleteNews = function(idx) {
+    if (!confirm('Видалити новину?')) return;
+    newsItems.splice(idx,1); saveAll(); renderNews();
+};
+
+// ========== КАБІНЕТ ==========
+function renderCabinet() {
+    const app = document.getElementById('appRoot');
+    const u = currentUser;
+    const myList = listings.filter(l => l.seller===u.nickname && l.status!=='deleted');
+    const activeList = myList.filter(l => l.status==='active');
+    const soldList = myList.filter(l => l.status==='sold');
+    const roleNames = {user:'Рибалка 🎣',store:'Магазин 🏪',waterowner:'Власник водойми 🗺️',manufacturer:'Виробник 🏭',camping:'Кемпінг 🏕️',resort:'База відпочинку 🏖️',travelagency:'Турагентство 🚌',admin:'Адмін ⭐'};
+    const roleName = roleNames[u.role]||u.role;
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${u.nickname}</div>
+    <div class="card">
+        <div class="cabinet-header">
+            <div class="avatar">${(u.nickname||'?')[0].toUpperCase()}</div>
+            <div>
+                <div style="font-size:1.2rem;font-weight:900;">${u.nickname}</div>
+                <div style="font-size:0.85rem;opacity:0.85;">${u.email||'anonymous'}</div>
+                <div style="margin-top:4px;background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:40px;font-size:0.8rem;font-weight:700;display:inline-block;">${roleName}</div>
+            </div>
+        </div>
+        <div class="cabinet-stats">
+            <div class="stat-card"><div class="stat-num">${activeList.length}</div><div class="stat-label">Активних</div></div>
+            <div class="stat-card"><div class="stat-num">${soldList.length}</div><div class="stat-label">Продано</div></div>
+            <div class="stat-card"><div class="stat-num">${myList.reduce((s,l)=>s+(l.views||0),0)}</div><div class="stat-label">Переглядів</div></div>
+        </div>
+        <div class="cabinet-tabs">
+            <button class="cabinet-tab active" id="tabMyAds">📢 Оголошення</button>
+            <button class="cabinet-tab" id="tabSettings">⚙️ Налаштування</button>
+            <button class="cabinet-tab" id="tabPartner">🤝 Партнерство</button>
+        </div>
+        <div id="cabinetContent"></div>
+        <button id="backCabinet" class="btn btn-block btn-secondary" style="margin-top:16px;">← На головну</button>
+    </div>`;
+    document.getElementById('backCabinet').onclick = () => renderMainMenu();
+    function showMyAds() {
+        document.querySelectorAll('.cabinet-tab').forEach(t=>t.classList.remove('active'));
+        document.getElementById('tabMyAds').classList.add('active');
+        const div = document.getElementById('cabinetContent');
+        if (myList.length===0) {
+            div.innerHTML = `<div style="text-align:center;padding:40px;color:#aaa;">
+                <div style="font-size:3rem;">📭</div>
+                <div style="margin-bottom:12px;">У вас немає оголошень</div>
+                <button onclick="renderMarketplace()" class="btn">📢 На дошку оголошень</button>
+            </div>`; return;
+        }
+        div.innerHTML = myList.map(l=>`
+        <div class="olx-listing">
+            <div class="olx-listing-img">${SECONDHAND_CATS.find(c=>c.id===l.category)?.icon||'📦'}</div>
+            <div class="olx-listing-body">
+                <div class="olx-listing-title">${l.title}</div>
+                <div class="olx-listing-price">${l.price} грн</div>
+                <div class="olx-listing-meta">
+                    <span class="status-pill ${l.status==='active'?'pill-active':'pill-sold'}">${l.status==='active'?'Активне':'Продано'}</span>
+                    · 👁 ${l.views||0} · ${l.date||''}
+                </div>
+                <div class="olx-listing-actions">
+                    <button class="btn-edit-l" onclick="window.editListing(${l.id})">✏️ Ред.</button>
+                    <button class="btn-sold-l" onclick="window.markSold(${l.id})">${l.status==='active'?'✅ Продано':'♻️ Активне'}</button>
+                    <button class="btn-del-l" onclick="window.deleteListing(${l.id})">🗑️</button>
+                </div>
+            </div>
+        </div>`).join('');
+    }
+    function showSettings() {
+        document.querySelectorAll('.cabinet-tab').forEach(t=>t.classList.remove('active'));
+        document.getElementById('tabSettings').classList.add('active');
+        document.getElementById('cabinetContent').innerHTML = `
+        <div style="padding:8px 0;">
+            <div class="input-group"><label>Нікнейм</label><input id="settNick" value="${u.nickname}"></div>
+            <div class="input-group"><label>Телефон</label><input id="settPhone" type="tel" value="${u.phone||''}" placeholder="+380..."></div>
+            <button id="saveSettings" class="btn btn-block">💾 Зберегти зміни</button>
+        </div>`;
+        document.getElementById('saveSettings').onclick = () => {
+            const nick = document.getElementById('settNick').value.trim();
+            if (nick.length<2) { alert('Нікнейм мін. 2 символи'); return; }
+            u.nickname=nick; u.phone=document.getElementById('settPhone').value.trim();
+            saveAll(); alert('✅ Збережено!'); renderCabinet();
+        };
+    }
+    function showPartner() {
+        document.querySelectorAll('.cabinet-tab').forEach(t=>t.classList.remove('active'));
+        document.getElementById('tabPartner').classList.add('active');
+        document.getElementById('cabinetContent').innerHTML = `
+        <div style="padding:8px 0;">
+            <div style="background:#fff3cd;border-radius:20px;padding:14px;margin-bottom:14px;font-size:0.85rem;color:#856404;">
+                💡 Зареєструйтесь як партнер — це безкоштовно!
+            </div>
+            ${(u.role==='user'||u.role==='seller')?`
+            <button onclick="payStore()" class="btn btn-block" style="margin-bottom:8px;">🏪 Зареєструвати магазин</button>
+            <button onclick="payWaterOwner()" class="btn btn-block btn-secondary" style="margin-bottom:8px;">🗺️ Зареєструвати водойму</button>
+            <button onclick="payCamping()" class="btn btn-block" style="margin-bottom:8px;background:#27ae60;color:white;">🏕️ Зареєструвати кемпінг</button>
+            <button onclick="payResort()" class="btn btn-block" style="margin-bottom:8px;background:#3b82f6;color:white;">🏖️ База відпочинку</button>
+            <button onclick="payTravelAgency()" class="btn btn-block" style="margin-bottom:8px;background:#8b5cf6;color:white;">🚌 Турагентство</button>
+            <button onclick="payManufacturer()" class="btn btn-block" style="background:#e74c3c;color:white;">🏭 Бренд / Виробник</button>
+            `:`<div style="background:#e8f5e9;border-radius:20px;padding:16px;text-align:center;">
+                <div style="font-size:2rem;margin-bottom:8px;">✅</div>
+                <div style="font-weight:700;">Ви вже партнер!</div>
+                <div style="color:#888;font-size:0.85rem;margin-top:4px;">${roleName}</div>
+            </div>`}
+        </div>`;
+    }
+    document.getElementById('tabMyAds').onclick = showMyAds;
+    document.getElementById('tabSettings').onclick = showSettings;
+    document.getElementById('tabPartner').onclick = showPartner;
+    showMyAds();
+}
+window.editListing = function(id) {
+    const l = listings.find(x=>x.id===id); if (!l) return;
+    const modal = openModal(`
+        <h2 style="margin-bottom:16px;">✏️ Редагувати оголошення</h2>
+        <div class="input-group"><label>Назва</label><input id="editTitle" value="${l.title}"></div>
+        <div class="input-group"><label>Ціна (грн)</label><input id="editPrice" type="number" value="${l.price}"></div>
+        <div class="input-group"><label>Опис</label><textarea id="editDesc">${l.desc}</textarea></div>
+        <button id="saveEdit" class="btn btn-block">💾 Зберегти</button>
+        <button class="close-modal">Скасувати</button>
+    `);
+    modal.querySelector('.close-modal').onclick = () => modal.remove();
+    modal.querySelector('#saveEdit').onclick = () => {
+        l.title = modal.querySelector('#editTitle').value.trim()||l.title;
+        l.price = parseInt(modal.querySelector('#editPrice').value)||l.price;
+        l.desc = modal.querySelector('#editDesc').value.trim();
+        saveAll(); modal.remove(); renderCabinet();
+    };
+};
+window.markSold = function(id) {
+    const l = listings.find(x=>x.id===id); if (!l) return;
+    l.status = l.status==='active'?'sold':'active'; saveAll(); renderCabinet();
+};
+window.deleteListing = function(id) {
+    if (!confirm('Видалити оголошення?')) return;
+    const idx = listings.findIndex(x=>x.id===id);
+    if (idx!==-1) { listings.splice(idx,1); saveAll(); }
+    renderCabinet();
+};
+
+// ========== SOS ==========
+function renderSOS() {
+    const app = document.getElementById('appRoot');
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${currentUser.nickname}</div>
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h1>🆘 SOS — Екстрена допомога</h1>
+            <button id="backSOS" class="back-btn">← Назад</button>
+        </div>
+        <div class="sos-info">⚠️ Використовуйте лише у реальних надзвичайних ситуаціях. Помилкові виклики є кримінально карними.</div>
+        <button class="sos-main-btn" onclick="window.sendSOSAlert()">🆘 SOS — НАДІСЛАТИ СИГНАЛ</button>
+        <div class="emergency-contacts">
+            <a href="tel:101" class="emergency-btn ec-101" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <div style="font-size:1.4rem;">🔥</div><div>101</div><div style="font-size:0.7rem;">Пожежна</div>
+            </a>
+            <a href="tel:102" class="emergency-btn ec-102" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <div style="font-size:1.4rem;">👮</div><div>102</div><div style="font-size:0.7rem;">Поліція</div>
+            </a>
+            <a href="tel:103" class="emergency-btn ec-103" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <div style="font-size:1.4rem;">🚑</div><div>103</div><div style="font-size:0.7rem;">Швидка</div>
+            </a>
+        </div>
+        <div style="background:#fff3cd;border-radius:20px;padding:16px;margin-top:8px;">
+            <div style="font-weight:800;margin-bottom:8px;color:#856404;">📋 При надзвичайній ситуації на воді:</div>
+            <div style="font-size:0.85rem;color:#856404;line-height:1.8;">
+                1️⃣ Збережіть спокій, тримайтесь за плавучий предмет<br>
+                2️⃣ Зателефонуйте 101 або 103<br>
+                3️⃣ Натисніть кнопку SOS вище — координати відправляться<br>
+                4️⃣ Кричіть або використовуйте свисток<br>
+                5️⃣ Якщо є рятувальний жилет — надіньте його негайно
+            </div>
+        </div>
+    </div>`;
+    document.getElementById('backSOS').onclick = () => renderMainMenu();
+}
+window.sendSOSAlert = function() {
+    if (!confirm('⚠️ Відправити сигнал SOS з вашими координатами?')) return;
+    getUserLocation(ok => {
+        if (ok) {
+            alert(`🆘 SOS відправлено!\n\n📍 Ваші координати:\n${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)}\n\nТерміново дзвоніть 101 / 102 / 103!`);
+        } else {
+            alert('🆘 SOS відправлено!\n\n⚠️ GPS недоступний — геолокацію заблоковано.\n\nТерміново дзвоніть 101 / 102 / 103!');
+        }
+    });
+};
+
 // ========== RENDER SECTION ==========
 function renderSection(section) {
     if (section==='waterbodies') renderWaterbodies();
