@@ -3400,23 +3400,21 @@ window.openWaterReview = function(id) {
 
 // ========== ПРОГНОЗ КЛЮВАННЯ ==========
 function renderForecast() {
+    ensureLeafletFallback();
     const app = document.getElementById('appRoot');
     const now = new Date();
     const hour = now.getHours();
     const month = now.getMonth();
-    const timeScore = (hour>=5&&hour<=9)?90:(hour>=17&&hour<=20)?85:(hour>=10&&hour<=16)?65:40;
-    const seasonScore = (month>=3&&month<=5)?90:(month>=8&&month<=10)?85:(month>=6&&month<=7)?70:55;
-    const totalScore = Math.round((timeScore+seasonScore)/2);
-    const scoreColor = totalScore>=75?'#27ae60':totalScore>=50?'#f39c12':'#e74c3c';
-    const scoreLabel = totalScore>=75?'🟢 Відмінно':totalScore>=50?'🟡 Задовільно':'🔴 Погано';
     const moonPhase = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'][Math.floor((now.getDate()%30)/4)];
     const tips = [
-        {fish:'🐟 Короп', best:'Ранок 6:00–9:00, вечір 17:00–20:00', bait:'Кукурудза, горох, бойли'},
-        {fish:'🦈 Щука', best:'Ранок до 10:00, хмарна погода', bait:'Воблери, живець, блешні'},
-        {fish:'🐠 Судак', best:'Вечір після 18:00', bait:'Джиг, силікон, живець'},
-        {fish:'🐡 Окунь', best:'Весь день, краще ранок', bait:'Вертушки, мікроджиг'},
-        {fish:'🐟 Лящ', best:'Ранок 5:00–8:00', bait:'Мотиль, опариш, манка'},
+        {fish:'🐟 Короп', best:'Ранок 6:00–9:00, вечір 17:00–20:00', bait:'Кукурудза, горох, бойли', pressure:'стабільний або падає', wind:'слабкий до 3 м/с'},
+        {fish:'🦈 Щука', best:'Ранок до 10:00, хмарна погода', bait:'Воблери, живець, блешні', pressure:'падає', wind:'до 5 м/с'},
+        {fish:'🐠 Судак', best:'Вечір після 18:00', bait:'Джиг, силікон, живець', pressure:'стабільний', wind:'будь-який'},
+        {fish:'🐡 Окунь', best:'Весь день, краще ранок', bait:'Вертушки, мікроджиг', pressure:'будь-який', wind:'до 4 м/с'},
+        {fish:'🐟 Лящ', best:'Ранок 5:00–8:00', bait:'Мотиль, опариш, манка', pressure:'стабільний або росте', wind:'слабкий'},
+        {fish:'🐠 Карась', best:'Ранок 6:00–10:00', bait:'Хліб, опариш, горох', pressure:'стабільний', wind:'штиль'},
     ];
+
     app.innerHTML = `
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
@@ -3424,12 +3422,78 @@ function renderForecast() {
             <h1>🔮 Прогноз клювання</h1>
             <button id="backForecast" class="back-btn">← Назад</button>
         </div>
-        <div style="text-align:center;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:28px;padding:24px;color:white;margin-bottom:20px;">
+
+        <!-- Геолокація -->
+        <button id="getForecastLocation" class="btn btn-location btn-block" style="margin-bottom:8px;">
+            📍 Визначити моє місце для прогнозу
+        </button>
+        <div id="forecastLocationStatus" style="font-size:0.82rem;color:#888;text-align:center;margin-bottom:12px;"></div>
+
+        <!-- Карта 10км -->
+        <div id="forecastMap" class="map-container" style="margin-bottom:16px;"></div>
+
+        <!-- Блок загального прогнозу (заповнюється після геолокації) -->
+        <div id="forecastMain"></div>
+
+        <!-- Прогноз по рибі -->
+        <h2 style="font-size:1.1rem;font-weight:800;margin:16px 0 12px;color:#1f3b4c;">🐟 Прогноз по видах риби</h2>
+        <div id="fishForecast">
+        ${tips.map(t=>`
+        <div style="background:white;border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);border-left:4px solid #f39c12;">
+            <div style="font-weight:800;font-size:1rem;margin-bottom:6px;">${t.fish}</div>
+            <div style="font-size:0.83rem;color:#555;">⏰ ${t.best}</div>
+            <div style="font-size:0.83rem;color:#555;">🪱 ${t.bait}</div>
+            <div style="font-size:0.82rem;color:#888;margin-top:4px;">🌡️ Тиск: ${t.pressure} · 💨 Вітер: ${t.wind}</div>
+        </div>`).join('')}
+        </div>
+
+        <div style="background:#fff3cd;border-radius:20px;padding:14px;font-size:0.82rem;color:#856404;margin-top:4px;">
+            ℹ️ Погода завантажується з Open-Meteo (реальні дані). Визначте місце для точного прогнозу.
+        </div>
+    </div>`;
+
+    document.getElementById('backForecast').onclick = () => renderMainMenu();
+
+    // Ініціалізуємо карту
+    let fMap = null;
+    const mapDiv = document.getElementById('forecastMap');
+    fMap = L.map(mapDiv).setView([49, 32], 6);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(fMap);
+    setTimeout(() => { try { fMap.invalidateSize(); } catch(e){} }, 300);
+
+    // Якщо вже є геолокація — одразу завантажуємо
+    if (currentLocation) {
+        showForecastForLocation(currentLocation.lat, currentLocation.lng);
+    } else {
+        renderForecastBasic();
+    }
+
+    document.getElementById('getForecastLocation').onclick = () => {
+        document.getElementById('forecastLocationStatus').innerHTML = '⏳ Визначаємо місце...';
+        getUserLocation(ok => {
+            if (ok) {
+                showForecastForLocation(currentLocation.lat, currentLocation.lng);
+            } else {
+                document.getElementById('forecastLocationStatus').innerHTML = '❌ Не вдалося визначити місце';
+                renderForecastBasic();
+            }
+        });
+    };
+
+    // Базовий прогноз без геолокації
+    function renderForecastBasic() {
+        const timeScore = (hour>=5&&hour<=9)?90:(hour>=17&&hour<=20)?85:(hour>=10&&hour<=16)?65:40;
+        const seasonScore = (month>=3&&month<=5)?90:(month>=8&&month<=10)?85:(month>=6&&month<=7)?70:55;
+        const totalScore = Math.round((timeScore+seasonScore)/2);
+        const scoreColor = totalScore>=75?'#27ae60':totalScore>=50?'#f39c12':'#e74c3c';
+        const scoreLabel = totalScore>=75?'🟢 Відмінно':totalScore>=50?'🟡 Задовільно':'🔴 Погано';
+        document.getElementById('forecastMain').innerHTML = `
+        <div style="text-align:center;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:28px;padding:24px;color:white;margin-bottom:16px;">
             <div style="font-size:3.5rem;font-weight:900;color:${scoreColor};">${totalScore}%</div>
             <div style="font-size:1.1rem;font-weight:700;margin-top:4px;">${scoreLabel} клювання сьогодні</div>
             <div style="font-size:0.85rem;opacity:0.8;margin-top:8px;">${now.toLocaleDateString('uk-UA',{weekday:'long',day:'numeric',month:'long'})}</div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;">
             <div style="background:#f0fdf4;border-radius:20px;padding:14px;text-align:center;">
                 <div style="font-size:1.8rem;">${moonPhase}</div>
                 <div style="font-weight:700;margin-top:4px;">Місяць</div>
@@ -3450,19 +3514,137 @@ function renderForecast() {
                 <div style="font-weight:700;margin-top:4px;">Активність</div>
                 <div style="font-size:0.8rem;color:#666;">${totalScore>=75?'Висока':totalScore>=50?'Середня':'Низька'}</div>
             </div>
-        </div>
-        <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:12px;color:#1f3b4c;">🐟 Прогноз по видах риби</h2>
-        ${tips.map(t=>`
-        <div style="background:white;border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);border-left:4px solid #f39c12;">
-            <div style="font-weight:800;font-size:1rem;margin-bottom:4px;">${t.fish}</div>
-            <div style="font-size:0.83rem;color:#555;">⏰ ${t.best}</div>
-            <div style="font-size:0.83rem;color:#555;">🪱 ${t.bait}</div>
-        </div>`).join('')}
-        <div style="background:#fff3cd;border-radius:20px;padding:14px;font-size:0.82rem;color:#856404;margin-top:8px;">
-            ℹ️ Прогноз базується на сезоні та часі доби. Враховуйте також місцеву погоду та атмосферний тиск.
-        </div>
-    </div>`;
-    document.getElementById('backForecast').onclick = () => renderMainMenu();
+        </div>`;
+    }
+
+    // Прогноз з реальною погодою
+    async function showForecastForLocation(lat, lng) {
+        document.getElementById('forecastLocationStatus').innerHTML = `✅ ${lat.toFixed(4)}, ${lng.toFixed(4)} · ⏳ Завантажуємо погоду...`;
+
+        // Карта — центруємо, малюємо коло 10км
+        fMap.setView([lat, lng], 10);
+        L.marker([lat, lng]).addTo(fMap).bindPopup('📍 Ваше місце');
+        try {
+            L.circle([lat, lng], {radius: 10000, color:'#3b82f6', fillColor:'#3b82f6', fillOpacity:0.07, weight:2}).addTo(fMap);
+        } catch(e){}
+
+        // Водойми в радіусі 10км
+        const nearWater = waterbodies.filter(w =>
+            getDistance(lat, lng, w.lat, w.lng) <= 10000
+        );
+        nearWater.forEach(w => {
+            try {
+                L.marker([w.lat, w.lng], {
+                    icon: L.divIcon({className:'', html:'<div style="font-size:1.2rem;">🗺️</div>', iconSize:[24,24]})
+                }).addTo(fMap).bindPopup(`<b>${w.name}</b><br>📍 ${w.city||''}`);
+            } catch(e){}
+        });
+
+        // Отримуємо погоду з Open-Meteo
+        try {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,precipitation,surface_pressure,weather_code&wind_speed_unit=ms&timezone=auto`;
+            const resp = await fetch(url);
+            const data = await resp.json();
+            const c = data.current;
+
+            const temp = Math.round(c.temperature_2m);
+            const wind = Math.round(c.wind_speed_10m);
+            const windDir = c.wind_direction_10m;
+            const pressure = Math.round(c.surface_pressure * 0.750064); // гПа → мм рт.ст.
+            const rain = c.precipitation || 0;
+            const humidity = c.relative_humidity_2m;
+            const wcode = c.weather_code;
+
+            // Іконка погоди
+            const weatherIcon = wcode===0?'☀️':wcode<=3?'🌤️':wcode<=48?'☁️':wcode<=67?'🌧️':wcode<=77?'❄️':wcode<=82?'🌦️':'⛈️';
+            const weatherDesc = wcode===0?'Ясно':wcode<=3?'Мінлива хмарність':wcode<=48?'Хмарно':wcode<=67?'Дощ':wcode<=77?'Сніг':wcode<=82?'Злива':'Гроза';
+
+            // Напрямок вітру
+            const dirs = ['Пн','ПнСх','Сх','ПдСх','Пд','ПдЗх','Зх','ПнЗх'];
+            const windDirName = dirs[Math.round(windDir/45)%8];
+
+            // Розрахунок індексу клювання з урахуванням погоди
+            const timeScore = (hour>=5&&hour<=9)?90:(hour>=17&&hour<=20)?85:(hour>=10&&hour<=16)?65:40;
+            const seasonScore = (month>=3&&month<=5)?90:(month>=8&&month<=10)?85:(month>=6&&month<=7)?70:55;
+            let weatherScore = 70;
+            if (wind <= 2) weatherScore = 90;
+            else if (wind <= 4) weatherScore = 80;
+            else if (wind <= 7) weatherScore = 60;
+            else weatherScore = 35;
+            if (rain > 0.5) weatherScore -= 20;
+            // Тиск: ідеал 750-760 мм рт.ст.
+            let pressureScore = 80;
+            if (pressure >= 748 && pressure <= 762) pressureScore = 95;
+            else if (pressure >= 740 && pressure <= 770) pressureScore = 75;
+            else pressureScore = 50;
+
+            const totalScore = Math.round((timeScore + seasonScore + weatherScore + pressureScore) / 4);
+            const scoreColor = totalScore>=75?'#27ae60':totalScore>=50?'#f39c12':'#e74c3c';
+            const scoreLabel = totalScore>=75?'🟢 Відмінно':totalScore>=50?'🟡 Задовільно':'🔴 Погано';
+
+            document.getElementById('forecastLocationStatus').innerHTML = `✅ Погода завантажена · ${nearWater.length} водойм в радіусі 10км`;
+
+            document.getElementById('forecastMain').innerHTML = `
+            <!-- Головний індекс -->
+            <div style="text-align:center;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:28px;padding:24px;color:white;margin-bottom:16px;">
+                <div style="font-size:3.5rem;font-weight:900;color:${scoreColor};">${totalScore}%</div>
+                <div style="font-size:1.1rem;font-weight:700;margin-top:4px;">${scoreLabel} клювання</div>
+                <div style="font-size:0.85rem;opacity:0.8;margin-top:6px;">${now.toLocaleDateString('uk-UA',{weekday:'long',day:'numeric',month:'long'})}</div>
+                <div style="font-size:1.4rem;margin-top:8px;">${weatherIcon} ${weatherDesc}</div>
+            </div>
+
+            <!-- Погодні параметри -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+                <div style="background:#fff8e1;border-radius:20px;padding:14px;text-align:center;">
+                    <div style="font-size:2rem;">🌡️</div>
+                    <div style="font-weight:800;font-size:1.3rem;margin-top:2px;">${temp}°C</div>
+                    <div style="font-size:0.78rem;color:#888;">Температура</div>
+                </div>
+                <div style="background:#e3f2fd;border-radius:20px;padding:14px;text-align:center;">
+                    <div style="font-size:2rem;">💨</div>
+                    <div style="font-weight:800;font-size:1.3rem;margin-top:2px;">${wind} м/с</div>
+                    <div style="font-size:0.78rem;color:#888;">Вітер ${windDirName}</div>
+                </div>
+                <div style="background:#f3e5f5;border-radius:20px;padding:14px;text-align:center;">
+                    <div style="font-size:2rem;">🔵</div>
+                    <div style="font-weight:800;font-size:1.3rem;margin-top:2px;">${pressure}</div>
+                    <div style="font-size:0.78rem;color:#888;">мм рт.ст.</div>
+                </div>
+                <div style="background:#e8f5e9;border-radius:20px;padding:14px;text-align:center;">
+                    <div style="font-size:2rem;">🌧️</div>
+                    <div style="font-weight:800;font-size:1.3rem;margin-top:2px;">${rain} мм</div>
+                    <div style="font-size:0.78rem;color:#888;">Опади</div>
+                </div>
+                <div style="background:#f0fdf4;border-radius:20px;padding:14px;text-align:center;">
+                    <div style="font-size:2rem;">${moonPhase}</div>
+                    <div style="font-weight:700;font-size:0.95rem;margin-top:2px;">Місяць</div>
+                    <div style="font-size:0.78rem;color:#888;">Фаза ${Math.floor((now.getDate()%30)/4)+1}/8</div>
+                </div>
+                <div style="background:#fff3e0;border-radius:20px;padding:14px;text-align:center;">
+                    <div style="font-size:2rem;">💧</div>
+                    <div style="font-weight:800;font-size:1.3rem;margin-top:2px;">${humidity}%</div>
+                    <div style="font-size:0.78rem;color:#888;">Вологість</div>
+                </div>
+            </div>
+
+            <!-- Водойми поруч -->
+            ${nearWater.length ? `
+            <div style="background:#e8f5e9;border-radius:20px;padding:14px;margin-bottom:8px;">
+                <div style="font-weight:800;color:#2e7d32;margin-bottom:8px;">🗺️ Водойми в радіусі 10км (${nearWater.length}):</div>
+                ${nearWater.map(w=>`
+                <div style="font-size:0.85rem;color:#555;padding:4px 0;border-bottom:1px solid #c8e6c9;">
+                    🎣 ${w.name} · ${Math.round(getDistance(lat,lng,w.lat,w.lng)/1000)} км
+                </div>`).join('')}
+            </div>` : `
+            <div style="background:#fff3cd;border-radius:20px;padding:12px;margin-bottom:8px;font-size:0.85rem;color:#856404;">
+                🔍 Водойм у радіусі 10км не знайдено
+            </div>`}`;
+
+        } catch(err) {
+            document.getElementById('forecastLocationStatus').innerHTML = '⚠️ Не вдалося завантажити погоду';
+            renderForecastBasic();
+        }
+    }
 }
 
 // ========== КЕМПІНГИ ==========
