@@ -1257,14 +1257,10 @@ function renderLogin() {
       <!-- Шапка -->
       <div style="background:linear-gradient(135deg,#1f3b4c,#2a5f7a);padding:16px 20px 0;border-radius:48px 48px 0 0;">
         <!-- Рядок мова / країна / валюта -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:8px;">
+        <div style="display:flex;align-items:center;margin-bottom:16px;">
           <button id="langBtn" style="background:rgba(255,255,255,0.18);border:none;border-radius:40px;padding:7px 14px;color:white;font-size:0.85rem;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:6px;">
             ${selLang.label}
           </button>
-          <div style="display:flex;gap:6px;">
-            <button id="countryBtnTop" style="background:rgba(255,255,255,0.12);border:none;border-radius:40px;padding:7px 12px;color:white;font-size:0.82rem;cursor:pointer;">${selCountry.flag} ${selCountry.code}</button>
-            <button id="currencyBtnTop" style="background:rgba(255,255,255,0.12);border:none;border-radius:40px;padding:7px 12px;color:white;font-size:0.82rem;cursor:pointer;">${selCurrency.symbol} ${selCurrency.code}</button>
-          </div>
         </div>
         <!-- Лого -->
         <div style="text-align:center;padding-bottom:24px;">
