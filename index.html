@@ -3175,6 +3175,10 @@ let tours = [
 function renderWaterbodies() {
     ensureLeafletFallback();
     const app = document.getElementById('appRoot');
+    // фільтри: 'all' | 'free' | 'paid'
+    let priceFilter = 'all';
+    let nearbyOnly = false;
+
     app.innerHTML = `
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
@@ -3182,64 +3186,131 @@ function renderWaterbodies() {
             <h1>🗺️ Водойми</h1>
             <button id="backWater" class="back-btn">← Назад</button>
         </div>
-        <div class="search-bar">
-            <input id="waterSearch" placeholder="🔍 Пошук водойми, регіону...">
-            <button id="waterSortBtn" class="btn btn-secondary">📍 Поруч</button>
+
+        <!-- Рядок пошуку + кнопки фільтрів -->
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+            <input id="waterSearch" placeholder="🔍 Пошук водойми, регіону..." style="flex:1;min-width:150px;margin:0;">
+            <button id="filterFree" style="background:#f5c518;color:#1a0a00;border:none;border-radius:40px;padding:10px 16px;font-weight:800;cursor:pointer;white-space:nowrap;">🟡 Безкоштовні</button>
+            <button id="filterPaid" style="background:#3b82f6;color:white;border:none;border-radius:40px;padding:10px 16px;font-weight:800;cursor:pointer;white-space:nowrap;">🔵 Платні</button>
         </div>
-        <button id="getWaterLocation" class="btn btn-location btn-block">📍 Визначити моє місце</button>
-        <div id="waterLocationStatus" style="margin:8px 0;font-size:0.85rem;color:#888;text-align:center;"></div>
+
+        <!-- Кнопки геолокації -->
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <button id="getWaterLocation" class="btn btn-location" style="flex:1;margin:0;">📍 Визначити моє місце</button>
+            <button id="waterNearbyBtn" class="btn btn-secondary" style="white-space:nowrap;">📍 Поруч 50км</button>
+        </div>
+        <div id="waterLocationStatus" style="margin:4px 0 10px;font-size:0.85rem;color:#888;text-align:center;"></div>
+
         <div id="waterMap" class="map-container"></div>
         <div id="waterList"></div>
     </div>`;
 
     document.getElementById('backWater').onclick = () => renderMainMenu();
+
     document.getElementById('getWaterLocation').onclick = () => {
         getUserLocation(ok => {
             if (ok) {
                 const acc = currentLocation.accuracy ? ` (±${Math.round(currentLocation.accuracy)}м)` : '';
-                document.getElementById('waterLocationStatus').innerHTML = `✅ ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}${acc}`;
-                renderWaterList(true);
+                document.getElementById('waterLocationStatus').innerHTML = `✅ Місце визначено${acc}`;
+                renderWaterList();
             } else {
                 document.getElementById('waterLocationStatus').innerHTML = '❌ Не вдалося визначити місце';
             }
         });
     };
-    document.getElementById('waterSortBtn').onclick = () => {
-        if (!currentLocation) { alert("❌ Спочатку натисніть 'Визначити моє місце'"); return; }
-        renderWaterList(true);
+
+    document.getElementById('waterNearbyBtn').onclick = () => {
+        if (!currentLocation) {
+            alert("❌ Спочатку натисніть 'Визначити моє місце'");
+            return;
+        }
+        nearbyOnly = !nearbyOnly;
+        document.getElementById('waterNearbyBtn').style.background = nearbyOnly ? '#27ae60' : '#1e3a3a';
+        document.getElementById('waterNearbyBtn').style.color = 'white';
+        renderWaterList();
     };
-    document.getElementById('waterSearch').oninput = () => renderWaterList(false);
+
+    document.getElementById('waterSearch').oninput = () => renderWaterList();
+
+    // Фільтр безкоштовні / платні
+    document.getElementById('filterFree').onclick = () => {
+        priceFilter = priceFilter === 'free' ? 'all' : 'free';
+        document.getElementById('filterFree').style.background = priceFilter==='free' ? '#e6b800' : '#f5c518';
+        document.getElementById('filterFree').style.boxShadow = priceFilter==='free' ? '0 0 0 3px #1a0a00' : 'none';
+        renderWaterList();
+    };
+    document.getElementById('filterPaid').onclick = () => {
+        priceFilter = priceFilter === 'paid' ? 'all' : 'paid';
+        document.getElementById('filterPaid').style.background = priceFilter==='paid' ? '#1d4ed8' : '#3b82f6';
+        document.getElementById('filterPaid').style.boxShadow = priceFilter==='paid' ? '0 0 0 3px #1a0a00' : 'none';
+        renderWaterList();
+    };
 
     let wMap = null;
-    function renderWaterList(sortByDist) {
+    function renderWaterList() {
         const q = document.getElementById('waterSearch').value.toLowerCase();
-        let filtered = waterbodies.filter(w =>
-            w.name.toLowerCase().includes(q) ||
-            (w.region||'').toLowerCase().includes(q) ||
-            (w.city||'').toLowerCase().includes(q)
-        );
-        if (sortByDist && currentLocation) {
+
+        let filtered = waterbodies.filter(w => {
+            // текстовий пошук
+            const matchQ = !q ||
+                w.name.toLowerCase().includes(q) ||
+                (w.region||'').toLowerCase().includes(q) ||
+                (w.city||'').toLowerCase().includes(q);
+            // фільтр ціна
+            const matchPrice = priceFilter==='all' ||
+                (priceFilter==='free' && !w.paid) ||
+                (priceFilter==='paid' && w.paid);
+            // радіус 50км
+            const matchNearby = !nearbyOnly || !currentLocation ||
+                getDistance(currentLocation.lat,currentLocation.lng,w.lat,w.lng) <= 50000;
+            return matchQ && matchPrice && matchNearby;
+        });
+
+        // Якщо є геолокація — сортуємо за відстанню
+        if (currentLocation) {
             filtered.sort((a,b) =>
                 getDistance(currentLocation.lat,currentLocation.lng,a.lat,a.lng) -
                 getDistance(currentLocation.lat,currentLocation.lng,b.lat,b.lng)
             );
         }
+
+        // Карта
         const mapDiv = document.getElementById('waterMap');
         if (wMap) { try { wMap.remove(); } catch(e){} }
         wMap = L.map(mapDiv).setView([49,32],6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(wMap);
         setTimeout(() => { try { wMap.invalidateSize(); } catch(e){} }, 300);
         if (currentLocation) {
-            wMap.setView([currentLocation.lat,currentLocation.lng],9);
+            wMap.setView([currentLocation.lat,currentLocation.lng], nearbyOnly ? 9 : 9);
             L.marker([currentLocation.lat,currentLocation.lng]).addTo(wMap).bindPopup('📍 Ви тут');
         }
+
+        // Список
         const listDiv = document.getElementById('waterList');
+        if (filtered.length === 0) {
+            listDiv.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;">🔍 Нічого не знайдено</div>';
+            return;
+        }
+
         listDiv.innerHTML = filtered.map(w => {
-            const dist = currentLocation ? `<span style="color:#27ae60;font-weight:700;font-size:0.82rem;">📏 ${Math.round(getDistance(currentLocation.lat,currentLocation.lng,w.lat,w.lng)/1000)} км</span>` : '';
-            const statusClass = w.status==='biting'?'status-biting':w.status==='not-biting'?'status-not-biting':'status-unknown';
-            const statusText = w.status==='biting'?'✅ Клює!':w.status==='not-biting'?'❌ Не клює':'❓ Невідомо';
-            const priceBadge = w.paid ? `<span class="price-badge">${w.price||'Платна'}</span>` : '<span class="free-badge">Безкоштовна</span>';
-            try { L.marker([w.lat,w.lng]).addTo(wMap).bindPopup(`<b>${w.name}</b><br>${statusText}`); } catch(e){}
+            const distM = currentLocation ? getDistance(currentLocation.lat,currentLocation.lng,w.lat,w.lng) : null;
+            const dist = distM !== null ? `<span style="color:#27ae60;font-weight:700;font-size:0.82rem;">📏 ${Math.round(distM/1000)} км</span>` : '';
+            const priceBadge = w.paid
+                ? `<span class="price-badge" style="background:#3b82f6;color:white;">${w.price||'Платна'}</span>`
+                : '<span class="free-badge">Безкоштовна</span>';
+
+            // Рейтинг 👑
+            const reviews = (w.reviews||[]);
+            const avgRating = reviews.length ? Math.round(reviews.reduce((s,r)=>s+(r.rating||0),0)/reviews.length) : 0;
+            const crowns = [1,2,3,4,5].map(i =>
+                `<span style="font-size:1.4rem;cursor:pointer;opacity:${i<=avgRating?1:0.22};transition:0.15s;" onclick="window.openWaterReview(${w.id})">👑</span>`
+            ).join('');
+            const reviewCount = reviews.length
+                ? `<span style="font-size:0.78rem;color:#888;margin-left:4px;">(${reviews.length} відгук${reviews.length===1?'':reviews.length<5?'и':'ів'})</span>`
+                : '<span style="font-size:0.78rem;color:#bbb;margin-left:4px;">Без відгуків</span>';
+
+            try { L.marker([w.lat,w.lng]).addTo(wMap).bindPopup(`<b>${w.name}</b><br>${avgRating ? '👑'.repeat(avgRating) : 'Без оцінки'}`); } catch(e){}
+
             return `<div class="water-card">
                 <div class="water-header">
                     <div class="water-name">🗺️ ${w.name} ${priceBadge}</div>
@@ -3247,24 +3318,84 @@ function renderWaterbodies() {
                 </div>
                 <div style="font-size:0.82rem;color:#888;">📍 ${w.region||''} · ${w.city||''}</div>
                 ${w.services?`<div style="font-size:0.82rem;color:#555;margin-top:6px;">🐟 ${w.services}</div>`:''}
-                <div class="status ${statusClass}">${statusText}</div>
                 ${w.promo?`<div class="promo">🎁 ${w.promo}</div>`:''}
-                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-                    <button class="action-btn" onclick="window.setWaterStatus(${w.id},'biting')" ${canChangeStatus(w.lat,w.lng)?'':'disabled'}>✅ Клює!</button>
-                    <button class="action-btn" style="background:#e74c3c;color:white;" onclick="window.setWaterStatus(${w.id},'not-biting')" ${canChangeStatus(w.lat,w.lng)?'':'disabled'}>❌ Не клює</button>
-                    ${w.phone?`<a href="tel:${w.phone}" style="background:#27ae60;color:white;padding:10px 16px;border-radius:40px;text-decoration:none;font-size:0.82rem;font-weight:700;">📞 Дзвінок</a>`:''}
-                    <button class="action-btn" style="background:#3b82f6;color:white;" onclick="window.open('https://www.google.com/maps?q=${w.lat},${w.lng}','_blank')">🗺️ Карта</button>
+
+                <!-- Рейтинг корони -->
+                <div style="display:flex;align-items:center;gap:2px;margin-top:10px;">
+                    ${crowns}${reviewCount}
                 </div>
+
+                <!-- Кнопки дій -->
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+                    <button onclick="window.openWaterReview(${w.id})"
+                        style="background:#f5c518;color:#1a0a00;border:none;padding:10px 18px;border-radius:40px;font-weight:800;font-size:0.85rem;cursor:pointer;">✍️ Відгук</button>
+                    ${w.phone?`<a href="tel:${w.phone}" style="background:#27ae60;color:white;padding:10px 16px;border-radius:40px;text-decoration:none;font-size:0.82rem;font-weight:700;">📞 Дзвінок</a>`:''}
+                    <button style="background:#3b82f6;color:white;border:none;padding:10px 16px;border-radius:40px;font-size:0.82rem;font-weight:700;cursor:pointer;"
+                        onclick="window.open('https://www.google.com/maps?q=${w.lat},${w.lng}','_blank')">🗺️ Карта</button>
+                </div>
+
+                <!-- Останні відгуки -->
+                ${reviews.length ? `<div style="margin-top:12px;border-top:1px solid #f0f0f0;padding-top:10px;">
+                    ${reviews.slice(-2).reverse().map(r=>`
+                    <div style="font-size:0.82rem;margin-bottom:6px;">
+                        <span style="font-weight:700;color:#1f3b4c;">👤 ${r.author}</span>
+                        <span style="margin-left:6px;">${'👑'.repeat(r.rating||0)}</span>
+                        <div style="color:#666;margin-top:2px;">${r.text}</div>
+                    </div>`).join('')}
+                </div>` : ''}
             </div>`;
-        }).join('') || '<div style="text-align:center;padding:40px;color:#aaa;">🔍 Нічого не знайдено</div>';
+        }).join('');
     }
-    renderWaterList(false);
+
+    renderWaterList();
 }
-window.setWaterStatus = function(id, status) {
+
+window.openWaterReview = function(id) {
     const w = waterbodies.find(x=>x.id===id);
     if (!w) return;
-    if (!canChangeStatus(w.lat,w.lng)) { alert("❌ Потрібно бути в радіусі 300м від водойми."); return; }
-    w.status = status; saveAll(); renderWaterbodies();
+    if (!w.reviews) w.reviews = [];
+    let selectedRating = 0;
+
+    const modal = openModal(`
+        <h2 style="margin-bottom:4px;">✍️ Відгук про водойму</h2>
+        <div style="font-size:0.9rem;color:#888;margin-bottom:16px;">🗺️ ${w.name}</div>
+        <div style="margin-bottom:16px;">
+            <div style="font-weight:700;margin-bottom:8px;">Оцінка:</div>
+            <div id="crownPicker" style="display:flex;gap:8px;">
+                ${[1,2,3,4,5].map(i=>`<span data-r="${i}" style="font-size:2.4rem;cursor:pointer;opacity:0.25;transition:0.15s;">👑</span>`).join('')}
+            </div>
+        </div>
+        <div class="input-group">
+            <label>Ваш відгук</label>
+            <textarea id="reviewText" placeholder="Розкажіть про місце, улов, зручності..." style="min-height:90px;"></textarea>
+        </div>
+        <button id="saveReview" class="btn btn-block">✅ Опублікувати</button>
+        <button class="close-modal" style="margin-top:8px;width:100%;padding:10px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:700;">Скасувати</button>
+    `);
+
+    const crownsEl = modal.querySelectorAll('#crownPicker span');
+    function highlightCrowns(n) {
+        crownsEl.forEach((s,i) => {
+            s.style.opacity = i < n ? '1' : '0.25';
+            s.style.transform = i < n ? 'scale(1.2)' : 'scale(1)';
+        });
+    }
+    crownsEl.forEach(star => {
+        star.onclick = () => { selectedRating = parseInt(star.dataset.r); highlightCrowns(selectedRating); };
+        star.onmouseenter = () => highlightCrowns(parseInt(star.dataset.r));
+        star.onmouseleave = () => highlightCrowns(selectedRating);
+    });
+
+    modal.querySelector('.close-modal').onclick = () => modal.remove();
+    modal.querySelector('#saveReview').onclick = () => {
+        const text = modal.querySelector('#reviewText').value.trim();
+        if (!selectedRating) { alert('Оберіть оцінку 👑'); return; }
+        if (!text) { alert('Напишіть відгук'); return; }
+        w.reviews.push({ author: currentUser.nickname, rating: selectedRating, text, date: new Date().toISOString().slice(0,10) });
+        saveAll();
+        modal.remove();
+        renderWaterbodies();
+    };
 };
 
 // ========== ПРОГНОЗ КЛЮВАННЯ ==========
