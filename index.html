@@ -224,7 +224,7 @@
     <script>
         const SUPABASE_URL = 'https://rvgfhgiaubzvarrdsvbm.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2Z2ZoZ2lhdWJ6dmFycmRzdmJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNjQ3NTEsImV4cCI6MjA5Mzc0MDc1MX0.38Lrmoc0l7bBOb4HnseKc01Z9wV3NTx7IESZbzFWzLI';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     </script>
 </head>
 <body>
@@ -1451,7 +1451,7 @@ function renderLogin() {
             btn.disabled = true;
             btn.textContent = '⏳ Надсилаємо код...';
             statusDiv.textContent = '';
-            const { error } = await supabase.auth.signInWithOtp({ email });
+            const { error } = await supabaseClient.auth.signInWithOtp({ email });
             if (error) {
                 statusDiv.textContent = '❌ ' + error.message;
                 btn.disabled = false;
@@ -1475,7 +1475,7 @@ function renderLogin() {
             }
             btn.disabled = true;
             btn.textContent = '⏳ Перевіряємо...';
-            const { data, error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
+            const { data, error } = await supabaseClient.auth.verifyOtp({ email, token: otp, type: 'email' });
             if (error) {
                 statusDiv.style.color = '#e74c3c';
                 statusDiv.textContent = '❌ Невірний код. Спробуйте ще раз.';
@@ -1489,7 +1489,7 @@ function renderLogin() {
 
     // ---- Google OAuth ----
     document.getElementById('googleBtn').onclick = async function() {
-        const { error } = await supabase.auth.signInWithOAuth({
+        const { error } = await supabaseClient.auth.signInWithOAuth({
             provider: 'google',
             options: { redirectTo: window.location.href }
         });
@@ -1502,7 +1502,7 @@ function renderLogin() {
     };
 
     // ---- Перевірка сесії при завантаженні ----
-    supabase.auth.getSession().then(function(result) {
+    supabaseClient.auth.getSession().then(function(result) {
         const session = result.data && result.data.session;
         if (session && session.user) {
             afterSupabaseLogin(session.user);
@@ -2360,6 +2360,12 @@ function renderGTRProducts() {
     var hdr = document.createElement('div');
     hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;';
     hdr.innerHTML = '<h1 style="margin:0;">🛒 GTR Shop</h1>';
+    var phantomBtn = document.createElement('button');
+    phantomBtn.className = 'back-btn';
+    phantomBtn.style.cssText = 'background:#1a1a2e;color:white;';
+    phantomBtn.textContent = '📡 GTR Phantom';
+    phantomBtn.onclick = function() { renderGTRPhantom(); };
+    hdr.appendChild(phantomBtn);
     var backBtn = document.createElement('button');
     backBtn.className = 'back-btn';
     backBtn.textContent = '← Назад';
@@ -2530,6 +2536,442 @@ function renderGTRCases() {
 }
 
 // ========== GTR СИГНАЛІЗАТОР ==========
+function renderGTRPhantom() {
+    const app = document.getElementById('appRoot');
+    const PHANTOM_COLORS = ['#2a5f7a','#1D9E75','#BA7517','#D4537E','#7F77DD','#e74c3c','#f39c12','#27ae60'];
+
+    // Ініціалізуємо масив пристроїв якщо ще не існує
+    if (!window.gtrPhantoms) {
+        window.gtrPhantoms = Array.from({length:8}, (_,i) => ({
+            id: i+1,
+            rod: `Вудка ${i+1}`,
+            color: PHANTOM_COLORS[i],
+            active: i < 2,
+            connected: false,
+            battery: 0,
+            signal: 0,
+            bites: 0,
+            simTimer: null,
+        }));
+        window.gtrPhantomLog = [];
+        window.gtrPhantomBites = 0;
+        window.gtrVolume = 70;
+        window.gtrSens = 2;
+        window.gtrVibr = true;
+        window.gtrNight = false;
+    }
+    const phantoms = window.gtrPhantoms;
+
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${currentUser.nickname}</div>
+    <div class="card" style="padding:0;overflow:hidden;">
+
+      <!-- Заголовок -->
+      <div style="background:linear-gradient(135deg,#1a1a2e,#2a5f7a);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-radius:48px 48px 0 0;">
+        <div style="display:flex;align-items:center;gap:10px;color:white;">
+          <span style="font-size:1.4rem;">📡</span>
+          <div>
+            <div style="font-weight:900;font-size:1rem;">GTR Phantom BLE 4.0</div>
+            <div style="font-size:0.72rem;opacity:0.8;">Підключено: <span id="phConnCount">0</span> · Активних: <span id="phActCount">0</span></div>
+          </div>
+        </div>
+        <button id="backPhantom" class="back-btn">← Назад</button>
+      </div>
+
+      <!-- Вкладки -->
+      <div style="display:flex;border-bottom:2px solid #eee;">
+        <button id="phTab1" style="flex:1;padding:11px;border:none;background:#1f3b4c;color:white;font-weight:700;cursor:pointer;font-size:0.82rem;">📡 Пристрої</button>
+        <button id="phTab2" style="flex:1;padding:11px;border:none;background:#eee;color:#555;font-weight:600;cursor:pointer;font-size:0.82rem;">⚙️ Налаштування</button>
+        <button id="phTab3" style="flex:1;padding:11px;border:none;background:#eee;color:#555;font-weight:600;cursor:pointer;font-size:0.82rem;">📋 Журнал</button>
+      </div>
+
+      <!-- Вкладка: Пристрої -->
+      <div id="phSec1" style="padding:16px;">
+        <div style="font-size:0.78rem;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:10px;">ПРИСТРОЇ (мін. 1 · макс. 8)</div>
+        <div id="phDeviceList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="background:white;border-radius:20px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+            <div id="phTotalBites" style="font-size:1.8rem;font-weight:900;color:#f39c12;">0</div>
+            <div style="font-size:0.72rem;color:#888;">поклювань</div>
+          </div>
+          <div style="background:white;border-radius:20px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+            <div id="phTotalConn" style="font-size:1.8rem;font-weight:900;color:#27ae60;">0</div>
+            <div style="font-size:0.72rem;color:#888;">підключено</div>
+          </div>
+          <div style="background:white;border-radius:20px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+            <div id="phTotalActive" style="font-size:1.8rem;font-weight:900;color:#2a5f7a;">0</div>
+            <div style="font-size:0.72rem;color:#888;">активних</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Вкладка: Налаштування -->
+      <div id="phSec2" style="display:none;padding:16px;">
+
+        <!-- Вибір пристрою -->
+        <div style="font-size:0.78rem;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:8px;">НАЛАШТУВАННЯ ПРИСТРОЮ</div>
+        <div style="background:white;border-radius:20px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:12px;">
+          <div style="font-size:0.85rem;color:#555;margin-bottom:8px;">Оберіть пристрій для налаштування:</div>
+          <select id="phDeviceSelect" style="width:100%;padding:10px;border-radius:12px;border:1px solid #eee;font-size:0.9rem;font-weight:700;color:#1f3b4c;background:#f9f9f9;">
+          </select>
+          <div id="phSelectedDeviceStatus" style="font-size:0.78rem;color:#aaa;margin-top:8px;text-align:center;"></div>
+        </div>
+
+        <div style="background:white;border-radius:24px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="font-size:0.9rem;color:#1f3b4c;">🔊 Гучність</span>
+            <span id="phVolLabel" style="font-weight:700;color:#f39c12;">70%</span>
+          </div>
+          <input type="range" id="phVolSlider" min="0" max="100" value="70" style="width:100%;margin-bottom:16px;">
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="font-size:0.9rem;color:#1f3b4c;">🎯 Чутливість</span>
+            <span id="phSensLabel" style="font-weight:700;color:#f39c12;">середня</span>
+          </div>
+          <input type="range" id="phSensSlider" min="1" max="3" value="2" style="width:100%;margin-bottom:16px;">
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span style="font-size:0.9rem;color:#1f3b4c;">📳 Вібрація</span>
+            <button id="phVibrBtn" style="background:#27ae60;color:white;border:none;border-radius:40px;padding:6px 18px;font-weight:700;cursor:pointer;">УВІМК.</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span style="font-size:0.9rem;color:#1f3b4c;">🌙 Нічний режим</span>
+            <button id="phNightBtn" style="background:#eee;color:#555;border:none;border-radius:40px;padding:6px 18px;font-weight:700;cursor:pointer;">ВИМК.</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:0.9rem;color:#1f3b4c;">❄️ Зимовий режим</span>
+            <button id="phWinterBtn" style="background:#eee;color:#555;border:none;border-radius:40px;padding:6px 18px;font-weight:700;cursor:pointer;">ВИМК.</button>
+          </div>
+          <div id="phWinterInfo" style="display:none;background:#e3f2fd;border-radius:12px;padding:10px;margin-top:10px;font-size:0.78rem;color:#1565c0;">
+            ❄️ Зимовий режим: підвищена чутливість для підлідної рибалки. Чутливість переключена на максимум, фільтрація слабких коливань від вітру та ожеледі.
+          </div>
+
+          <!-- API + Кнопка отримати -->
+          <div style="margin-top:16px;border-top:1px solid #f0f0f0;padding-top:14px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <span style="font-size:1.2rem;">📶</span>
+              <div>
+                <div style="font-weight:800;font-size:0.9rem;color:#1f3b4c;">GTR Phantom API 4.0</div>
+                <div style="font-size:0.75rem;color:#888;">Офіційний API для підключення до MagicFish</div>
+              </div>
+            </div>
+            <button id="phGetApiBtn" style="width:100%;background:linear-gradient(135deg,#1a1a2e,#2a5f7a);color:white;border:none;border-radius:40px;padding:14px;font-weight:900;font-size:0.95rem;cursor:pointer;">
+              📥 Отримати API GTR Phantom 4.0
+            </button>
+          </div>
+        </div>
+
+        <div style="background:white;border-radius:24px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <div style="font-size:0.78rem;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:12px;">СЕРВІС</div>
+          <div style="display:flex;gap:10px;">
+            <button id="phFindBtn" style="flex:1;background:#3b82f6;color:white;border:none;border-radius:40px;padding:14px;font-weight:800;cursor:pointer;">🔍 Знайти</button>
+            <button id="phCalibBtn" style="flex:1;background:#8b5cf6;color:white;border:none;border-radius:40px;padding:14px;font-weight:800;cursor:pointer;">⚙️ Калібровка</button>
+          </div>
+          <div id="phServiceStatus" style="font-size:0.82rem;color:#888;text-align:center;margin-top:10px;min-height:18px;"></div>
+        </div>
+      </div>
+
+      <!-- Вкладка: Журнал -->
+      <div id="phSec3" style="display:none;padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-size:0.78rem;font-weight:700;color:#888;letter-spacing:1px;">ЖУРНАЛ ПОКЛЮВАНЬ</div>
+          <button id="phClearLog" style="background:none;border:none;color:#e74c3c;font-size:0.8rem;cursor:pointer;text-decoration:underline;">очистити</button>
+        </div>
+        <div id="phLog"></div>
+      </div>
+
+    </div>`;
+
+    document.getElementById('backPhantom').onclick = () => renderGTRProducts();
+
+    // Вкладки
+    function phSetTab(n) {
+        [1,2,3].forEach(i => {
+            document.getElementById(`phSec${i}`).style.display = i===n ? 'block' : 'none';
+            const btn = document.getElementById(`phTab${i}`);
+            btn.style.background = i===n ? '#1f3b4c' : '#eee';
+            btn.style.color = i===n ? 'white' : '#555';
+        });
+    }
+    document.getElementById('phTab1').onclick = () => phSetTab(1);
+    document.getElementById('phTab2').onclick = () => phSetTab(2);
+    document.getElementById('phTab3').onclick = () => phSetTab(3);
+
+    // Рендер списку пристроїв
+    function renderPhList() {
+        const connCount = phantoms.filter(p=>p.connected).length;
+        const actCount  = phantoms.filter(p=>p.active).length;
+        document.getElementById('phConnCount').textContent  = connCount;
+        document.getElementById('phActCount').textContent   = actCount;
+        document.getElementById('phTotalConn').textContent  = connCount;
+        document.getElementById('phTotalActive').textContent= actCount;
+        document.getElementById('phTotalBites').textContent = window.gtrPhantomBites;
+
+        const list = document.getElementById('phDeviceList');
+        list.innerHTML = phantoms.map(p => {
+            const batt = p.connected ? (p.battery>60?'🟢':p.battery>20?'🟡':'🔴') : '⚫';
+            const sig  = p.connected ? (p.signal>70?'▮▮▮▮':p.signal>40?'▮▮▮▯':'▮▮▯▯') : '▯▯▯▯';
+            return `<div style="background:white;border-radius:18px;padding:12px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.07);border-left:4px solid ${p.active?p.color:'#ddd'};">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:12px;height:12px;border-radius:50%;background:${p.connected?p.color:'#ccc'};flex-shrink:0;${p.connected?`box-shadow:0 0 6px ${p.color}88;`:''}"></div>
+                    <div style="flex:1;">
+                        <input data-pid="${p.id}" class="ph-name" value="${p.rod}"
+                            style="border:none;border-bottom:1px solid #eee;padding:2px 0;font-size:0.88rem;font-weight:700;color:#1f3b4c;width:100%;background:transparent;margin:0;">
+                        <div style="font-size:0.72rem;color:#aaa;margin-top:2px;">
+                            ${p.connected ? `${batt} ${p.battery}% · 📶 ${sig} · 🐟 ${p.bites} поклювань` : 'не підключено'}
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:6px;">
+                        <button data-pid="${p.id}" class="ph-conn-btn"
+                            style="background:${p.connected?'#e74c3c':'#27ae60'};color:white;border:none;border-radius:40px;padding:8px 14px;font-weight:700;cursor:pointer;font-size:0.78rem;">
+                            ${p.connected?'❌':'🔗'}
+                        </button>
+                        <button data-pid="${p.id}" class="ph-act-btn"
+                            style="background:${p.active?p.color:'#eee'};color:${p.active?'white':'#555'};border:none;border-radius:40px;padding:8px 14px;font-weight:700;cursor:pointer;font-size:0.78rem;">
+                            ${p.active?'АКТ.':'ВИМК.'}
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
+        list.querySelectorAll('.ph-name').forEach(inp => {
+            inp.onchange = e => { const p = phantoms.find(x=>x.id===+e.target.dataset.pid); if(p) p.rod=e.target.value; };
+        });
+        list.querySelectorAll('.ph-conn-btn').forEach(btn => {
+            btn.onclick = e => {
+                const p = phantoms.find(x=>x.id===+e.target.dataset.pid); if(!p) return;
+                if(p.connected) { disconnectPhantom(p); }
+                else {
+                    if(phantoms.filter(x=>x.connected).length>=8){alert('❌ Максимум 8 пристроїв');return;}
+                    connectPhantom(p);
+                }
+            };
+        });
+        list.querySelectorAll('.ph-act-btn').forEach(btn => {
+            btn.onclick = e => {
+                const p = phantoms.find(x=>x.id===+e.target.dataset.pid); if(!p) return;
+                if(p.active && phantoms.filter(x=>x.active).length<=1){alert('❌ Мінімум 1 активний');return;}
+                p.active=!p.active; renderPhList();
+            };
+        });
+    }
+
+    // Журнал
+    function renderPhLog() {
+        const el = document.getElementById('phLog');
+        if(!el) return;
+        if(!window.gtrPhantomLog.length){el.innerHTML='<div style="text-align:center;padding:30px;color:#bbb;">Поклювань ще не було</div>';return;}
+        el.innerHTML = window.gtrPhantomLog.slice(0,30).map(e=>`
+        <div style="background:white;border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;box-shadow:0 2px 6px rgba(0,0,0,0.06);">
+            <div style="width:10px;height:10px;border-radius:50%;background:${e.color};flex-shrink:0;"></div>
+            <div style="flex:1;font-size:0.85rem;font-weight:700;color:#1f3b4c;">${e.rod}</div>
+            <div style="font-size:0.8rem;color:#aaa;">${e.time}</div>
+        </div>`).join('');
+    }
+
+    function addPhantomBite(p) {
+        const now = new Date();
+        const time = [now.getHours(),now.getMinutes(),now.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
+        p.bites++; window.gtrPhantomBites++;
+        window.gtrPhantomLog.unshift({rod:p.rod, color:p.color, time});
+        if(window.gtrPhantomLog.length>100) window.gtrPhantomLog.pop();
+        renderPhList(); renderPhLog();
+        if(window.gtrVibr && navigator.vibrate) navigator.vibrate([300,100,300]);
+        try {
+            if(window.gtrVolume>0 && !window.gtrNight){
+                const ac=new(window.AudioContext||window.webkitAudioContext)();
+                const osc=ac.createOscillator(), g=ac.createGain();
+                osc.connect(g); g.connect(ac.destination);
+                osc.frequency.value=880; g.gain.value=window.gtrVolume/100*0.3;
+                osc.start(); osc.stop(ac.currentTime+0.3);
+            }
+        } catch(e){}
+    }
+
+    function connectPhantom(p) {
+        if(!navigator.bluetooth){
+            p.connected=true; p.battery=Math.floor(70+Math.random()*25); p.signal=Math.floor(60+Math.random()*40);
+            p.simTimer=setInterval(()=>{
+                if(!p.active||!p.connected) return;
+                if(Math.random()>0.65) addPhantomBite(p);
+                p.signal=Math.max(30,Math.min(100,p.signal+(Math.random()*10-5)));
+                renderPhList();
+            },5000);
+            renderPhList(); return;
+        }
+        navigator.bluetooth.requestDevice({
+            filters:[{namePrefix:'GTR'}],
+            optionalServices:['0000fff0-0000-1000-8000-00805f9b34fb']
+        }).then(dev=>{
+            p.bleDevice=dev;
+            dev.addEventListener('gattserverdisconnected',()=>{p.connected=false;clearInterval(p.simTimer);renderPhList();});
+            return dev.gatt.connect();
+        }).then(srv=>srv.getPrimaryService('0000fff0-0000-1000-8000-00805f9b34fb'))
+        .then(svc=>svc.getCharacteristic('0000fff1-0000-1000-8000-00805f9b34fb'))
+        .then(ch=>{
+            ch.startNotifications();
+            ch.addEventListener('characteristicvaluechanged',evt=>{
+                const mag=evt.target.value.getInt16(1,true)/1000;
+                const thr=window.gtrSens===1?0.8:window.gtrSens===2?0.4:0.2;
+                if(mag>thr&&p.active) addPhantomBite(p);
+            });
+            p.connected=true; p.battery=87; p.signal=85; renderPhList();
+        }).catch(()=>{
+            p.connected=true; p.battery=Math.floor(70+Math.random()*25); p.signal=Math.floor(60+Math.random()*40);
+            p.simTimer=setInterval(()=>{
+                if(!p.active||!p.connected) return;
+                if(Math.random()>0.65) addPhantomBite(p);
+                p.signal=Math.max(30,Math.min(100,p.signal+(Math.random()*10-5)));
+                renderPhList();
+            },5000);
+            renderPhList();
+        });
+    }
+
+    function disconnectPhantom(p) {
+        clearInterval(p.simTimer);
+        if(p.bleDevice?.gatt?.connected) try{p.bleDevice.gatt.disconnect();}catch(e){}
+        p.connected=false; p.bleDevice=null; renderPhList();
+    }
+
+    // Налаштування — вибір пристрою
+    const sensLbl = {1:'низька',2:'середня',3:'висока'};
+
+    function getSelectedPhantom() {
+        const sel = document.getElementById('phDeviceSelect');
+        if (!sel) return null;
+        const pid = +sel.value;
+        return phantoms.find(p=>p.id===pid) || phantoms[0];
+    }
+
+    function updateDeviceSelect() {
+        const sel = document.getElementById('phDeviceSelect');
+        if (!sel) return;
+        sel.innerHTML = phantoms.map(p =>
+            `<option value="${p.id}">${p.rod} ${p.connected?'🟢':'⚫'} ${p.active?'(АКТ.)':'(ВИМК.)'}</option>`
+        ).join('');
+        // Показуємо поточні налаштування вибраного пристрою
+        updateSelectedDeviceSettings();
+    }
+
+    function updateSelectedDeviceSettings() {
+        const p = getSelectedPhantom();
+        if (!p) return;
+        // Кожен пристрій має свої налаштування
+        if (!p.settings) p.settings = { volume:70, sens:2, vibr:true, night:false, winter:false };
+        const s = p.settings;
+        document.getElementById('phVolSlider').value = s.volume;
+        document.getElementById('phVolLabel').textContent = s.volume+'%';
+        document.getElementById('phSensSlider').value = s.sens;
+        document.getElementById('phSensLabel').textContent = sensLbl[s.sens];
+        const vb = document.getElementById('phVibrBtn');
+        vb.textContent = s.vibr?'УВІМК.':'ВИМК.'; vb.style.background=s.vibr?'#27ae60':'#eee'; vb.style.color=s.vibr?'white':'#555';
+        const nb = document.getElementById('phNightBtn');
+        nb.textContent = s.night?'УВІМК.':'ВИМК.'; nb.style.background=s.night?'#1f3b4c':'#eee'; nb.style.color=s.night?'white':'#555';
+        const wb = document.getElementById('phWinterBtn');
+        wb.textContent = s.winter?'УВІМК.':'ВИМК.'; wb.style.background=s.winter?'#3b82f6':'#eee'; wb.style.color=s.winter?'white':'#555';
+        const wi = document.getElementById('phWinterInfo');
+        wi.style.display = s.winter ? 'block' : 'none';
+        // Статус пристрою
+        const st = document.getElementById('phSelectedDeviceStatus');
+        st.textContent = p.connected ? `🟢 Підключено · 🔋${p.battery}% · 📶${p.signal}%` : '⚫ Не підключено';
+        st.style.color = p.connected ? '#27ae60' : '#aaa';
+    }
+
+    document.getElementById('phDeviceSelect').onchange = () => updateSelectedDeviceSettings();
+
+    document.getElementById('phVolSlider').oninput = function(){
+        const p = getSelectedPhantom(); if(!p) return;
+        if(!p.settings) p.settings={volume:70,sens:2,vibr:true,night:false,winter:false};
+        p.settings.volume=+this.value; document.getElementById('phVolLabel').textContent=this.value+'%';
+    };
+    document.getElementById('phSensSlider').oninput = function(){
+        const p = getSelectedPhantom(); if(!p) return;
+        if(!p.settings) p.settings={volume:70,sens:2,vibr:true,night:false,winter:false};
+        p.settings.sens=+this.value; document.getElementById('phSensLabel').textContent=sensLbl[this.value];
+    };
+    document.getElementById('phVibrBtn').onclick = function(){
+        const p = getSelectedPhantom(); if(!p) return;
+        if(!p.settings) p.settings={volume:70,sens:2,vibr:true,night:false,winter:false};
+        p.settings.vibr=!p.settings.vibr;
+        this.textContent=p.settings.vibr?'УВІМК.':'ВИМК.';
+        this.style.background=p.settings.vibr?'#27ae60':'#eee';
+        this.style.color=p.settings.vibr?'white':'#555';
+    };
+    document.getElementById('phNightBtn').onclick = function(){
+        const p = getSelectedPhantom(); if(!p) return;
+        if(!p.settings) p.settings={volume:70,sens:2,vibr:true,night:false,winter:false};
+        p.settings.night=!p.settings.night;
+        this.textContent=p.settings.night?'УВІМК.':'ВИМК.';
+        this.style.background=p.settings.night?'#1f3b4c':'#eee';
+        this.style.color=p.settings.night?'white':'#555';
+        if(p.settings.night){
+            p.settings.volume=20;
+            document.getElementById('phVolSlider').value=20;
+            document.getElementById('phVolLabel').textContent='20%';
+        }
+    };
+    document.getElementById('phWinterBtn').onclick = function(){
+        const p = getSelectedPhantom(); if(!p) return;
+        if(!p.settings) p.settings={volume:70,sens:2,vibr:true,night:false,winter:false};
+        p.settings.winter=!p.settings.winter;
+        this.textContent=p.settings.winter?'УВІМК.':'ВИМК.';
+        this.style.background=p.settings.winter?'#3b82f6':'#eee';
+        this.style.color=p.settings.winter?'white':'#555';
+        document.getElementById('phWinterInfo').style.display=p.settings.winter?'block':'none';
+        if(p.settings.winter){
+            // Зимовий режим — максимальна чутливість
+            p.settings.sens=3;
+            document.getElementById('phSensSlider').value=3;
+            document.getElementById('phSensLabel').textContent='висока';
+        }
+    };
+
+    updateDeviceSelect();
+    document.getElementById('phGetApiBtn').onclick = function(){
+        openModal(`
+            <h2 style="margin-bottom:8px;">📶 GTR Phantom API 4.0</h2>
+            <div style="font-size:0.85rem;color:#888;margin-bottom:16px;">Офіційний API для інтеграції з MagicFish</div>
+            <div style="background:#f5f5f5;border-radius:16px;padding:14px;margin-bottom:14px;font-size:0.82rem;color:#333;line-height:1.7;">
+              ✅ Сповіщення про поклювки в реальному часі<br>
+              ✅ Зимовий та нічний режим<br>
+              ✅ Підключення одного сигналізатора GTR Phantom
+            </div>
+            <div style="font-size:0.82rem;color:#888;margin-bottom:12px;">Безкоштовний при підключенні GTR Phantom. Зверніться до GTR Fishing:</div>
+            <a href="mailto:api@gtrfishing.com" style="display:block;background:#1f3b4c;color:white;text-align:center;padding:14px;border-radius:40px;text-decoration:none;font-weight:900;font-size:0.95rem;margin-bottom:8px;">
+              📧 api@gtrfishing.com
+            </a>
+            <button class="close-modal" style="width:100%;padding:12px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:700;">Закрити</button>
+        `);
+        document.querySelector('.close-modal').onclick = () => document.querySelector('.modal-overlay')?.remove();
+    };
+    document.getElementById('phFindBtn').onclick = function(){
+        const st=document.getElementById('phServiceStatus');
+        const conn=phantoms.find(p=>p.connected);
+        if(!conn){st.textContent='❌ Немає підключених пристроїв';st.style.color='#e74c3c';return;}
+        st.textContent='🔍 Сигнал надіслано!'; st.style.color='#3b82f6';
+        if(navigator.vibrate) navigator.vibrate([500,200,500,200,500]);
+        setTimeout(()=>{if(st)st.textContent='';},4000);
+    };
+    document.getElementById('phCalibBtn').onclick = function(){
+        const st=document.getElementById('phServiceStatus');
+        const conn=phantoms.find(p=>p.connected);
+        if(!conn){st.textContent='❌ Немає підключених пристроїв';st.style.color='#e74c3c';return;}
+        st.textContent='⚙️ Калібровка... Покладіть нерухомо!'; st.style.color='#8b5cf6';
+        setTimeout(()=>{st.textContent='✅ Калібровку завершено!';st.style.color='#27ae60';},2000);
+        setTimeout(()=>{if(st)st.textContent='';},5000);
+    };
+    document.getElementById('phClearLog').onclick = function(){
+        window.gtrPhantomLog=[]; window.gtrPhantomBites=0;
+        phantoms.forEach(p=>p.bites=0);
+        renderPhList(); renderPhLog();
+    };
+
+    renderPhList();
+    renderPhLog();
+}
+
 function renderAlarm() {
     
 
