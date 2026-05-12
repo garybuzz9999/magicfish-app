@@ -1966,6 +1966,29 @@ function renderMainMenu() {
         <a href="mailto:ckbbuild@gmail.com" style="font-size:0.72rem;color:#aaa;text-decoration:none;">📧 Розмістити рекламу → ckbbuild@gmail.com</a>
       </div>
 
+      <!-- ЗАВАНТАЖИТИ ДОДАТОК -->
+      <div style="margin:16px 0 8px;padding:0 4px;">
+        <div style="font-size:0.72rem;font-weight:700;color:#888;letter-spacing:1px;text-align:center;margin-bottom:10px;">ЗАВАНТАЖИТИ ДОДАТОК</div>
+        <div style="display:flex;gap:8px;">
+          <a href="#" onclick="alert('Google Play — незабаром! 🚀');return false;"
+            style="flex:1;background:#1a1a2e;color:white;border-radius:14px;padding:10px 8px;text-decoration:none;display:flex;align-items:center;gap:8px;justify-content:center;">
+            <span style="font-size:1.4rem;">▶</span>
+            <div>
+              <div style="font-size:0.6rem;opacity:0.7;">Завантажити в</div>
+              <div style="font-size:0.82rem;font-weight:800;">Google Play</div>
+            </div>
+          </a>
+          <a href="#" onclick="alert('App Store — незабаром! 🚀');return false;"
+            style="flex:1;background:#1a1a2e;color:white;border-radius:14px;padding:10px 8px;text-decoration:none;display:flex;align-items:center;gap:8px;justify-content:center;">
+            <span style="font-size:1.4rem;"></span>
+            <div>
+              <div style="font-size:0.6rem;opacity:0.7;">Завантажити в</div>
+              <div style="font-size:0.82rem;font-weight:800;">App Store</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
       <!-- ПАРТНЕРИ + GTR PHANTOM -->
     </div>`;
 
@@ -2706,7 +2729,7 @@ function renderGTRPhantom() {
       <div id="phSec1" style="padding:16px;">
         <div style="font-size:0.78rem;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:10px;">ПРИСТРОЇ (мін. 1 · макс. 8)</div>
         <div id="phDeviceList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
           <div style="background:white;border-radius:20px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
             <div id="phTotalBites" style="font-size:1.8rem;font-weight:900;color:#f39c12;">0</div>
             <div style="font-size:0.72rem;color:#888;">поклювань</div>
@@ -2718,6 +2741,27 @@ function renderGTRPhantom() {
           <div style="background:white;border-radius:20px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
             <div id="phTotalActive" style="font-size:1.8rem;font-weight:900;color:#2a5f7a;">0</div>
             <div style="font-size:0.72rem;color:#888;">активних</div>
+          </div>
+        </div>
+        <div style="background:#fff3cd;border-radius:16px;padding:12px 14px;margin-bottom:12px;">
+          <div style="font-size:0.82rem;color:#856404;font-weight:700;margin-bottom:8px;">📱 BLE працює тільки в додатку</div>
+          <div style="display:flex;gap:8px;">
+            <a href="#" onclick="alert('Google Play — незабаром! 🚀');return false;"
+              style="flex:1;background:#1a1a2e;color:white;border-radius:12px;padding:8px;text-decoration:none;display:flex;align-items:center;gap:6px;justify-content:center;">
+              <span style="font-size:1.1rem;">▶</span>
+              <div>
+                <div style="font-size:0.55rem;opacity:0.7;">Завантажити в</div>
+                <div style="font-size:0.75rem;font-weight:800;">Google Play</div>
+              </div>
+            </a>
+            <a href="#" onclick="alert('App Store — незабаром! 🚀');return false;"
+              style="flex:1;background:#1a1a2e;color:white;border-radius:12px;padding:8px;text-decoration:none;display:flex;align-items:center;gap:6px;justify-content:center;">
+              <span style="font-size:1.1rem;"></span>
+              <div>
+                <div style="font-size:0.55rem;opacity:0.7;">Завантажити в</div>
+                <div style="font-size:0.75rem;font-weight:800;">App Store</div>
+              </div>
+            </a>
           </div>
         </div>
       </div>
@@ -2772,9 +2816,28 @@ function renderGTRPhantom() {
                 <div style="font-size:0.75rem;color:#888;">Офіційний API для підключення до MagicFish</div>
               </div>
             </div>
-            <button id="phGetApiBtn" style="width:100%;background:linear-gradient(135deg,#1a1a2e,#2a5f7a);color:white;border:none;border-radius:40px;padding:14px;font-weight:900;font-size:0.95rem;cursor:pointer;">
+            <button id="phGetApiBtn" style="width:100%;background:linear-gradient(135deg,#1a1a2e,#2a5f7a);color:white;border:none;border-radius:40px;padding:14px;font-weight:900;font-size:0.95rem;cursor:pointer;margin-bottom:10px;">
               📥 Отримати API GTR Phantom 4.0
             </button>
+            <div style="font-size:0.75rem;color:#888;text-align:center;margin-bottom:8px;">GTR Phantom працює тільки в додатку</div>
+            <div style="display:flex;gap:8px;">
+              <a href="#" onclick="alert('Google Play — незабаром! 🚀');return false;"
+                style="flex:1;background:#1a1a2e;color:white;border-radius:14px;padding:10px 8px;text-decoration:none;display:flex;align-items:center;gap:8px;justify-content:center;">
+                <span style="font-size:1.2rem;">▶</span>
+                <div>
+                  <div style="font-size:0.55rem;opacity:0.7;">Завантажити в</div>
+                  <div style="font-size:0.78rem;font-weight:800;">Google Play</div>
+                </div>
+              </a>
+              <a href="#" onclick="alert('App Store — незабаром! 🚀');return false;"
+                style="flex:1;background:#1a1a2e;color:white;border-radius:14px;padding:10px 8px;text-decoration:none;display:flex;align-items:center;gap:8px;justify-content:center;">
+                <span style="font-size:1.2rem;"></span>
+                <div>
+                  <div style="font-size:0.55rem;opacity:0.7;">Завантажити в</div>
+                  <div style="font-size:0.78rem;font-weight:800;">App Store</div>
+                </div>
+              </a>
+            </div>
           </div>
         </div>
 
