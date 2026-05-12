@@ -613,6 +613,51 @@ let tournaments = [
 ];
 
 // ========== ЗБЕРІГАННЯ ==========
+// ========== КУРСИ ВАЛЮТ ==========
+function showCurrencyRates() {
+    const rates = exchangeRates;
+    const uahRate = r => r ? Math.round(1/r) : '—';
+    const modal = openModal(`
+        <h2 style="margin-bottom:4px;">💱 Курси НБУ</h2>
+        <div style="font-size:0.75rem;color:#888;margin-bottom:16px;">Оновлюється автоматично</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;padding:10px;background:#f5f5f5;border-radius:12px;">
+                <span style="font-weight:700;">🇺🇦 UAH</span>
+                <span style="color:#888;">базова валюта</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px;background:#f5f5f5;border-radius:12px;">
+                <span style="font-weight:700;">🇺🇸 USD</span>
+                <span style="font-weight:700;color:#27ae60;">1$ = ${uahRate(rates.USD)} ₴</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px;background:#f5f5f5;border-radius:12px;">
+                <span style="font-weight:700;">🇪🇺 EUR</span>
+                <span style="font-weight:700;color:#27ae60;">1€ = ${uahRate(rates.EUR)} ₴</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px;background:#f5f5f5;border-radius:12px;">
+                <span style="font-weight:700;">🇵🇱 PLN</span>
+                <span style="font-weight:700;color:#27ae60;">1zł = ${Math.round(1/rates.PLN)} ₴</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px;background:#f5f5f5;border-radius:12px;">
+                <span style="font-weight:700;">🇬🇧 GBP</span>
+                <span style="font-weight:700;color:#27ae60;">1£ = ${uahRate(rates.GBP)} ₴</span>
+            </div>
+        </div>
+        <div style="font-size:0.75rem;color:#aaa;text-align:center;margin-bottom:12px;">Джерело: НБУ (bank.gov.ua)</div>
+        <button class="close-modal btn btn-block">Закрити</button>
+    `);
+    modal.querySelector('.close-modal').onclick = () => modal.remove();
+}
+
+// Оновлюємо індикатор курсу в хедері
+function updateRateIndicator() {
+    const el = document.getElementById('rateIndicator');
+    if (!el || appCurrency === 'UAH') return;
+    const rate = exchangeRates[appCurrency];
+    if (!rate) return;
+    const uahRate = Math.round(1/rate);
+    el.textContent = ` · 1${CURRENCIES.find(c=>c.code===appCurrency)?.symbol||''} = ${uahRate}₴`;
+}
+
 // ========== ФІЛЬТР МАТІВ ==========
 function filterMat(text) {
     if (!text) return text;
@@ -1013,6 +1058,14 @@ function showPartnerForm(config) {
         <div class="input-group"><label>${config.dirLabel}</label>
             <input id="pf_direction" placeholder="${config.dirPlaceholder}"></div>
 
+        <div class="input-group"><label>Ціна (якщо є)</label>
+            <div style="display:flex;gap:8px;">
+                <input id="pf_price" type="number" placeholder="0" style="flex:1;margin:0;">
+                <select id="pf_currency" style="width:90px;margin:0;padding:10px 8px;border-radius:12px;border:1px solid #eee;">
+                    ${CURRENCIES.map(c=>`<option value="${c.code}" ${c.code===appCurrency?'selected':''}>${c.code} ${c.symbol}</option>`).join('')}
+                </select>
+            </div>
+        </div>
         <div class="input-group"><label>Графік роботи</label>
             <input id="pf_hours" placeholder="9:00–18:00, Пн–Пт"></div>
 
@@ -1053,6 +1106,8 @@ function showPartnerForm(config) {
         const direction= modal.querySelector('#pf_direction').value.trim();
         const hours    = modal.querySelector('#pf_hours').value.trim();
         const desc     = modal.querySelector('#pf_desc').value.trim();
+        const priceVal = parseInt(modal.querySelector('#pf_price')?.value || '0') || 0;
+        const priceCur = modal.querySelector('#pf_currency')?.value || 'UAH';
 
         if (!name)    { alert('Введіть назву'); return; }
         if (!phone)   { alert('Введіть телефон'); return; }
@@ -1382,6 +1437,8 @@ const CURRENCIES = [
     { code:'UAH', symbol:'₴', name:'Гривня' },
     { code:'EUR', symbol:'€', name:'Euro' },
     { code:'USD', symbol:'$', name:'US Dollar' },
+    { code:'PLN', symbol:'zł', name:'Złoty' },
+    { code:'GBP', symbol:'£', name:'Pound' },
     { code:'GBP', symbol:'£', name:'Pound' },
     { code:'PLN', symbol:'zł', name:'Złoty' },
     { code:'SEK', symbol:'kr', name:'Krona' },
@@ -1401,6 +1458,73 @@ const CURRENCIES = [
 let appLang = localStorage.getItem('mf_lang') || 'uk';
 let appCountry = localStorage.getItem('mf_country') || 'UA';
 let appCurrency = localStorage.getItem('mf_currency') || 'UAH';
+
+// ========== СИСТЕМА ВАЛЮТ ==========
+// Курси відносно UAH (оновлюються з НБУ)
+let exchangeRates = {
+    UAH: 1,
+    USD: 0.024,  // приблизно
+    EUR: 0.022,
+    PLN: 0.098,
+    GBP: 0.019,
+};
+
+// Завантажуємо курси НБУ
+async function loadExchangeRates() {
+    try {
+        const res = await fetch('https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json');
+        const data = await res.json();
+        const usd = data.find(r => r.cc === 'USD');
+        const eur = data.find(r => r.cc === 'EUR');
+        const pln = data.find(r => r.cc === 'PLN');
+        const gbp = data.find(r => r.cc === 'GBP');
+        if (usd) exchangeRates.USD = 1 / usd.rate;
+        if (eur) exchangeRates.EUR = 1 / eur.rate;
+        if (pln) exchangeRates.PLN = 1 / pln.rate;
+        if (gbp) exchangeRates.GBP = 1 / gbp.rate;
+        localStorage.setItem('mf_rates', JSON.stringify({rates: exchangeRates, updated: Date.now()}));
+    } catch(e) {
+        // Використовуємо збережені або дефолтні
+        const saved = JSON.parse(localStorage.getItem('mf_rates') || 'null');
+        if (saved && saved.rates) exchangeRates = saved.rates;
+    }
+}
+
+// Конвертація ціни
+// fromCurrency - валюта продавця, toCurrency - валюта покупця
+function convertPrice(amount, fromCurrency, toCurrency) {
+    if (!amount || isNaN(amount)) return 0;
+    if (fromCurrency === toCurrency) return Math.round(amount);
+    // Конвертуємо через UAH
+    const inUAH = fromCurrency === 'UAH' ? amount : amount / exchangeRates[fromCurrency];
+    const result = toCurrency === 'UAH' ? inUAH : inUAH * exchangeRates[toCurrency];
+    return Math.round(result);
+}
+
+// Форматування ціни з символом валюти
+function formatPrice(amount, currency) {
+    if (!amount || isNaN(amount) || amount === 0) return '';
+    currency = currency || appCurrency;
+    const cur = CURRENCIES.find(c => c.code === currency) || CURRENCIES[0];
+    const formatted = amount >= 1000 ? amount.toLocaleString('uk-UA') : amount;
+    return `${cur.symbol}${formatted}`;
+}
+
+// Показуємо ціну в валюті юзера + оригінал якщо різні
+function displayPrice(amount, sellerCurrency, showOriginal) {
+    if (!amount || isNaN(amount) || amount === 0) return '';
+    sellerCurrency = sellerCurrency || 'UAH';
+    const converted = convertPrice(amount, sellerCurrency, appCurrency);
+    const mainPrice = formatPrice(converted, appCurrency);
+    if (showOriginal && sellerCurrency !== appCurrency) {
+        const origPrice = formatPrice(amount, sellerCurrency);
+        return `${mainPrice} <span style="font-size:0.75em;opacity:0.6;">(${origPrice})</span>`;
+    }
+    return mainPrice;
+}
+
+// Завантажуємо курси при старті (не блокуємо UI)
+loadExchangeRates();
 
 function getCurrencySymbol() {
     const c = CURRENCIES.find(x => x.code === appCurrency);
@@ -1992,7 +2116,10 @@ function renderMainMenu() {
 
     let menuHtml = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div style="font-size:1.4rem;">${flag} <span style="font-size:0.8rem;color:#555;font-weight:600;">${appCountry} · ${appCurrency}</span></div>
+      <div style="font-size:1.4rem;cursor:pointer;" onclick="showCurrencyRates()" title="Курси валют НБУ">
+        ${flag} <span style="font-size:0.8rem;color:#555;font-weight:600;">${appCountry} · ${appCurrency}</span>
+        <span style="font-size:0.7rem;color:#aaa;" id="rateIndicator"></span>
+      </div>
       <div style="font-size:0.9rem;color:#1e3a3a;">👤 ${currentUser.nickname} | <span id="logoutBtn" style="text-decoration:underline;cursor:pointer;">вийти</span></div>
     </div>
     <div class="card">
@@ -2388,7 +2515,7 @@ function renderGTRShopInto(el) {
             '<div style="font-size:0.78rem;color:#888;">' + p.desc + '</div></div>' +
             '</div>' +
             '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-                '<div style="font-size:1.2rem;font-weight:900;color:#f39c12;">&#x20B4;' + p.price + '</div>' +
+                '<div style="font-size:1.2rem;font-weight:900;color:#f39c12;">' + displayPrice(p.price, p.currency||'UAH', true) + '</div>' +
                 (isAdmin ? '<button data-edit-id="' + p.id + '" style="background:#3b82f6;color:#fff;border:none;border-radius:40px;padding:7px 14px;font-size:0.78rem;cursor:pointer;">✏️ Ред.</button>' : '') +
                 (p.available && !isAdmin ? '<button data-order-name="' + p.name + '" data-order-price="' + p.price + '" style="background:#1f3b4c;color:#fff;border:none;border-radius:40px;padding:8px 16px;font-weight:700;font-size:0.82rem;cursor:pointer;">🛒 Замовити</button>' : '') +
                 (!p.available ? '<span style="color:#bbb;font-size:0.78rem;">Немає</span>' : '') +
@@ -2726,7 +2853,7 @@ function showGTRCases() {
                 ${c.features.map(f=>`<span style="background:#e8f4fd;color:${c.color};padding:3px 10px;border-radius:40px;font-size:0.72rem;font-weight:600;">${f}</span>`).join('')}
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;">
-                <div style="font-size:1.3rem;font-weight:900;color:#f39c12;">₴${c.price}</div>
+                <div style="font-size:1.3rem;font-weight:900;color:#f39c12;">${displayPrice(c.price, c.currency||'UAH', true)}</div>
                 <button style="background:${c.color};color:white;border:none;border-radius:40px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.88rem;">🛒 Замовити</button>
               </div>
             </div>
@@ -2774,7 +2901,7 @@ function showGTRBackpacks() {
                 ${p.features.map(f=>`<span style="background:#d1fae5;color:${p.color};padding:3px 10px;border-radius:40px;font-size:0.72rem;font-weight:600;">${f}</span>`).join('')}
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;">
-                <div style="font-size:1.3rem;font-weight:900;color:#f39c12;">₴${p.price}</div>
+                <div style="font-size:1.3rem;font-weight:900;color:#f39c12;">${displayPrice(p.price, p.currency||'UAH', true)}</div>
                 <button style="background:${p.color};color:white;border:none;border-radius:40px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.88rem;">🛒 Замовити</button>
               </div>
             </div>
@@ -3533,7 +3660,7 @@ function renderAlarm() {
             <div style="font-size:0.8rem;opacity:0.8;margin-top:2px;">Сигналізатор клювання · Bluetooth · IPX6</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:1.4rem;font-weight:900;color:#f39c12;">₴1 890</div>
+            <div style="font-size:1.4rem;font-weight:900;color:#f39c12;">${displayPrice(1890, 'UAH', false)}</div>
             <div style="font-size:0.7rem;opacity:0.7;">+ доставка</div>
           </div>
         </div>
@@ -4346,8 +4473,10 @@ function renderWaterbodies() {
         listDiv.innerHTML = filtered.map(w => {
             const distM = currentLocation ? getDistance(currentLocation.lat,currentLocation.lng,w.lat,w.lng) : null;
             const dist = distM !== null ? `<span style="color:#27ae60;font-weight:700;font-size:0.82rem;">📏 ${Math.round(distM/1000)} км</span>` : '';
-            const priceBadge = w.paid
-                ? `<span class="price-badge" style="background:#3b82f6;color:white;">${w.price||'Платна'}</span>`
+            const priceAmt = w.priceAmount ? convertPrice(w.priceAmount, w.priceCurrency||'UAH', appCurrency) : 0;
+        const priceStr = priceAmt ? `${formatPrice(priceAmt, appCurrency)}/день` : (w.price||'Платна');
+        const priceBadge = w.paid
+                ? `<span class="price-badge" style="background:#3b82f6;color:white;">${priceStr}</span>`
                 : '<span class="free-badge">Безкоштовна</span>';
 
             // Рейтинг 👑
@@ -4848,7 +4977,7 @@ function renderTours() {
             <div class="tournament-meta">
                 <span class="t-badge t-date">⏱️ ${t.duration}</span>
                 <span class="t-badge t-place">📍 Від ${t.from}</span>
-                <span class="t-badge t-prize">💰 ${t.price} грн</span>
+                <span class="t-badge t-prize">💰 ${displayPrice(t.price, t.currency||'UAH', true)}</span>
                 <span class="t-badge" style="background:#e8f5e9;color:#2e7d32;">🐟 ${t.fish}</span>
             </div>
             <div style="font-size:0.83rem;color:#555;margin-bottom:8px;">${t.desc}</div>
@@ -4912,7 +5041,7 @@ function renderMarketplace() {
                             <div style="width:70px;height:70px;background:#f5f5f5;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;">${catIcon}</div>
                             <div style="flex:1;min-width:0;">
                                 <div style="font-weight:800;font-size:1rem;color:#1f3b4c;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.title}</div>
-                                <div style="font-size:1.1rem;font-weight:900;color:#f39c12;margin-bottom:4px;">${item.price} грн</div>
+                                <div style="font-size:1.1rem;font-weight:900;color:#f39c12;margin-bottom:4px;">${displayPrice(item.price, item.currency||'UAH', true)}</div>
                                 <div style="font-size:0.78rem;color:#aaa;">${isStore?`🏪 ${item.storeName}`:`👤 ${item.seller}`}${item.subcategory?' · '+item.subcategory:''}</div>
                                 <div style="font-size:0.82rem;color:#666;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.desc||''}</div>
                             </div>
@@ -4936,7 +5065,14 @@ function showAddListingModal() {
         <h2 style="margin-bottom:16px;">📢 Нове оголошення</h2>
         <div class="input-group"><label>Назва товару</label><input id="newTitle" placeholder="Назва..."></div>
         <div class="input-group"><label>Категорія</label><select id="newCat">${SECONDHAND_CATS.map(c=>`<option value="${c.id}">${c.label}</option>`).join('')}</select></div>
-        <div class="input-group"><label>Ціна (грн)</label><input id="newPrice" type="number" placeholder="0"></div>
+        <div class="input-group"><label>Ціна</label>
+            <div style="display:flex;gap:8px;">
+                <input id="newPrice" type="number" placeholder="0" style="flex:1;margin:0;">
+                <select id="newCurrency" style="width:90px;margin:0;padding:10px 8px;border-radius:12px;border:1px solid #eee;">
+                    ${CURRENCIES.map(c=>`<option value="${c.code}" ${c.code===appCurrency?'selected':''}>${c.code} ${c.symbol}</option>`).join('')}
+                </select>
+            </div>
+        </div>
         <div class="input-group"><label>Опис стану</label><textarea id="newDesc" placeholder="Стан, рік, комплектація..."></textarea></div>
         <button id="saveListing" class="btn btn-block">✅ Опублікувати</button>
         <button class="close-modal">Скасувати</button>
@@ -4948,7 +5084,8 @@ function showAddListingModal() {
         const desc = modal.querySelector('#newDesc').value.trim();
         const cat = modal.querySelector('#newCat').value;
         if (!title) { alert('Введіть назву'); return; }
-        listings.push({id:Date.now(),seller:currentUser.nickname,title:filterMat(title),price,desc:filterMat(desc),photo:'',category:cat,subcategory:'',status:'active',views:0,date:new Date().toISOString().slice(0,10)});
+        const listCur = modal.querySelector('#newCurrency')?.value || 'UAH';
+        listings.push({id:Date.now(),seller:currentUser.nickname,title:filterMat(title),price,currency:listCur,desc:filterMat(desc),photo:'',category:cat,subcategory:'',status:'active',views:0,date:new Date().toISOString().slice(0,10)});
         saveAll(); modal.remove(); renderMarketplace();
     };
 }
