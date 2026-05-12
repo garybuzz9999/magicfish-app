@@ -4479,8 +4479,19 @@ function renderStores() {
                     <button onclick="window.openStoreReview('${s.name}')" style="background:#f5c518;color:#1a0a00;border:none;padding:10px 18px;border-radius:40px;font-weight:800;font-size:0.85rem;cursor:pointer;">✍️ Відгук</button>
                     <a href="tel:${s.phone}" style="background:#27ae60;color:white;padding:10px 14px;border-radius:40px;text-decoration:none;font-size:0.82rem;font-weight:700;">📞 ${s.phone}</a>
                     <button onclick="window.open('https://www.google.com/maps?q=${s.lat},${s.lng}','_blank')" style="background:#3b82f6;color:white;border:none;padding:10px 14px;border-radius:40px;font-size:0.82rem;font-weight:700;cursor:pointer;">🗺️ Карта</button>
-                    ${s.site?`<a href="${s.site}" target="_blank" style="background:#f39c12;color:white;padding:10px 14px;border-radius:40px;text-decoration:none;font-size:0.82rem;font-weight:700;">🌐 Сайт</a>`:''}
+                    ${s.site
+                        ? `<a href="${s.site}" target="_blank" style="background:#f39c12;color:white;padding:10px 14px;border-radius:40px;text-decoration:none;font-size:0.82rem;font-weight:700;">🌐 Сайт</a>`
+                        : `<button onclick="window.showMagicFishAd('${s.name}')" style="background:#f39c12;color:white;border:none;padding:10px 14px;border-radius:40px;font-size:0.82rem;font-weight:700;cursor:pointer;">🌐 Сайт</button>`
+                    }
                     ${dist}
+                </div>
+                <!-- Рекламний блок MagicFish (якщо немає сайту) -->
+                ${!s.site ? `<div style="margin-top:10px;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
+                    <div style="color:white;font-size:0.78rem;">
+                        <div style="font-weight:800;font-size:0.9rem;">Немає свого сайту? Зробимо!</div>
+                    </div>
+                    <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${encodeURIComponent(s.name)}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
+                </div>` : ''}
                 </div>
                 ${reviews.length ? `<div style="margin-top:10px;border-top:1px solid #f0f0f0;padding-top:8px;">${reviews.slice(-2).reverse().map(r=>`<div style="font-size:0.82rem;margin-bottom:6px;"><span style="font-weight:700;color:#1f3b4c;">👤 ${r.author}</span> <span>${'👑'.repeat(r.rating||0)}</span><div style="color:#666;margin-top:2px;">${r.text}</div></div>`).join('')}</div>` : ''}
             </div>`;
@@ -4488,6 +4499,27 @@ function renderStores() {
     }
     renderStoreList();
 }
+window.showMagicFishAd = function(storeName) {
+    const modal = openModal(`
+        <div style="text-align:center;margin-bottom:16px;">
+            <div style="font-size:2.5rem;">🎣</div>
+            <div style="font-weight:900;font-size:1.1rem;color:#1f3b4c;margin-top:8px;">MagicFish</div>
+            <div style="font-size:0.82rem;color:#888;">Рибальська спільнота України</div>
+        </div>
+        <div style="background:#f5f5f5;border-radius:16px;padding:14px;margin-bottom:14px;font-size:0.85rem;color:#555;line-height:1.7;">
+            Магазин <b>${storeName}</b> ще не має власного сайту.<br><br>
+            Хочете розмістити сайт, рекламу або акції на MagicFish?<br>
+            Зв'яжіться з нами — це просто і вигідно!
+        </div>
+        <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${storeName}" 
+            style="display:block;background:#1f3b4c;color:white;text-align:center;padding:14px;border-radius:40px;text-decoration:none;font-weight:900;font-size:0.95rem;margin-bottom:8px;">
+            📧 ckbbuild@gmail.com
+        </a>
+        <button class="close-modal" style="width:100%;padding:12px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:700;">Закрити</button>
+    `);
+    modal.querySelector('.close-modal').onclick = () => modal.remove();
+};
+
 window.openStoreReview = function(name) {
     const s = stores.find(x=>x.name===name); if (!s) return;
     if (!s.reviews) s.reviews = [];
