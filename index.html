@@ -2007,29 +2007,6 @@ function renderMainMenu() {
         <a href="mailto:ckbbuild@gmail.com" style="font-size:0.72rem;color:#aaa;text-decoration:none;">📧 Розмістити рекламу → ckbbuild@gmail.com</a>
       </div>
 
-      <!-- ЗАВАНТАЖИТИ ДОДАТОК -->
-      <div style="margin:16px 0 8px;padding:0 4px;">
-        <div style="font-size:0.72rem;font-weight:700;color:#888;letter-spacing:1px;text-align:center;margin-bottom:10px;">ЗАВАНТАЖИТИ ДОДАТОК</div>
-        <div style="display:flex;gap:8px;">
-          <a href="#" onclick="alert('Google Play — незабаром! 🚀');return false;"
-            style="flex:1;background:#1a1a2e;color:white;border-radius:14px;padding:10px 8px;text-decoration:none;display:flex;align-items:center;gap:8px;justify-content:center;">
-            <span style="font-size:1.4rem;">▶</span>
-            <div>
-              <div style="font-size:0.6rem;opacity:0.7;">Завантажити в</div>
-              <div style="font-size:0.82rem;font-weight:800;">Google Play</div>
-            </div>
-          </a>
-          <a href="#" onclick="alert('App Store — незабаром! 🚀');return false;"
-            style="flex:1;background:#1a1a2e;color:white;border-radius:14px;padding:10px 8px;text-decoration:none;display:flex;align-items:center;gap:8px;justify-content:center;">
-            <span style="font-size:1.4rem;"></span>
-            <div>
-              <div style="font-size:0.6rem;opacity:0.7;">Завантажити в</div>
-              <div style="font-size:0.82rem;font-weight:800;">App Store</div>
-            </div>
-          </a>
-        </div>
-      </div>
-
       <!-- ПАРТНЕРИ + GTR PHANTOM -->
     </div>`;
 
@@ -2542,9 +2519,8 @@ function renderGTRProducts() {
     hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;';
     hdr.innerHTML = '<h1 style="margin:0;">🛒 GTR Shop</h1>';
     var phantomBtn = document.createElement('button');
-    phantomBtn.className = 'back-btn';
-    phantomBtn.style.cssText = 'background:#1a1a2e;color:white;';
-    phantomBtn.textContent = '📡 GTR Phantom';
+    phantomBtn.style.cssText = 'background:#3b82f6;color:white;border:none;border-radius:40px;padding:0 18px;font-weight:800;cursor:pointer;font-size:0.88rem;height:100%;min-height:40px;white-space:nowrap;';
+    phantomBtn.textContent = '📡 Налаштування GTR Phantom';
     phantomBtn.onclick = function() { renderGTRPhantom(); };
     hdr.appendChild(phantomBtn);
     var backBtn = document.createElement('button');
