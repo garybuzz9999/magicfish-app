@@ -5450,12 +5450,31 @@ if (!currentUser) {
     saveAll();
 }
 updateSubscriptionStatus();
-// Перевіряємо hash для адмінки
-if (window.location.hash === '#admin') {
-    renderGTRAdmin();
-} else {
-    renderMainMenu();
-}
+// Старт додатку — перевіряємо авторизацію
+(function() {
+    const savedUser = localStorage.getItem('mf_user');
+    const lastSection = localStorage.getItem('mf_current_section');
+
+    if (savedUser) {
+        try {
+            const user = JSON.parse(savedUser);
+            if (user && user.nickname && user.email) {
+                currentUser = user;
+                // Відновлюємо останній розділ
+                if (window.location.hash === '#admin') {
+                    renderAdmin();
+                } else if (lastSection && lastSection !== 'main' && lastSection !== 'login') {
+                    try { renderSection(lastSection); } catch(e) { renderMainMenu(); }
+                } else {
+                    renderMainMenu();
+                }
+                return;
+            }
+        } catch(e) {}
+    }
+    // Немає юзера — показуємо логін
+    renderLogin();
+})();
 
 // ========== ЗВІТИ З РИБАЛКИ (Instagram стиль) ==========
 function renderReports() {
