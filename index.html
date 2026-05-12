@@ -911,75 +911,192 @@ function payBasic() {
     renderMainMenu(); 
 }
 
+// ========== УНІВЕРСАЛЬНА ФОРМА РЕЄСТРАЦІЇ ПАРТНЕРА ==========
+function showPartnerForm(config) {
+    const modal = openModal(`
+        <h2 style="margin-bottom:4px;">${config.icon} ${config.title}</h2>
+        <div style="font-size:0.82rem;color:#888;margin-bottom:16px;">Безкоштовна реєстрація · MagicFish</div>
+
+        <div class="input-group"><label>Назва ${config.nameLabel} *</label>
+            <input id="pf_name" placeholder="${config.namePlaceholder}"></div>
+
+        <div class="input-group"><label>Телефон *</label>
+            <input id="pf_phone" type="tel" placeholder="+380..." value="${currentUser.phone||''}"></div>
+
+        <div class="input-group"><label>Адреса / Місто *</label>
+            <input id="pf_address" placeholder="м. Київ, вул. Рибна, 1"></div>
+
+        <div class="input-group"><label>Сайт (якщо є)</label>
+            <input id="pf_site" placeholder="https://..."></div>
+
+        <div class="input-group"><label>${config.dirLabel}</label>
+            <input id="pf_direction" placeholder="${config.dirPlaceholder}"></div>
+
+        <div class="input-group"><label>Графік роботи</label>
+            <input id="pf_hours" placeholder="9:00–18:00, Пн–Пт"></div>
+
+        <div class="input-group"><label>Опис (для відображення)</label>
+            <textarea id="pf_desc" placeholder="${config.descPlaceholder}" style="min-height:70px;"></textarea></div>
+
+        <button id="pf_geo" style="width:100%;background:#1f3b4c;color:white;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;margin-bottom:12px;">
+            📍 Визначити геолокацію автоматично
+        </button>
+        <div id="pf_geo_status" style="font-size:0.78rem;color:#888;text-align:center;margin-bottom:12px;min-height:16px;"></div>
+
+        <button id="pf_save" class="btn btn-block">✅ Зареєструватись</button>
+        <button class="close-modal" style="margin-top:8px;width:100%;padding:12px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:700;">Скасувати</button>
+    `);
+
+    let partnerLat = 49, partnerLng = 32;
+
+    modal.querySelector('#pf_geo').onclick = () => {
+        document.getElementById('pf_geo_status').textContent = '⏳ Визначаємо...';
+        getUserLocation(ok => {
+            if (ok) {
+                partnerLat = currentLocation.lat;
+                partnerLng = currentLocation.lng;
+                document.getElementById('pf_geo_status').innerHTML = `✅ ${partnerLat.toFixed(4)}, ${partnerLng.toFixed(4)}`;
+            } else {
+                document.getElementById('pf_geo_status').textContent = '❌ Не вдалось — введіть адресу вручну';
+            }
+        });
+    };
+
+    modal.querySelector('.close-modal').onclick = () => modal.remove();
+
+    modal.querySelector('#pf_save').onclick = () => {
+        const name     = modal.querySelector('#pf_name').value.trim();
+        const phone    = modal.querySelector('#pf_phone').value.trim();
+        const address  = modal.querySelector('#pf_address').value.trim();
+        const site     = modal.querySelector('#pf_site').value.trim();
+        const direction= modal.querySelector('#pf_direction').value.trim();
+        const hours    = modal.querySelector('#pf_hours').value.trim();
+        const desc     = modal.querySelector('#pf_desc').value.trim();
+
+        if (!name)    { alert('Введіть назву'); return; }
+        if (!phone)   { alert('Введіть телефон'); return; }
+        if (!address) { alert('Введіть адресу'); return; }
+
+        // Зберігаємо в currentUser
+        currentUser.role = config.role;
+        currentUser.partnerName = name;
+        currentUser.phone = phone;
+
+        // Додаємо в відповідний масив
+        config.onSave({ name, phone, address, site, direction, hours, desc, lat: partnerLat, lng: partnerLng });
+
+        saveAll();
+        modal.remove();
+        alert(`✅ ${config.title} "${name}" зареєстровано!\nВи з'явитесь у відповідному розділі MagicFish.`);
+        renderSection('cabinet');
+    };
+}
+
 function payStore() {
-    const name = prompt("Введіть назву вашого магазину:");
-    if (!name || name.trim().length < 2) { alert("Назва магазину обов'язкова."); return; }
-    alert(`✅ Магазин "${name.trim()}" зареєстровано безкоштовно!\n\nТепер ви можете додавати товари в кабінеті.`);
-    currentUser.role = 'store';
-    currentUser.storeName = name.trim();
-    currentUser.storeExpiry = new Date(Date.now()+365*86400000).toISOString();
-    saveAll(); renderSection('cabinet');
+    showPartnerForm({
+        icon: '🏪', title: 'Реєстрація магазину', role: 'store',
+        nameLabel: 'магазину', namePlaceholder: 'Рибалка-Центр',
+        dirLabel: 'Основний напрямок', dirPlaceholder: 'Вудки, котушки, приманки, ехолоти...',
+        descPlaceholder: 'Опис магазину, асортимент, акції...',
+        onSave: (d) => {
+            currentUser.storeName = d.name;
+            currentUser.storeExpiry = new Date(Date.now()+365*86400000).toISOString();
+            stores.push({ id: Date.now(), name: d.name, city: d.address, address: d.address,
+                phone: d.phone, site: d.site, hours: d.hours||'9:00–18:00',
+                gear: d.direction||d.desc, lat: d.lat, lng: d.lng, reviews:[] });
+        }
+    });
 }
 
 function payWaterOwner() {
-    const waterName = prompt("Введіть назву вашої водойми:");
-    if (!waterName || waterName.trim().length < 2) { alert("Назва водойми обов'язкова."); return; }
-    const name = waterName.trim();
-    if (!currentUser.waterLicenses) currentUser.waterLicenses = [];
-    const alreadyHas = currentUser.waterLicenses.find(w => w.name.toLowerCase() === name.toLowerCase());
-    if (alreadyHas) { alert(`❌ Водойма "${name}" вже зареєстрована.`); return; }
-    alert(`✅ Водойма "${name}" зареєстрована безкоштовно!\n\nДодайте інформацію в кабінеті.`);
-    currentUser.waterLicenses.push({ name, expiry: new Date(Date.now()+365*86400000).toISOString() });
-    currentUser.role = 'waterowner';
-    currentUser.waterOwnerExpiry = new Date(Date.now()+365*86400000).toISOString();
-    currentUser.myWaterName = currentUser.waterLicenses[0].name;
-    currentUser.activeWaterIdx = 0;
-    if (!waterbodies.find(w => w.name === name)) {
-        waterbodies.push({ id: Date.now(), name, lat: 49, lng: 32, paid: true, status: 'unknown', crown: 0, promo: '', price: '', phone: currentUser.phone||'', workingHours: '', services: '', description: '' });
-    }
-    saveAll(); renderSection('cabinet');
-}
-
-function payManufacturer() {
-    const name = prompt("Введіть назву вашої компанії/бренду:");
-    if (!name || name.trim().length < 2) { alert("Назва компанії обов'язкова."); return; }
-    alert(`✅ Компанія "${name.trim()}" зареєстрована безкоштовно!\n\nДодавайте товари в кабінеті.`);
-    currentUser.role = 'manufacturer';
-    currentUser.manufacturerName = name.trim();
-    currentUser.manufacturerExpiry = new Date(Date.now()+365*86400000).toISOString();
-    saveAll(); renderSection('cabinet');
+    showPartnerForm({
+        icon: '🗺️', title: 'Реєстрація водойми', role: 'waterowner',
+        nameLabel: 'водойми', namePlaceholder: 'Ставок Дубки',
+        dirLabel: 'Які риби водяться', dirPlaceholder: 'Короп, карась, щука...',
+        descPlaceholder: 'Послуги: альтанки, мангал, риболовля...',
+        onSave: (d) => {
+            if (!currentUser.waterLicenses) currentUser.waterLicenses = [];
+            currentUser.waterLicenses.push({ name: d.name, expiry: new Date(Date.now()+365*86400000).toISOString() });
+            currentUser.waterOwnerExpiry = new Date(Date.now()+365*86400000).toISOString();
+            currentUser.myWaterName = d.name;
+            if (!waterbodies.find(w => w.name === d.name)) {
+                waterbodies.push({ id: Date.now(), name: d.name, lat: d.lat, lng: d.lng,
+                    paid: true, status: 'unknown', promo: '', price: '',
+                    phone: d.phone, region: '', city: d.address,
+                    services: d.direction||d.desc, reviews: [] });
+            }
+        }
+    });
 }
 
 function payCamping() {
-    const name = prompt("Введіть назву вашого кемпінгу:");
-    if (!name || name.trim().length < 2) { alert("Назва кемпінгу обов'язкова."); return; }
-    alert(`✅ Кемпінг "${name.trim()}" зареєстровано безкоштовно!\n\nДодайте деталі в кабінеті.`);
-    currentUser.role = 'camping';
-    currentUser.campingName = name.trim();
-    currentUser.campingExpiry = new Date(Date.now()+365*86400000).toISOString();
-    saveAll(); renderSection('cabinet');
+    showPartnerForm({
+        icon: '🏕️', title: 'Реєстрація кемпінгу', role: 'camping',
+        nameLabel: 'кемпінгу', namePlaceholder: 'Лісовий кемпінг',
+        dirLabel: 'Послуги', dirPlaceholder: 'Намісця, дрова, душ, мангали...',
+        descPlaceholder: 'Опис кемпінгу, умови, правила...',
+        onSave: (d) => {
+            currentUser.campingName = d.name;
+            currentUser.campingExpiry = new Date(Date.now()+365*86400000).toISOString();
+            campings.push({ id: Date.now(), name: d.name, city: d.address,
+                phone: d.phone, site: d.site, services: d.direction||d.desc,
+                lat: d.lat, lng: d.lng, reviews: [] });
+        }
+    });
 }
 
 function payResort() {
-    const name = prompt("Назва вашої бази відпочинку:");
-    if (!name || name.trim().length < 2) { alert("Назва обов'язкова."); return; }
-    alert(`✅ База відпочинку "${name.trim()}" зареєстрована безкоштовно!\n\nНалаштуйте все в кабінеті.`);
-    if (!currentUser.resortLicenses) currentUser.resortLicenses = [];
-    currentUser.resortLicenses.push({ name: name.trim(), expiry: new Date(Date.now()+365*86400000).toISOString() });
-    currentUser.role = 'resort';
-    currentUser.resortExpiry = new Date(Date.now()+365*86400000).toISOString();
-    currentUser.myResortName = name.trim();
-    saveAll(); renderSection('cabinet');
+    showPartnerForm({
+        icon: '🏖️', title: 'Реєстрація бази відпочинку', role: 'resort',
+        nameLabel: 'бази', namePlaceholder: 'База Лісова Хата',
+        dirLabel: 'Послуги', dirPlaceholder: 'Будиночки, баня, риболовля...',
+        descPlaceholder: 'Опис бази, умови проживання, ціни...',
+        onSave: (d) => {
+            if (!currentUser.resortLicenses) currentUser.resortLicenses = [];
+            currentUser.resortLicenses.push({ name: d.name, expiry: new Date(Date.now()+365*86400000).toISOString() });
+            currentUser.resortExpiry = new Date(Date.now()+365*86400000).toISOString();
+            currentUser.myResortName = d.name;
+            const allBases = [...(typeof basesKyivChop!=='undefined'?basesKyivChop:[]),
+                             ...(typeof basesKyivWarsaw!=='undefined'?basesKyivWarsaw:[])];
+            if (!allBases.find(b => b.name === d.name)) {
+                if (typeof basesKyivChop !== 'undefined') {
+                    basesKyivChop.push({ id: Date.now(), name: d.name, city: d.address,
+                        phone: d.phone, services: d.direction||d.desc,
+                        lat: d.lat, lng: d.lng, reviews: [] });
+                }
+            }
+        }
+    });
 }
 
 function payTravelAgency() {
-    const name = prompt("Введіть назву вашого турагентства:");
-    if (!name || name.trim().length < 2) { alert("Назва турагентства обов'язкова."); return; }
-    alert(`✅ Турагентство "${name.trim()}" зареєстровано безкоштовно!\n\nПублікуйте тури в кабінеті.`);
-    currentUser.role = 'travelagency';
-    currentUser.agencyName = name.trim();
-    currentUser.travelagencyExpiry = new Date(Date.now()+365*86400000).toISOString();
-    saveAll(); renderSection('cabinet');
+    showPartnerForm({
+        icon: '🚌', title: 'Реєстрація турагентства', role: 'travelagency',
+        nameLabel: 'агентства', namePlaceholder: 'Fishing Ukraine',
+        dirLabel: 'Напрямки турів', dirPlaceholder: 'Шацькі озера, Карпати, морська рибалка...',
+        descPlaceholder: 'Опис агентства, умови, контакти...',
+        onSave: (d) => {
+            currentUser.agencyName = d.name;
+            currentUser.travelagencyExpiry = new Date(Date.now()+365*86400000).toISOString();
+            tours.push({ id: Date.now(), title: `Тури від ${d.name}`, agency: d.name,
+                duration: 'Уточнюйте', price: 0, from: d.address,
+                dates: [], fish: d.direction||'', includes: d.desc||'',
+                maxPeople: 10, booked: 0, phone: d.phone, desc: d.desc||'' });
+        }
+    });
+}
+
+function payManufacturer() {
+    showPartnerForm({
+        icon: '🏭', title: 'Реєстрація бренду/виробника', role: 'manufacturer',
+        nameLabel: 'компанії', namePlaceholder: 'GTR Fishing',
+        dirLabel: 'Продукція', dirPlaceholder: 'Сигналізатори, вудки, приманки...',
+        descPlaceholder: 'Опис компанії, бренду, виробництва...',
+        onSave: (d) => {
+            currentUser.manufacturerName = d.name;
+            currentUser.manufacturerExpiry = new Date(Date.now()+365*86400000).toISOString();
+        }
+    });
 }
 
 
@@ -3448,6 +3565,10 @@ function renderResorts() {
                         style="background:#3b82f6;color:white;border:none;padding:10px 14px;border-radius:40px;font-size:0.82rem;font-weight:700;cursor:pointer;">🗺️ Карта</button>
                     ${dist}
                 </div>
+                ${!b.site ? `<div style="margin-top:10px;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
+                    <div style="color:white;font-size:0.85rem;font-weight:800;">Немає свого сайту? Зробимо!</div>
+                    <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${b.name}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
+                </div>` : ''}
 
                 <!-- Останні відгуки -->
                 ${reviews.length ? `<div style="margin-top:12px;border-top:1px solid #f0f0f0;padding-top:10px;">
@@ -3855,6 +3976,12 @@ function renderWaterbodies() {
                     <button style="background:#3b82f6;color:white;border:none;padding:10px 16px;border-radius:40px;font-size:0.82rem;font-weight:700;cursor:pointer;"
                         onclick="window.open('https://www.google.com/maps?q=${w.lat},${w.lng}','_blank')">🗺️ Карта</button>
                 </div>
+                ${!w.site ? `<div style="margin-top:10px;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
+                    <div style="color:white;font-size:0.85rem;font-weight:800;">Немає свого сайту? Зробимо!</div>
+                    <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${w.name}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
+                </div>` : ''}
+                <div style="display:none;">
+                </div>
 
                 <!-- Останні відгуки -->
                 ${reviews.length ? `<div style="margin-top:12px;border-top:1px solid #f0f0f0;padding-top:10px;">
@@ -4245,6 +4372,10 @@ function renderCampings() {
                         <a href="tel:${c.phone}" style="background:#27ae60;color:white;padding:10px 14px;border-radius:40px;text-decoration:none;font-size:0.82rem;font-weight:700;">📞 ${c.phone}</a>
                         <button onclick="window.open('https://www.google.com/maps?q=${c.lat},${c.lng}','_blank')" style="background:#3b82f6;color:white;border:none;padding:10px 14px;border-radius:40px;font-size:0.82rem;font-weight:700;cursor:pointer;">🗺️ Карта</button>
                     </div>
+                    ${!c.site ? `<div style="margin-top:10px;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
+                        <div style="color:white;font-size:0.85rem;font-weight:800;">Немає свого сайту? Зробимо!</div>
+                        <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${c.name}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
+                    </div>` : ''}
                     ${reviews.length ? `<div style="margin-top:10px;border-top:1px solid #f0f0f0;padding-top:8px;">${reviews.slice(-2).reverse().map(r=>`<div style="font-size:0.82rem;margin-bottom:6px;"><span style="font-weight:700;color:#1f3b4c;">👤 ${r.author}</span> <span>${'👑'.repeat(r.rating||0)}</span><div style="color:#666;margin-top:2px;">${r.text}</div></div>`).join('')}</div>` : ''}
                 </div>
             </div>`;
@@ -4317,6 +4448,10 @@ function renderTours() {
                 <a href="tel:${t.phone}" style="background:#27ae60;color:white;padding:10px 22px;border-radius:40px;text-decoration:none;font-weight:700;font-size:0.9rem;">📞 Забронювати</a>
                 <span style="font-size:0.8rem;color:#888;">Агентство: ${t.agency}</span>
             </div>
+            ${!t.site ? `<div style="margin-top:10px;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
+                <div style="color:white;font-size:0.85rem;font-weight:800;">Немає свого сайту? Зробимо!</div>
+                <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${t.agency}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
+            </div>` : ''}
         </div>`;
     }).join('') || '<div style="text-align:center;padding:40px;color:#aaa;">🚌 Турів поки немає</div>';
 }
