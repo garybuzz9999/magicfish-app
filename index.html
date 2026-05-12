@@ -1374,10 +1374,29 @@ function renderLogin() {
       <!-- Шапка -->
       <div style="background:linear-gradient(135deg,#1f3b4c,#2a5f7a);padding:16px 20px 0;border-radius:48px 48px 0 0;">
         <!-- Рядок мова / країна / валюта -->
-        <div style="display:flex;align-items:center;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
           <button id="langBtn" style="background:rgba(255,255,255,0.18);border:none;border-radius:40px;padding:7px 14px;color:white;font-size:0.85rem;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:6px;">
             ${selLang.label}
           </button>
+          <!-- Кнопки App Store / Google Play -->
+          <div style="display:flex;gap:6px;">
+            <a href="#" onclick="alert('Google Play — незабаром! 🚀');return false;"
+              style="background:rgba(255,255,255,0.15);color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
+              <span style="font-size:1rem;">▶</span>
+              <div>
+                <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
+                <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">Google Play</div>
+              </div>
+            </a>
+            <a href="#" onclick="alert('App Store — незабаром! 🚀');return false;"
+              style="background:rgba(255,255,255,0.15);color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
+              <span style="font-size:1rem;"></span>
+              <div>
+                <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
+                <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">App Store</div>
+              </div>
+            </a>
+          </div>
         </div>
         <!-- Лого -->
         <div style="text-align:center;padding-bottom:24px;">
@@ -1881,8 +1900,30 @@ function renderMainMenu() {
       <div style="font-size:0.9rem;color:#1e3a3a;">👤 ${currentUser.nickname} | <span id="logoutBtn" style="text-decoration:underline;cursor:pointer;">вийти</span></div>
     </div>
     <div class="card">
-      <h1>🎣 MagicFish</h1>
-      <div class="tagline">Рибальська спільнота</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+        <div>
+          <h1 style="margin:0;">🎣 MagicFish</h1>
+          <div class="tagline" style="margin:0;">Рибальська спільнота</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:4px;">
+          <a href="#" onclick="alert('Google Play — незабаром! 🚀');return false;"
+            style="background:#1a1a2e;color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
+            <span style="font-size:1rem;">▶</span>
+            <div>
+              <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
+              <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">Google Play</div>
+            </div>
+          </a>
+          <a href="#" onclick="alert('App Store — незабаром! 🚀');return false;"
+            style="background:#1a1a2e;color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
+            <span style="font-size:1rem;"></span>
+            <div>
+              <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
+              <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">App Store</div>
+            </div>
+          </a>
+        </div>
+      </div>
       <!-- Глобальний пошук -->
       <div style="position:relative;margin-bottom:14px;">
         <input id="globalSearch" type="text" placeholder="🔍 Пошук по сайту..." style="width:100%;padding:11px 40px 11px 16px;border-radius:40px;border:1.5px solid #c8e6c9;background:#f8fff8;font-size:0.88rem;box-sizing:border-box;outline:none;">
