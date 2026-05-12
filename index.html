@@ -613,6 +613,49 @@ let tournaments = [
 ];
 
 // ========== ЗБЕРІГАННЯ ==========
+// ========== СИСТЕМА РЕЙТИНГУ ==========
+function getUserRank(points) {
+    if (points >= 1001) return { label:'Легенда', icon:'👑', color:'#f39c12' };
+    if (points >= 501)  return { label:'Майстер', icon:'🏆', color:'#8b5cf6' };
+    if (points >= 201)  return { label:'Досвідчений', icon:'🎣', color:'#27ae60' };
+    if (points >= 51)   return { label:'Рибалка', icon:'🐟', color:'#3b82f6' };
+    return { label:'Новачок', icon:'🪱', color:'#888' };
+}
+
+function getUserStage(regDate) {
+    if (!regDate) return '';
+    const diff = Date.now() - new Date(regDate).getTime();
+    const days  = Math.floor(diff / 86400000);
+    const months = Math.floor(days / 30);
+    const years  = Math.floor(days / 365);
+    if (years >= 1)  return `${years} р.`;
+    if (months >= 1) return `${months} міс.`;
+    return `${days} дн.`;
+}
+
+function addPoints(user, action) {
+    if (!user) return;
+    if (!user.points) user.points = 0;
+    const pts = { forum:5, review:3, checkin:2, report:5, news:10, like:1 };
+    user.points += (pts[action] || 0);
+    saveAll();
+}
+
+function renderUserBadge(u, size) {
+    // Показує аватар + нікнейм + ранг + стаж
+    size = size || 36;
+    const rank = getUserRank(u.points || 0);
+    const stage = getUserStage(u.regDate);
+    const avatar = getUserAvatar(u.nickname, size, u.avatar);
+    return `<div style="display:flex;align-items:center;gap:8px;">
+        ${avatar}
+        <div>
+            <div style="font-weight:700;font-size:0.85rem;color:#1f3b4c;">${u.nickname}</div>
+            <div style="font-size:0.72rem;color:${rank.color};">${rank.icon} ${rank.label}${stage ? ' · '+stage : ''}</div>
+        </div>
+    </div>`;
+}
+
 function getUserAvatar(nickname, size, avatar) {
     size = size || 36;
     if (avatar) {
@@ -1578,7 +1621,7 @@ function renderLogin() {
             } catch(e) {}
         }
         // Новий користувач — вибір нікнейму
-        currentUser = { nickname:'', email: user.email, role:'user', hasBasicPaid:true, lang:appLang, country:appCountry, currency:appCurrency };
+        currentUser = { nickname:'', email: user.email, role:'user', hasBasicPaid:true, lang:appLang, country:appCountry, currency:appCurrency, regDate: new Date().toISOString(), points: 0 };
         saveAll();
         renderPickNickname('supabase');
     }
@@ -3826,7 +3869,7 @@ function showNewTopicModal() {
             createdAt: Date.now(),
         };
         forumPosts.push(firstPost);
-        
+        addPoints(currentUser, 'forum');
         saveForumData();
         modal.remove();
         renderForumTopic(newTopic.id);
@@ -4133,6 +4176,7 @@ window.openWaterReview = function(id) {
         if (!selectedRating) { alert('Оберіть оцінку 👑'); return; }
         if (!text) { alert('Напишіть відгук'); return; }
         w.reviews.push({ author: currentUser.nickname, rating: selectedRating, text, date: new Date().toISOString().slice(0,10) });
+        addPoints(currentUser, 'review');
         saveAll();
         modal.remove();
         renderWaterbodies();
@@ -4844,7 +4888,13 @@ function renderCabinet() {
                 <div style="font-size:1.2rem;font-weight:900;">${u.nickname}</div>
                 <div style="font-size:0.85rem;opacity:0.85;">${u.fullName ? u.fullName+' · ' : ''}${u.email||'anonymous'}</div>
                 <div style="font-size:0.78rem;opacity:0.75;margin-top:2px;">${u.city ? '📍 '+u.city : ''} ${u.phone ? '· 📞 '+u.phone : ''}</div>
-                <div style="margin-top:4px;background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:40px;font-size:0.8rem;font-weight:700;display:inline-block;">${roleName}</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;align-items:center;">
+                    <div style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:40px;font-size:0.8rem;font-weight:700;">${roleName}</div>
+                    <div style="background:rgba(255,255,255,0.15);padding:4px 12px;border-radius:40px;font-size:0.8rem;font-weight:700;">
+                        ${getUserRank(u.points||0).icon} ${getUserRank(u.points||0).label} · ${u.points||0} очок
+                    </div>
+                    ${u.regDate ? `<div style="background:rgba(255,255,255,0.1);padding:4px 12px;border-radius:40px;font-size:0.75rem;opacity:0.85;">📅 стаж ${getUserStage(u.regDate)}</div>` : ''}
+                </div>
             </div>
         </div>
         <div class="cabinet-stats">
@@ -4917,6 +4967,29 @@ function renderCabinet() {
             </button>
             <div id="settGeoStatus" style="font-size:0.78rem;color:#888;text-align:center;margin-bottom:12px;min-height:16px;">
                 ${u.lat ? `✅ ${parseFloat(u.lat).toFixed(4)}, ${parseFloat(u.lng).toFixed(4)}` : ''}
+            </div>
+
+            <!-- Статистика профілю -->
+            <div style="background:#f5f5f5;border-radius:20px;padding:14px;margin-bottom:12px;">
+                <div style="font-size:0.75rem;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:10px;">МІЙ ПРОФІЛЬ</div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                    <span style="font-size:0.85rem;color:#555;">📅 Дата реєстрації</span>
+                    <span style="font-size:0.85rem;font-weight:700;color:#1f3b4c;">${u.regDate ? new Date(u.regDate).toLocaleDateString('uk-UA') : 'сьогодні'}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                    <span style="font-size:0.85rem;color:#555;">⏱️ Стаж</span>
+                    <span style="font-size:0.85rem;font-weight:700;color:#1f3b4c;">${u.regDate ? getUserStage(u.regDate) : '0 дн.'}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                    <span style="font-size:0.85rem;color:#555;">⭐ Очки</span>
+                    <span style="font-size:0.85rem;font-weight:700;color:#f39c12;">${u.points||0}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                    <span style="font-size:0.85rem;color:#555;">🏅 Ранг</span>
+                    <span style="font-size:0.85rem;font-weight:700;" style="color:${getUserRank(u.points||0).color};">
+                        ${getUserRank(u.points||0).icon} ${getUserRank(u.points||0).label}
+                    </span>
+                </div>
             </div>
 
             <button id="saveSettings" class="btn btn-block">💾 Зберегти зміни</button>
