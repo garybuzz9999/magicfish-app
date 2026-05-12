@@ -1635,7 +1635,7 @@ function renderLogin() {
     };
 
     // ---- Supabase Auth helpers ----
-    async function afterSupabaseLogin(user) {
+    async function afterSupabaseLogin(user, restoreSection) {
         // Перевіряємо чи вже є профіль у localStorage
         const savedUser = localStorage.getItem('mf_user');
         if (savedUser) {
@@ -1643,6 +1643,13 @@ function renderLogin() {
                 const parsed = JSON.parse(savedUser);
                 if (parsed.email === user.email && parsed.nickname) {
                     currentUser = parsed;
+                    // Відновлюємо останній розділ після оновлення сторінки
+                    if (restoreSection) {
+                        const lastSection = localStorage.getItem('mf_current_section');
+                        if (lastSection && lastSection !== 'main' && lastSection !== 'login') {
+                            try { renderSection(lastSection); return; } catch(e) {}
+                        }
+                    }
                     renderMainMenu();
                     return;
                 }
@@ -1724,7 +1731,7 @@ function renderLogin() {
     supabaseClient.auth.getSession().then(function(result) {
         const session = result.data && result.data.session;
         if (session && session.user) {
-            afterSupabaseLogin(session.user);
+            afterSupabaseLogin(session.user, true); // true = відновити секцію
         }
     });
 }
@@ -1816,7 +1823,12 @@ function renderAskGeolocation() {
                 currentUser.locationDenied = false;
                 saveAll();
                 statusDiv.innerHTML = '✅ Визначено: ' + pos.coords.latitude.toFixed(4) + ', ' + pos.coords.longitude.toFixed(4) + ' (±' + Math.round(pos.coords.accuracy) + 'м)';
-                setTimeout(function() { renderMainMenu(); }, 800);
+                setTimeout(function() {
+                    const lastSection = localStorage.getItem('mf_current_section');
+                    if (lastSection && lastSection !== 'main' && lastSection !== 'login') {
+                        try { renderSection(lastSection); } catch(e) { renderMainMenu(); }
+                    } else { renderMainMenu(); }
+                }, 800);
             },
             function(err) {
                 statusDiv.innerHTML = '⚠️ Не вдалось визначити. Перевірте дозволи браузера.';
