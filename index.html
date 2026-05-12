@@ -1341,6 +1341,7 @@ function renderLogin() {
     // Тексти залежно від мови
     const txt = {
         subtitle:  isUk ? 'Рибальська спільнота · Весь світ' : 'Fishing Community · Worldwide',
+        slogan:    isUk ? 'Рибалка нового покоління' : 'Fishing of the New Generation',
         features:  isUk ? [
             '🗺️ Водойми — живі чекіни «клює/не клює»',
             '🏕️ Кемпінги біля водойм',
@@ -1403,6 +1404,7 @@ function renderLogin() {
           <div style="font-size:3rem;margin-bottom:8px;">🎣</div>
           <div style="font-size:2rem;font-weight:900;color:white;letter-spacing:-1px;">MagicFish</div>
           <div style="font-size:0.9rem;color:rgba(255,255,255,0.75);margin-top:6px;">${txt.subtitle}</div>
+          <div style="font-size:0.82rem;color:#f39c12;font-weight:700;margin-top:6px;letter-spacing:0.5px;">${txt.slogan}</div>
         </div>
       </div>
 
