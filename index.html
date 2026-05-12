@@ -983,7 +983,13 @@ function updateSubscriptionStatus() {
 function payBasic() { 
     currentUser.hasBasicPaid=true; 
     saveAll(); 
-    renderMainMenu(); 
+    // Відновлюємо останній розділ після оновлення сторінки
+    const lastSection = localStorage.getItem('mf_current_section');
+    if (lastSection && lastSection !== 'main' && lastSection !== 'login') {
+        try { renderSection(lastSection); } catch(e) { renderMainMenu(); }
+    } else {
+        renderMainMenu();
+    }
 }
 
 // ========== УНІВЕРСАЛЬНА ФОРМА РЕЄСТРАЦІЇ ПАРТНЕРА ==========
@@ -1942,6 +1948,7 @@ function globalSearch(q) {
 }
 
 function renderMainMenu() {
+    localStorage.setItem('mf_current_section', 'main');
     const app = document.getElementById('appRoot');
     // Показуємо банер якщо геолокація відхилена і ще не визначена
     if (currentUser?.locationDenied && !currentLocation) {
@@ -2582,6 +2589,7 @@ function renderGTRAdmin() {
     buildAdminList();
 }
 function renderGTRProducts() {
+    localStorage.setItem('mf_current_section', 'alarm');
     var app = document.getElementById('appRoot');
     app.innerHTML = '';
 
@@ -2917,6 +2925,7 @@ window.showPhantomLicenseModal = function() {
 };
 
 function renderGTRPhantom() {
+    localStorage.setItem('mf_current_section', 'gtrphantom');
     const app = document.getElementById('appRoot');
     const PHANTOM_COLORS = ['#2a5f7a','#1D9E75','#BA7517','#D4537E','#7F77DD','#e74c3c','#f39c12','#27ae60'];
 
@@ -3824,6 +3833,7 @@ function renderAlarm() {
 // ========== ГОЛОВНИЙ РОУТЕР ==========
 // ========== БАЗИ ВІДПОЧИНКУ (список для користувачів) ==========
 function renderResorts() {
+    localStorage.setItem('mf_current_section', 'resorts');
     ensureLeafletFallback();
     const app = document.getElementById('appRoot');
     let nearbyOnly = false;
@@ -4023,6 +4033,7 @@ function saveForumData() {
 }
 
 function renderForum() {
+    localStorage.setItem('mf_current_section', 'forum');
     const app = document.getElementById('appRoot');
     app.innerHTML = `
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
@@ -4200,6 +4211,7 @@ let tours = [
 
 // ========== ВОДОЙМИ ==========
 function renderWaterbodies() {
+    localStorage.setItem('mf_current_section', 'waterbodies');
     ensureLeafletFallback();
     const app = document.getElementById('appRoot');
     // фільтри: 'all' | 'free' | 'paid'
@@ -4434,6 +4446,7 @@ window.openWaterReview = function(id) {
 
 // ========== ПРОГНОЗ КЛЮВАННЯ ==========
 function renderForecast() {
+    localStorage.setItem('mf_current_section', 'forecast');
     ensureLeafletFallback();
     const app = document.getElementById('appRoot');
     const now = new Date();
@@ -4683,6 +4696,7 @@ function renderForecast() {
 
 // ========== КЕМПІНГИ ==========
 function renderCampings() {
+    localStorage.setItem('mf_current_section', 'campings');
     ensureLeafletFallback();
     const app = document.getElementById('appRoot');
     let nearbyOnly = false;
@@ -4796,6 +4810,7 @@ window.openCampingReview = function(name) {
 
 // ========== ТУРИ ПО УКРАЇНІ ==========
 function renderTours() {
+    localStorage.setItem('mf_current_section', 'tours');
     const app = document.getElementById('appRoot');
     const savedTours = JSON.parse(localStorage.getItem('mf_tours')||'[]');
     const allTours = savedTours.length ? savedTours : tours;
@@ -4843,6 +4858,7 @@ function renderTours() {
 
 // ========== ДОШКА ОГОЛОШЕНЬ ==========
 function renderMarketplace() {
+    localStorage.setItem('mf_current_section', 'marketplace');
     const app = document.getElementById('appRoot');
     let activeCat = 'all';
     let searchQ = '';
@@ -4927,6 +4943,7 @@ function showAddListingModal() {
 
 // ========== МАГАЗИНИ ==========
 function renderStores() {
+    localStorage.setItem('mf_current_section', 'stores');
     ensureLeafletFallback();
     const app = document.getElementById('appRoot');
     let nearbyOnly = false;
@@ -5068,6 +5085,7 @@ window.openStoreReview = function(name) {
 
 // ========== НОВИНИ ==========
 function renderNews() {
+    localStorage.setItem('mf_current_section', 'news');
     const app = document.getElementById('appRoot');
     const isAdmin = currentUser && (currentUser.email==='ckbbuild@gmail.com' || currentUser.role==='admin');
     app.innerHTML = `
@@ -5119,6 +5137,7 @@ window.deleteNews = function(idx) {
 
 // ========== КАБІНЕТ ==========
 function renderCabinet() {
+    localStorage.setItem('mf_current_section', 'cabinet');
     const app = document.getElementById('appRoot');
     const u = currentUser;
     const myList = listings.filter(l => l.seller===u.nickname && l.status!=='deleted');
@@ -5338,6 +5357,7 @@ window.deleteListing = function(id) {
 
 // ========== SOS ==========
 function renderSOS() {
+    localStorage.setItem('mf_current_section', 'sos');
     const app = document.getElementById('appRoot');
     app.innerHTML = `
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
@@ -5385,6 +5405,7 @@ window.sendSOSAlert = function() {
 
 // ========== RENDER SECTION ==========
 function renderSection(section) {
+    localStorage.setItem('mf_current_section', section);
     if (section==='waterbodies') renderWaterbodies();
     else if (section==='campings') renderCampings();
     else if (section==='resorts') renderResorts();
@@ -5426,6 +5447,7 @@ if (window.location.hash === '#admin') {
 
 // ========== ЗВІТИ З РИБАЛКИ (Instagram стиль) ==========
 function renderReports() {
+    localStorage.setItem('mf_current_section', 'reports');
     var app = document.getElementById('appRoot');
     var reports = JSON.parse(localStorage.getItem('mf_reports') || '[]');
     var myLikes = JSON.parse(localStorage.getItem('mf_report_likes') || '{}');
@@ -5831,6 +5853,7 @@ loadCustomCategories();
 loadCustomRatingItems();
 
 function renderLureRating() {
+    localStorage.setItem('mf_current_section', 'lurerating');
     var app = document.getElementById('appRoot');
     var selectedCat = localStorage.getItem('mf_rating_cat') || 'lures';
     var cat = ratingCategories.find(function(c){ return c.id === selectedCat; }) || ratingCategories[0];
@@ -6176,6 +6199,7 @@ window.voteRatingItem = function(itemId, voteType) {
 
 // ========== МАЙСТЕРНЯ ==========
 function renderWorkshop() {
+    localStorage.setItem('mf_current_section', 'workshop');
     var app = document.getElementById('appRoot');
     var posts = JSON.parse(localStorage.getItem('mf_workshop') || '[]');
     var cats = ['Ремонт котушок', 'Ремонт вудилищ', 'Виготовлення приманок', 'Спорядження', 'Човни та мотори', 'Інше'];
@@ -6222,6 +6246,7 @@ function renderWorkshop() {
 
 // ========== ПЛАНИ РИБАЛОК ==========
 function renderFishingPlans() {
+    localStorage.setItem('mf_current_section', 'fishingplans');
     var app = document.getElementById('appRoot');
     var plans = JSON.parse(localStorage.getItem('mf_plans') || '[]');
 
@@ -6284,6 +6309,7 @@ function renderFishingPlans() {
 
 // ========== ЗИМОВА РИБАЛКА ==========
 function renderWinterFishing() {
+    localStorage.setItem('mf_current_section', 'winterfishing');
     var app = document.getElementById('appRoot');
     var posts = JSON.parse(localStorage.getItem('mf_winter') || '[]');
     var cats = ['Мормишка','Балансир','Жерлиці','Блешня','Лід і безпека','Спорядження','Ехолоти для льоду','Інше'];
@@ -6344,6 +6370,7 @@ function renderWinterFishing() {
 
 // ========== СПОСОБИ ЛОВЛІ ==========
 function renderFishingMethods() {
+    localStorage.setItem('mf_current_section', 'fishingmethods');
     var app = document.getElementById('appRoot');
     var methods = [
         { id:'spinning', name:'Спінінг', emoji:'🎣', desc:'Воблери, блесни, силікон на хижака', color:'#1f3b4c' },
@@ -6435,6 +6462,7 @@ function renderMethodDetail(method) {
 
 // ========== ЧОВНИ ТА МОТОРИ ==========
 function renderBoats() {
+    localStorage.setItem('mf_current_section', 'boats');
     var app = document.getElementById('appRoot');
     var posts = JSON.parse(localStorage.getItem('mf_boats') || '[]');
     var cats = ['Гумові човни ПВХ','Алюмінієві човни','Катери','Підвісні мотори','Електромотори','Ехолоти та GPS','Обладнання','Безпека на воді','Інше'];
@@ -6493,6 +6521,7 @@ function renderBoats() {
 
 // ========== ПІДВОДНЕ ПОЛЮВАННЯ ==========
 function renderUnderwater() {
+    localStorage.setItem('mf_current_section', 'underwater');
     var app = document.getElementById('appRoot');
     var posts = JSON.parse(localStorage.getItem('mf_underwater') || '[]');
     var cats = ['Рушниці та арбалети','Ласти та маски','Гідрокостюми','Місця і водойми','Техніка і тактика','Безпека','Риба і закон','Інше'];
