@@ -613,6 +613,28 @@ let tournaments = [
 ];
 
 // ========== ЗБЕРІГАННЯ ==========
+// ========== ФІЛЬТР МАТІВ ==========
+function filterMat(text) {
+    if (!text) return text;
+    const mats = [
+        // Українські
+        'блять','бляд','сука','пизд','хуй','хуєв','хуєм','хуєц','піздеж','пізда','піздат',
+        'їбать','їбан','єбать','єбан','йобать','йобан','ахуй','нахуй','захуй','похуй',
+        'мудак','мудил','мудо','залупа','залуп','дрочи','дроч','дрочун',
+        'шлюха','шльоха','повія','бл*','бля',
+        // Російські (транслітом)
+        'blyad','suka','pizd','khuy','yebat','yoban','mudak','zalupa','droch','shlyukha',
+        // З замінами літер
+        'п1зд','х*й','б@ять','е6ать',
+    ];
+    let result = text;
+    mats.forEach(mat => {
+        const regex = new RegExp(mat, 'gi');
+        result = result.replace(regex, m => '*'.repeat(m.length));
+    });
+    return result;
+}
+
 // ========== СИСТЕМА РЕЙТИНГУ ==========
 function getUserRank(points) {
     if (points >= 1001) return { label:'Легенда', icon:'👑', color:'#f39c12' };
@@ -3759,7 +3781,7 @@ window.openResortReview = function(name) {
         const text = modal.querySelector('#resortReviewText').value.trim();
         if (!selectedRating) { alert('Оберіть оцінку 👑'); return; }
         if (!text) { alert('Напишіть відгук'); return; }
-        b.reviews.push({ author: currentUser.nickname, rating: selectedRating, text, date: new Date().toISOString().slice(0,10) });
+        b.reviews.push({ author: currentUser.nickname, rating: selectedRating, text: filterMat(text), date: new Date().toISOString().slice(0,10) });
         saveAll();
         modal.remove();
         renderResorts();
@@ -3868,6 +3890,8 @@ function showNewTopicModal() {
             text,
             createdAt: Date.now(),
         };
+        firstPost.text = filterMat(firstPost.text);
+        newTopic.title = filterMat(newTopic.title);
         forumPosts.push(firstPost);
         addPoints(currentUser, 'forum');
         saveForumData();
@@ -3903,7 +3927,7 @@ function renderForumTopic(topicId) {
 
     document.getElementById('backToForum').onclick = () => renderForum();
     document.getElementById('sendReplyBtn').onclick = () => {
-        const text = document.getElementById('replyText').value.trim();
+        const text = filterMat(document.getElementById('replyText').value.trim());
         if (!text) { alert('Напишіть щось!'); return; }
         
         forumPosts.push({
@@ -4175,7 +4199,7 @@ window.openWaterReview = function(id) {
         const text = modal.querySelector('#reviewText').value.trim();
         if (!selectedRating) { alert('Оберіть оцінку 👑'); return; }
         if (!text) { alert('Напишіть відгук'); return; }
-        w.reviews.push({ author: currentUser.nickname, rating: selectedRating, text, date: new Date().toISOString().slice(0,10) });
+        w.reviews.push({ author: currentUser.nickname, rating: selectedRating, text: filterMat(text), date: new Date().toISOString().slice(0,10) });
         addPoints(currentUser, 'review');
         saveAll();
         modal.remove();
@@ -4540,7 +4564,7 @@ window.openCampingReview = function(name) {
         const text = modal.querySelector('#campRevText').value.trim();
         if (!sel) { alert('Оберіть оцінку 👑'); return; }
         if (!text) { alert('Напишіть відгук'); return; }
-        c.reviews.push({ author: currentUser.nickname, rating: sel, text, date: new Date().toISOString().slice(0,10) });
+        c.reviews.push({ author: currentUser.nickname, rating: sel, text: filterMat(text), date: new Date().toISOString().slice(0,10) });
         saveAll(); modal.remove(); renderCampings();
     };
 };
@@ -4671,7 +4695,7 @@ function showAddListingModal() {
         const desc = modal.querySelector('#newDesc').value.trim();
         const cat = modal.querySelector('#newCat').value;
         if (!title) { alert('Введіть назву'); return; }
-        listings.push({id:Date.now(),seller:currentUser.nickname,title,price,desc,photo:'',category:cat,subcategory:'',status:'active',views:0,date:new Date().toISOString().slice(0,10)});
+        listings.push({id:Date.now(),seller:currentUser.nickname,title:filterMat(title),price,desc:filterMat(desc),photo:'',category:cat,subcategory:'',status:'active',views:0,date:new Date().toISOString().slice(0,10)});
         saveAll(); modal.remove(); renderMarketplace();
     };
 }
@@ -4812,7 +4836,7 @@ window.openStoreReview = function(name) {
         const text = modal.querySelector('#storeRevText').value.trim();
         if (!sel) { alert('Оберіть оцінку 👑'); return; }
         if (!text) { alert('Напишіть відгук'); return; }
-        s.reviews.push({ author: currentUser.nickname, rating: sel, text, date: new Date().toISOString().slice(0,10) });
+        s.reviews.push({ author: currentUser.nickname, rating: sel, text: filterMat(text), date: new Date().toISOString().slice(0,10) });
         saveAll(); modal.remove(); renderStores();
     };
 };
