@@ -2770,6 +2770,152 @@ function renderGTRCases() {
 }
 
 // ========== GTR СИГНАЛІЗАТОР ==========
+// ========== GTR PHANTOM API ==========
+
+// Перевірка ліцензії пристрою
+async function checkPhantomLicense(deviceId) {
+    const key = `mf_phantom_license_${deviceId}`;
+    const stored = JSON.parse(localStorage.getItem(key) || 'null');
+    if (stored) {
+        const expiry = new Date(stored.expiry);
+        const now = new Date();
+        const daysLeft = Math.ceil((expiry - now) / 86400000);
+        return { ...stored, daysLeft, expired: daysLeft <= 0 };
+    }
+    return null;
+}
+
+// Реєстрація пристрою в Supabase
+async function registerPhantomDevice(macHash, deviceType) {
+    try {
+        const { data, error } = await supabaseClient
+            .from('phantom_devices')
+            .insert({
+                user_id: (await supabaseClient.auth.getUser()).data.user?.id,
+                email: currentUser.email,
+                mac_hash: macHash,
+                device_type: deviceType,
+                max_devices: deviceType === 'original' ? 8 : 1,
+                is_active: deviceType === 'original', // оригінал активний одразу
+            })
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    } catch(e) {
+        console.warn('Supabase registerPhantomDevice:', e.message);
+        return null;
+    }
+}
+
+// Показуємо банер ліцензії DIY
+function showLicenseBanner(deviceId, daysLeft, expired) {
+    const existing = document.getElementById('licenseBanner');
+    if (existing) existing.remove();
+
+    const dismissed = localStorage.getItem(`mf_banner_dismissed_${deviceId}`);
+    if (dismissed === 'forever') return;
+    if (dismissed) {
+        const dismissedTime = parseInt(dismissed);
+        if (Date.now() - dismissedTime < 86400000) return; // до наступного входу
+    }
+
+    const banner = document.createElement('div');
+    banner.id = 'licenseBanner';
+    const bg = expired ? '#e74c3c' : '#f39c12';
+    const msg = expired
+        ? '🔴 Ліцензія DIY закінчилась! Пристрій заблоковано.'
+        : `🟡 Ліцензія DIY закінчується через ${daysLeft} дн.`;
+
+    banner.style.cssText = `position:fixed;bottom:0;left:0;right:0;background:${bg};color:white;padding:10px 16px;z-index:9999;display:flex;align-items:center;justify-content:space-between;gap:8px;`;
+    banner.innerHTML = `
+        <div style="flex:1;font-size:0.82rem;font-weight:700;">${msg}</div>
+        <button onclick="showPhantomLicenseModal()" style="background:white;color:${bg};border:none;border-radius:20px;padding:6px 12px;font-weight:800;font-size:0.78rem;cursor:pointer;white-space:nowrap;">💳 Продовжити $1</button>
+        <button onclick="dismissLicenseBanner('${deviceId}', false)" style="background:rgba(255,255,255,0.2);color:white;border:none;border-radius:20px;padding:6px 10px;font-size:0.78rem;cursor:pointer;">✕</button>
+        <button onclick="dismissLicenseBanner('${deviceId}', true)" style="background:rgba(255,255,255,0.2);color:white;border:none;border-radius:20px;padding:6px 10px;font-size:0.72rem;cursor:pointer;white-space:nowrap;">🔕 Не нагадувати</button>
+    `;
+    document.body.appendChild(banner);
+}
+
+window.dismissLicenseBanner = function(deviceId, forever) {
+    localStorage.setItem(`mf_banner_dismissed_${deviceId}`, forever ? 'forever' : Date.now().toString());
+    const b = document.getElementById('licenseBanner');
+    if (b) b.remove();
+};
+
+// Модалка покупки ліцензії
+window.showPhantomLicenseModal = function() {
+    const modal = openModal(`
+        <h2 style="margin-bottom:4px;">📡 Ліцензія GTR Phantom DIY</h2>
+        <div style="font-size:0.82rem;color:#888;margin-bottom:16px;">$1 / рік · Підключення 1 пристрою</div>
+
+        <div style="background:#f5f5f5;border-radius:16px;padding:14px;margin-bottom:16px;">
+            <div style="font-weight:700;margin-bottom:10px;font-size:0.9rem;">📋 Інструкція:</div>
+            <div style="font-size:0.82rem;color:#555;line-height:1.8;">
+                1️⃣ Натисніть кнопку PayPal нижче<br>
+                2️⃣ Оплатіть $1 донат<br>
+                3️⃣ Скопіюйте <b>Transaction ID</b> з листа PayPal<br>
+                4️⃣ Вставте ID в поле нижче<br>
+                5️⃣ Ліцензія активується протягом <b>24 годин</b>
+            </div>
+        </div>
+
+        <a href="https://www.paypal.com/donate/?hosted_button_id=MAGICFISH_BTN" target="_blank"
+            style="display:block;background:#0070ba;color:white;text-align:center;padding:14px;border-radius:40px;text-decoration:none;font-weight:900;font-size:1rem;margin-bottom:14px;">
+            💳 Оплатити $1 через PayPal
+        </a>
+
+        <div class="input-group">
+            <label>Transaction ID (після оплати)</label>
+            <input id="txInput" placeholder="Наприклад: 1AB23456CD789012E">
+        </div>
+
+        <button id="submitTx" class="btn btn-block">📨 Надіслати на активацію</button>
+        <button class="close-modal" style="margin-top:8px;width:100%;padding:10px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:700;">Закрити</button>
+    `);
+
+    modal.querySelector('.close-modal').onclick = () => modal.remove();
+    modal.querySelector('#submitTx').onclick = async () => {
+        const txId = modal.querySelector('#txInput').value.trim();
+        if (!txId || txId.length < 10) { alert('Введіть коректний Transaction ID'); return; }
+
+        // Зберігаємо заявку в Supabase
+        try {
+            await supabaseClient.from('phantom_devices').upsert({
+                user_id: (await supabaseClient.auth.getUser()).data.user?.id,
+                email: currentUser.email,
+                mac_hash: `diy_${currentUser.email}`,
+                device_type: 'diy',
+                max_devices: 1,
+                is_active: false,
+                api_key: txId,
+            });
+        } catch(e) { console.warn('Supabase upsert:', e); }
+
+        // Зберігаємо локально як "очікує"
+        localStorage.setItem(`mf_phantom_pending_${txId}`, JSON.stringify({
+            email: currentUser.email,
+            txId,
+            submitted: new Date().toISOString(),
+            status: 'pending'
+        }));
+
+        // Відправляємо email адміну через mailto
+        const subject = encodeURIComponent('GTR Phantom DIY Ліцензія - Активація');
+        const body = encodeURIComponent(
+            `Запит на активацію DIY ліцензії GTR Phantom\n\n` +
+            `Email: ${currentUser.email}\n` +
+            `Transaction ID: ${txId}\n` +
+            `Дата: ${new Date().toLocaleString('uk-UA')}\n\n` +
+            `Активуйте в Supabase → phantom_devices → is_active = true`
+        );
+        window.open(`mailto:ckbbuild@gmail.com?subject=${subject}&body=${body}`);
+
+        modal.remove();
+        alert('✅ Заявку надіслано!\n\nЛіцензія буде активована протягом 24 годин.\nСтатус можна перевірити в Налаштуваннях GTR Phantom.');
+    };
+};
+
 function renderGTRPhantom() {
     const app = document.getElementById('appRoot');
     const PHANTOM_COLORS = ['#2a5f7a','#1D9E75','#BA7517','#D4537E','#7F77DD','#e74c3c','#f39c12','#27ae60'];
@@ -2786,6 +2932,11 @@ function renderGTRPhantom() {
             signal: 0,
             bites: 0,
             simTimer: null,
+            // Ліцензія
+            deviceType: i === 0 ? 'sim' : 'sim', // sim | original | diy
+            licenseActive: false,
+            licenseExpiry: null,
+            daysLeft: null,
         }));
         window.gtrPhantomLog = [];
         window.gtrPhantomBites = 0;
@@ -2794,6 +2945,23 @@ function renderGTRPhantom() {
         window.gtrVibr = true;
         window.gtrNight = false;
     }
+
+    // Перевіряємо ліцензії при відкритті
+    const savedLicenses = JSON.parse(localStorage.getItem('mf_phantom_licenses') || '{}');
+    window.gtrPhantoms.forEach(p => {
+        const lic = savedLicenses[p.id];
+        if (lic) {
+            p.deviceType = lic.deviceType;
+            p.licenseActive = lic.active;
+            p.licenseExpiry = lic.expiry;
+            const daysLeft = Math.ceil((new Date(lic.expiry) - new Date()) / 86400000);
+            p.daysLeft = daysLeft;
+            // Показуємо банер якщо DIY і закінчується
+            if (lic.deviceType === 'diy' && daysLeft <= 14) {
+                setTimeout(() => showLicenseBanner(p.id, daysLeft, daysLeft <= 0), 500);
+            }
+        }
+    });
     const phantoms = window.gtrPhantoms;
 
     app.innerHTML = `
@@ -2985,6 +3153,16 @@ function renderGTRPhantom() {
         list.innerHTML = phantoms.map(p => {
             const batt = p.connected ? (p.battery>60?'🟢':p.battery>20?'🟡':'🔴') : '⚫';
             const sig  = p.connected ? (p.signal>70?'▮▮▮▮':p.signal>40?'▮▮▮▯':'▮▮▯▯') : '▯▯▯▯';
+            // Статус ліцензії
+            let licIcon = '⚫';
+            let licText = 'Симуляція';
+            if (p.deviceType === 'original') { licIcon = '🟢'; licText = 'Оригінал · Назавжди'; }
+            else if (p.deviceType === 'diy' && p.licenseActive) {
+                if (p.daysLeft > 14) { licIcon = '🟢'; licText = `DIY · ${p.daysLeft} дн.`; }
+                else if (p.daysLeft > 0) { licIcon = '🟡'; licText = `DIY · ${p.daysLeft} дн.!`; }
+                else { licIcon = '🔴'; licText = 'DIY · Прострочено'; }
+            } else if (p.deviceType === 'diy') { licIcon = '⏳'; licText = 'DIY · Очікує активації'; }
+
             return `<div style="background:white;border-radius:18px;padding:12px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.07);border-left:4px solid ${p.active?p.color:'#ddd'};">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div style="width:12px;height:12px;border-radius:50%;background:${p.connected?p.color:'#ccc'};flex-shrink:0;${p.connected?`box-shadow:0 0 6px ${p.color}88;`:''}"></div>
@@ -2994,6 +3172,7 @@ function renderGTRPhantom() {
                         <div style="font-size:0.72rem;color:#aaa;margin-top:2px;">
                             ${p.connected ? `${batt} ${p.battery}% · 📶 ${sig} · 🐟 ${p.bites} поклювань` : 'не підключено'}
                         </div>
+                        <div style="font-size:0.7rem;margin-top:2px;">${licIcon} ${licText}</div>
                     </div>
                     <div style="display:flex;gap:6px;">
                         <button data-pid="${p.id}" class="ph-conn-btn"
@@ -3204,21 +3383,67 @@ function renderGTRPhantom() {
 
     updateDeviceSelect();
     document.getElementById('phGetApiBtn').onclick = function(){
-        openModal(`
-            <h2 style="margin-bottom:8px;">📶 GTR Phantom API 4.0</h2>
-            <div style="font-size:0.85rem;color:#888;margin-bottom:16px;">Офіційний API для інтеграції з MagicFish</div>
-            <div style="background:#f5f5f5;border-radius:16px;padding:14px;margin-bottom:14px;font-size:0.82rem;color:#333;line-height:1.7;">
-              ✅ Сповіщення про поклювки в реальному часі<br>
-              ✅ Зимовий та нічний режим<br>
-              ✅ Підключення одного сигналізатора GTR Phantom
+        const modal = openModal(`
+            <h2 style="margin-bottom:4px;">📶 GTR Phantom API 4.0</h2>
+            <div style="font-size:0.82rem;color:#888;margin-bottom:16px;">Реєстрація пристрою · MagicFish</div>
+            <div style="display:flex;gap:8px;margin-bottom:16px;">
+                <button id="btnOriginal" style="flex:1;padding:12px;border:2px solid #27ae60;border-radius:16px;background:white;cursor:pointer;font-weight:700;font-size:0.82rem;text-align:center;">
+                    📡 Оригінальний<br><span style="font-size:0.7rem;color:#27ae60;font-weight:400;">Безкоштовно · 8 пристроїв</span>
+                </button>
+                <button id="btnDiy" style="flex:1;padding:12px;border:2px solid #3b82f6;border-radius:16px;background:white;cursor:pointer;font-weight:700;font-size:0.82rem;text-align:center;">
+                    🔧 DIY саморобка<br><span style="font-size:0.7rem;color:#3b82f6;font-weight:400;">$1/рік · 1 пристрій</span>
+                </button>
             </div>
-            <div style="font-size:0.82rem;color:#888;margin-bottom:12px;">Безкоштовний при підключенні GTR Phantom. Зверніться до GTR Fishing:</div>
-            <a href="mailto:api@gtrfishing.com" style="display:block;background:#1f3b4c;color:white;text-align:center;padding:14px;border-radius:40px;text-decoration:none;font-weight:900;font-size:0.95rem;margin-bottom:8px;">
-              📧 api@gtrfishing.com
-            </a>
-            <button class="close-modal" style="width:100%;padding:12px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:700;">Закрити</button>
+            <div id="regOriginal" style="display:none;background:#e8f5e9;border-radius:16px;padding:14px;margin-bottom:12px;">
+                <div style="font-weight:700;color:#2e7d32;margin-bottom:8px;">📡 Оригінальний GTR Phantom</div>
+                <div style="font-size:0.82rem;color:#555;line-height:1.7;margin-bottom:12px;">
+                    ✅ Ліцензія назавжди включена<br>
+                    ✅ До 8 пристроїв одночасно<br>
+                    ✅ Mesh мережа (незабаром)
+                </div>
+                <div class="input-group"><label>MAC адреса (з коробки)</label>
+                <input id="macInput" placeholder="AA:BB:CC:DD:EE:FF" style="font-family:monospace;letter-spacing:1px;text-transform:uppercase;"></div>
+                <button id="registerOriginal" class="btn btn-block" style="background:#27ae60;">✅ Зареєструвати</button>
+            </div>
+            <div id="regDiy" style="display:none;background:#e3f2fd;border-radius:16px;padding:14px;margin-bottom:12px;">
+                <div style="font-weight:700;color:#1565c0;margin-bottom:8px;">🔧 DIY на nRF52840</div>
+                <div style="font-size:0.82rem;color:#555;line-height:1.7;margin-bottom:12px;">
+                    ✅ 1 пристрій · $1/рік<br>
+                    ✅ Прошивка MagicFish безкоштовно<br>
+                    ⚙️ Потрібна MAC адреса з Serial Monitor
+                </div>
+                <button id="buyDiy" class="btn btn-block" style="background:#3b82f6;">💳 Придбати ліцензію $1/рік</button>
+            </div>
+            <button class="close-modal" style="width:100%;padding:10px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:700;">Закрити</button>
         `);
-        document.querySelector('.close-modal').onclick = () => document.querySelector('.modal-overlay')?.remove();
+        modal.querySelector('.close-modal').onclick = () => modal.remove();
+        modal.querySelector('#btnOriginal').onclick = () => {
+            modal.querySelector('#regOriginal').style.display = 'block';
+            modal.querySelector('#regDiy').style.display = 'none';
+            modal.querySelector('#btnOriginal').style.background = '#e8f5e9';
+            modal.querySelector('#btnDiy').style.background = 'white';
+        };
+        modal.querySelector('#btnDiy').onclick = () => {
+            modal.querySelector('#regDiy').style.display = 'block';
+            modal.querySelector('#regOriginal').style.display = 'none';
+            modal.querySelector('#btnDiy').style.background = '#e3f2fd';
+            modal.querySelector('#btnOriginal').style.background = 'white';
+        };
+        modal.querySelector('#registerOriginal').onclick = async () => {
+            const mac = modal.querySelector('#macInput').value.trim().toUpperCase();
+            if (!mac.match(/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/)) {
+                alert('Введіть MAC у форматі AA:BB:CC:DD:EE:FF'); return;
+            }
+            const macHash = btoa(mac + currentUser.email).replace(/[^a-z0-9]/gi,'').slice(0,32);
+            const licenses = JSON.parse(localStorage.getItem('mf_phantom_licenses') || '{}');
+            licenses[1] = { deviceType:'original', active:true, expiry:'2099-12-31', mac };
+            localStorage.setItem('mf_phantom_licenses', JSON.stringify(licenses));
+            await registerPhantomDevice(macHash, 'original');
+            modal.remove();
+            alert('✅ GTR Phantom зареєстровано!\nОригінальна ліцензія активна назавжди.');
+            renderGTRPhantom();
+        };
+        modal.querySelector('#buyDiy').onclick = () => { modal.remove(); showPhantomLicenseModal(); };
     };
     document.getElementById('phFindBtn').onclick = function(){
         const st=document.getElementById('phServiceStatus');
