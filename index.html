@@ -5605,11 +5605,8 @@ function renderSOS() {
         document.getElementById('sosSection1').style.display = 'none';
         document.getElementById('sosSection2').style.display = 'block';
         document.getElementById('sosTab2').style.display = 'none';
-        // Автоматично визначаємо геолокацію
-        getUserLocation(ok => {
-            renderHelpMap();
-            renderHelpList();
-        });
+        renderHelpMap();
+        renderHelpList();
     };
 
     // Кнопка геолокації під картою
@@ -5625,6 +5622,11 @@ function renderSOS() {
             }
         });
     };
+
+    // Завжди показуємо основний SOS при завантаженні
+    document.getElementById('sosSection1').style.display = 'block';
+    document.getElementById('sosSection2').style.display = 'none';
+    document.getElementById('sosTab2').style.display = 'block';
 
     // Кнопка назад до SOS
     document.getElementById('backToSOS').onclick = () => {
