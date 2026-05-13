@@ -5602,6 +5602,8 @@ function renderSOS() {
         localStorage.setItem('mf_current_section', 'main');
         renderMainMenu();
     };
+    // Скидаємо секцію на main щоб при оновленні не відновлювався SOS
+    localStorage.setItem('mf_current_section', 'main');
 
     // Кнопка допомоги спільноти
     document.getElementById('sosTab2').onclick = () => {
@@ -5850,7 +5852,7 @@ function renderSection(section) {
     else if (section==='campings') renderCampings();
     else if (section==='resorts') renderResorts();
     else if (section==='stores') renderStores();
-    else if (section==='sos') renderMainMenu(); // SOS завжди відкривається свіжим
+    else if (section==='sos') renderSOS();
     else if (section==='marketplace') renderMarketplace();
     else if (section==='news') renderNews();
     else if (section==='alarm') renderGTRProducts();
