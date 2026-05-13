@@ -1435,24 +1435,10 @@ const COUNTRIES = [
 ];
 const CURRENCIES = [
     { code:'UAH', symbol:'₴', name:'Гривня' },
-    { code:'EUR', symbol:'€', name:'Euro' },
     { code:'USD', symbol:'$', name:'US Dollar' },
+    { code:'EUR', symbol:'€', name:'Euro' },
     { code:'PLN', symbol:'zł', name:'Złoty' },
     { code:'GBP', symbol:'£', name:'Pound' },
-    { code:'GBP', symbol:'£', name:'Pound' },
-    { code:'PLN', symbol:'zł', name:'Złoty' },
-    { code:'SEK', symbol:'kr', name:'Krona' },
-    { code:'NOK', symbol:'kr', name:'Krone' },
-    { code:'CZK', symbol:'Kč', name:'Koruna' },
-    { code:'HUF', symbol:'Ft', name:'Forint' },
-    { code:'RON', symbol:'lei', name:'Leu' },
-    { code:'TRY', symbol:'₺', name:'Lira' },
-    { code:'JPY', symbol:'¥', name:'Yen' },
-    { code:'CNY', symbol:'¥', name:'Yuan' },
-    { code:'KRW', symbol:'₩', name:'Won' },
-    { code:'CAD', symbol:'C$', name:'Can. Dollar' },
-    { code:'AUD', symbol:'A$', name:'Aus. Dollar' },
-    { code:'BRL', symbol:'R$', name:'Real' },
 ];
 
 let appLang = localStorage.getItem('mf_lang') || 'uk';
@@ -2447,7 +2433,8 @@ function showOrderForm(productName, productPrice) {
 }
 
 // ========== GTR SHOP PRODUCTS ==========
-var gtrShopProducts = JSON.parse(localStorage.getItem('gtr_shop_products') || 'null') || [
+// Завжди перезавантажуємо GTR Shop з кодом (не з кешу)
+var gtrShopProducts = [
     { id:1,  name:'GTR Phantom BLE 4.0',      desc:'Сигналізатор клювання · Bluetooth · IPX6', price:1890, emoji:'📡', available:true },
     { id:2,  name:'GTR Case S',               desc:'Водонепроникний чохол · Смартфон до 6.5"', price:299,  emoji:'📱', available:true },
     { id:3,  name:'GTR Case M',               desc:'Водонепроникний чохол · Смартфон до 7"',   price:399,  emoji:'📲', available:true },
@@ -2462,7 +2449,7 @@ var gtrShopProducts = JSON.parse(localStorage.getItem('gtr_shop_products') || 'n
 ];
 
 function saveGTRProducts() {
-    localStorage.setItem('gtr_shop_products', JSON.stringify(gtrShopProducts));
+    // gtrShopProducts завжди з коду, не кешуємо
 }
 
 function renderGTRShopInto(el) {
