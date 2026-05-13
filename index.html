@@ -2502,16 +2502,11 @@ function renderGTRShopInto(el) {
             '<div style="font-size:0.78rem;color:#888;">' + p.desc + '</div></div>' +
             '</div>' +
             '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-                (function(price, cur) {
-                    var uah = price;
-                    var usd = Math.round(price * (exchangeRates.USD || 0.024));
-                    var eur = Math.round(price * (exchangeRates.EUR || 0.022));
-                    return '<div style="margin-bottom:4px;">' +
-                        '<span style="font-size:1.2rem;font-weight:900;color:#f39c12;">₴' + uah + '</span>' +
-                        '<span style="font-size:0.85rem;font-weight:700;color:#27ae60;margin-left:10px;">$' + usd + '</span>' +
-                        '<span style="font-size:0.85rem;font-weight:700;color:#3b82f6;margin-left:8px;">€' + eur + '</span>' +
-                    '</div>';
-                })(p.price, p.currency||'UAH') +
+                '<div style="margin-bottom:4px;">' +
+                    '<span style="font-size:1.2rem;font-weight:900;color:#f39c12;">₴' + p.price + '</span>' +
+                    (p.priceUSD ? '<span style="font-size:0.85rem;font-weight:700;color:#27ae60;margin-left:10px;">$' + p.priceUSD + '</span>' : '') +
+                    (p.priceEUR ? '<span style="font-size:0.85rem;font-weight:700;color:#3b82f6;margin-left:8px;">€' + p.priceEUR + '</span>' : '') +
+                '</div>' +
                 (isAdmin ? '<button data-edit-id="' + p.id + '" style="background:#3b82f6;color:#fff;border:none;border-radius:40px;padding:7px 14px;font-size:0.78rem;cursor:pointer;">✏️ Ред.</button>' : '') +
                 (p.available && !isAdmin ? '<button data-order-name="' + p.name + '" data-order-price="' + p.price + '" style="background:#1f3b4c;color:#fff;border:none;border-radius:40px;padding:8px 16px;font-weight:700;font-size:0.82rem;cursor:pointer;">🛒 Замовити</button>' : '') +
                 (!p.available ? '<span style="color:#bbb;font-size:0.78rem;">Немає</span>' : '') +
@@ -2587,8 +2582,12 @@ function showGTREditForm(pid, onSave) {
         '<input id="ep_name" type="text" value="' + prod.name + '" style="margin-bottom:8px;">' +
         '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Опис</div>' +
         '<input id="ep_desc" type="text" value="' + prod.desc + '" style="margin-bottom:8px;">' +
-        '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Ціна (грн)</div>' +
-        '<input id="ep_price" type="number" value="' + prod.price + '" style="margin-bottom:8px;">' +
+        '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">💛 Ціна ₴ (гривня)</div>' +
+        '<input id="ep_price" type="number" value="' + (prod.price||0) + '" style="margin-bottom:8px;">' +
+        '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">💚 Ціна $ (долар)</div>' +
+        '<input id="ep_price_usd" type="number" value="' + (prod.priceUSD||0) + '" style="margin-bottom:8px;">' +
+        '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">💙 Ціна € (євро)</div>' +
+        '<input id="ep_price_eur" type="number" value="' + (prod.priceEUR||0) + '" style="margin-bottom:8px;">' +
         '<div style="font-size:0.78rem;color:#888;margin-bottom:4px;">Емодзі</div>' +
         '<input id="ep_emoji" type="text" value="' + prod.emoji + '" maxlength="4" style="margin-bottom:12px;width:80px;">' +
         '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">' +
@@ -2646,7 +2645,9 @@ function showGTREditForm(pid, onSave) {
     modal.querySelector('#ep_save').onclick = function() {
         prod.name     = modal.querySelector('#ep_name').value.trim() || prod.name;
         prod.desc     = modal.querySelector('#ep_desc').value.trim();
-        prod.price    = parseInt(modal.querySelector('#ep_price').value) || prod.price;
+        prod.price    = parseInt(modal.querySelector('#ep_price').value) || 0;
+        prod.priceUSD = parseInt(modal.querySelector('#ep_price_usd').value) || 0;
+        prod.priceEUR = parseInt(modal.querySelector('#ep_price_eur').value) || 0;
         prod.emoji    = modal.querySelector('#ep_emoji').value.trim() || prod.emoji;
         prod.available = modal.querySelector('#ep_avail').checked;
         prod.photos   = photos;
@@ -2770,7 +2771,11 @@ function renderGTRProducts() {
                 '<span style="font-size:1.8rem;">' + p.emoji + '</span>' +
                 '<div><div style="font-weight:700;font-size:0.9rem;">' + p.name + '</div>' +
                 '<div style="font-size:0.78rem;color:#888;">' + p.desc + '</div>' +
-                '<div style="font-size:1.1rem;font-weight:900;color:#f39c12;margin-top:4px;">&#x20B4;' + p.price + '</div></div>' +
+                '<div style="margin-top:4px;">' +
+                '<span style="font-size:1.1rem;font-weight:900;color:#f39c12;">₴' + p.price + '</span>' +
+                (p.priceUSD ? '<span style="font-size:0.85rem;font-weight:700;color:#27ae60;margin-left:8px;">$' + p.priceUSD + '</span>' : '') +
+                (p.priceEUR ? '<span style="font-size:0.85rem;font-weight:700;color:#3b82f6;margin-left:6px;">€' + p.priceEUR + '</span>' : '') +
+                '</div></div>' +
             '</div>';
 
         var orderBtn = document.createElement('button');
