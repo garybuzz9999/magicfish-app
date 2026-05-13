@@ -5598,7 +5598,10 @@ function renderSOS() {
         </div>
     </div>`;
 
-    document.getElementById('backSOS').onclick = () => renderMainMenu();
+    document.getElementById('backSOS').onclick = () => {
+        localStorage.setItem('mf_current_section', 'main');
+        renderMainMenu();
+    };
 
     // Кнопка допомоги спільноти
     document.getElementById('sosTab2').onclick = () => {
@@ -5624,9 +5627,14 @@ function renderSOS() {
     };
 
     // Завжди показуємо основний SOS при завантаженні
-    document.getElementById('sosSection1').style.display = 'block';
-    document.getElementById('sosSection2').style.display = 'none';
-    document.getElementById('sosTab2').style.display = 'block';
+    setTimeout(() => {
+        const s1 = document.getElementById('sosSection1');
+        const s2 = document.getElementById('sosSection2');
+        const tb = document.getElementById('sosTab2');
+        if (s1) s1.style.display = 'block';
+        if (s2) s2.style.display = 'none';
+        if (tb) tb.style.display = 'block';
+    }, 50);
 
     // Кнопка назад до SOS
     document.getElementById('backToSOS').onclick = () => {
