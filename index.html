@@ -5589,7 +5589,10 @@ function renderSOS() {
             </button>
 
             <div style="font-size:0.78rem;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:10px;">ЗАПИТИ ПОРУЧ (20 км)</div>
-            <div id="helpMap" class="map-container" style="margin-bottom:12px;"></div>
+            <div id="helpMap" class="map-container" style="margin-bottom:8px;"></div>
+            <button id="helpGeoBtn" style="width:100%;background:#1f3b4c;color:white;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;margin-bottom:12px;">
+                📍 Визначити моє місце
+            </button>
             <div id="helpList"></div>
         </div>
     </div>`;
@@ -5605,6 +5608,20 @@ function renderSOS() {
         getUserLocation(ok => {
             renderHelpMap();
             renderHelpList();
+        });
+    };
+
+    // Кнопка геолокації під картою
+    document.getElementById('helpGeoBtn').onclick = () => {
+        document.getElementById('helpGeoBtn').textContent = '⏳ Визначаємо...';
+        getUserLocation(ok => {
+            if (ok) {
+                document.getElementById('helpGeoBtn').textContent = `✅ ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+                renderHelpMap();
+                renderHelpList();
+            } else {
+                document.getElementById('helpGeoBtn').textContent = '❌ Не вдалося визначити';
+            }
         });
     };
 
@@ -5698,9 +5715,6 @@ window.showAskHelpModal = function() {
             <span style="font-size:0.75rem;color:#888;">Буде видно тим хто відгукнеться</span>
         </div>
 
-        <button id="getHelpLocation" style="width:100%;background:#1f3b4c;color:white;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;margin-bottom:8px;">
-            📍 Визначити моє місце
-        </button>
         <div id="helpLocStatus" style="font-size:0.78rem;color:#888;text-align:center;margin-bottom:12px;min-height:16px;"></div>
 
         <button id="sendHelpReq" class="btn btn-block" style="background:#f39c12;">🤝 Надіслати запит</button>
@@ -5720,19 +5734,13 @@ window.showAskHelpModal = function() {
         };
     });
 
-    // Геолокація
-    document.getElementById('getHelpLocation').onclick = () => {
-        document.getElementById('helpLocStatus').textContent = '⏳ Визначаємо...';
-        getUserLocation(ok => {
-            if (ok) {
-                helpLat = currentLocation.lat;
-                helpLng = currentLocation.lng;
-                document.getElementById('helpLocStatus').innerHTML = `✅ ${helpLat.toFixed(4)}, ${helpLng.toFixed(4)}`;
-            } else {
-                document.getElementById('helpLocStatus').textContent = '❌ Не вдалося — введіть адресу в коментарі';
-            }
-        });
-    };
+    // Геолокація береться з currentLocation (вже визначена кнопкою під картою)
+    if (currentLocation) {
+        helpLat = currentLocation.lat;
+        helpLng = currentLocation.lng;
+        const st = document.getElementById('helpLocStatus');
+        if (st) st.innerHTML = `✅ ${helpLat.toFixed(4)}, ${helpLng.toFixed(4)}`;
+    }
 
     modal.querySelector('.close-modal').onclick = () => modal.remove();
 
