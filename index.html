@@ -5507,25 +5507,24 @@ window.deleteListing = function(id) {
 
 // ========== SOS ==========
 // ========== ДАНІ ВЗАЄМОДОПОМОГИ ==========
+// ========== SOS ==========
 if (!window.helpRequests) window.helpRequests = JSON.parse(localStorage.getItem('mf_help_requests') || '[]');
-
-function saveHelpRequests() {
-    localStorage.setItem('mf_help_requests', JSON.stringify(window.helpRequests));
-}
+function saveHelpRequests() { localStorage.setItem('mf_help_requests', JSON.stringify(window.helpRequests)); }
 
 const HELP_CATEGORIES = [
-    { id:'fuel',    icon:'⛽', label:'Закінчився бензин' },
-    { id:'broken',  icon:'🚗', label:'Поломка авто' },
-    { id:'jack',    icon:'🔧', label:'Домкрат / Запаска' },
-    { id:'tow',     icon:'🚜', label:'Буксир' },
-    { id:'ride',    icon:'🚌', label:'Підвезти' },
-    { id:'load',    icon:'📦', label:'Завантажити / Розвантажити' },
-    { id:'other',   icon:'❓', label:'Інша допомога' },
+    { id:'fuel',   icon:'⛽', label:'Закінчився бензин' },
+    { id:'broken', icon:'🚗', label:'Поломка авто' },
+    { id:'jack',   icon:'🔧', label:'Домкрат / Запаска' },
+    { id:'tow',    icon:'🚜', label:'Буксир' },
+    { id:'ride',   icon:'🚌', label:'Підвезти' },
+    { id:'load',   icon:'📦', label:'Завантажити / Розвантажити' },
+    { id:'other',  icon:'❓', label:'Інша допомога' },
 ];
 
+// SOS завжди відкривається на головному екрані
+// При натисканні ← Назад — зберігаємо 'main' щоб при оновленні не повертало сюди
 function renderSOS() {
-    localStorage.setItem('mf_current_section', 'sos');
-    // Скидаємо стан — завжди показуємо основний екран при відкритті
+    localStorage.setItem('mf_current_section', 'main');
     ensureLeafletFallback();
     const app = document.getElementById('appRoot');
     app.innerHTML = `
@@ -5536,85 +5535,80 @@ function renderSOS() {
             <button id="backSOS" class="back-btn">← Назад</button>
         </div>
 
-        <!-- Кнопка допомоги спільноти -->
-        <button id="sosTab2" style="width:100%;background:#3b82f6;color:white;border:none;border-radius:40px;padding:14px;font-weight:900;font-size:0.95rem;cursor:pointer;margin-bottom:16px;">
+        <!-- Синя кнопка допомоги спільноти -->
+        <button id="openHelpBtn" style="width:100%;background:#3b82f6;color:white;border:none;border-radius:40px;padding:14px;font-weight:900;font-size:0.95rem;cursor:pointer;margin-bottom:16px;">
             🤝 Допомога від спільноти MagicFish
         </button>
 
-        <!-- Екстрений SOS -->
-        <div id="sosSection1" style="display:block;">
-            <!-- Інформаційний банер -->
-            <div style="background:#e74c3c;border-radius:20px;padding:20px;text-align:center;margin-bottom:16px;">
-                <div style="font-size:1.3rem;font-weight:900;color:white;line-height:1.6;">
-                    🆘 При екстрених ситуаціях<br>викликайте служби порятунку
-                </div>
-            </div>
-
-            <!-- Кнопки служб -->
-            <div class="emergency-contacts" style="margin-bottom:16px;">
-                <a href="tel:101" class="emergency-btn ec-101" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                    <div style="font-size:1.4rem;">🔥</div><div>101</div><div style="font-size:0.7rem;">Пожежна</div>
-                </a>
-                <a href="tel:102" class="emergency-btn ec-102" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                    <div style="font-size:1.4rem;">👮</div><div>102</div><div style="font-size:0.7rem;">Поліція</div>
-                </a>
-                <a href="tel:103" class="emergency-btn ec-103" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                    <div style="font-size:1.4rem;">🚑</div><div>103</div><div style="font-size:0.7rem;">Швидка</div>
-                </a>
-            </div>
-
-            <!-- SOS координати -->
-            <button class="sos-main-btn" onclick="window.showSOSCoordinates()" style="font-size:0.95rem;padding:18px;">
-                📍 Надіслати координати службам
-            </button>
-            <div class="sos-info" style="margin-top:10px;">⚠️ Помилкові виклики є кримінально карними.</div>
-            <div style="background:#fff3cd;border-radius:20px;padding:16px;margin-top:8px;">
-                <div style="font-weight:800;margin-bottom:8px;color:#856404;">📋 При надзвичайній ситуації на воді:</div>
-                <div style="font-size:0.85rem;color:#856404;line-height:1.8;">
-                    1️⃣ Збережіть спокій, тримайтесь за плавучий предмет<br>
-                    2️⃣ Зателефонуйте 101 або 103<br>
-                    3️⃣ Натисніть кнопку SOS вище — координати відправляться<br>
-                    4️⃣ Кричіть або використовуйте свисток<br>
-                    5️⃣ Якщо є рятувальний жилет — надіньте його негайно
-                </div>
+        <!-- Екстрений блок -->
+        <div style="background:#e74c3c;border-radius:20px;padding:20px;text-align:center;margin-bottom:16px;">
+            <div style="font-size:1.3rem;font-weight:900;color:white;line-height:1.6;">
+                🆘 При екстрених ситуаціях<br>викликайте служби порятунку
             </div>
         </div>
 
-        <!-- Взаємодопомога -->
-        <div id="sosSection2" style="display:none;">
-            <button id="backToSOS" style="width:100%;background:#f5f5f5;color:#555;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;margin-bottom:12px;">
-                ← Повернутись до SOS
-            </button>
-            <button id="askHelpBtn" style="width:100%;background:linear-gradient(135deg,#f39c12,#e67e22);color:white;border:none;border-radius:40px;padding:16px;font-weight:900;font-size:1rem;cursor:pointer;margin-bottom:16px;">
-                🤝 Попросити допомогу
-            </button>
+        <div class="emergency-contacts" style="margin-bottom:16px;">
+            <a href="tel:101" class="emergency-btn ec-101" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <div style="font-size:1.4rem;">🔥</div><div>101</div><div style="font-size:0.7rem;">Пожежна</div>
+            </a>
+            <a href="tel:102" class="emergency-btn ec-102" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <div style="font-size:1.4rem;">👮</div><div>102</div><div style="font-size:0.7rem;">Поліція</div>
+            </a>
+            <a href="tel:103" class="emergency-btn ec-103" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <div style="font-size:1.4rem;">🚑</div><div>103</div><div style="font-size:0.7rem;">Швидка</div>
+            </a>
+        </div>
 
-            <div style="font-size:0.78rem;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:10px;">ЗАПИТИ ПОРУЧ (20 км)</div>
-            <div id="helpMap" class="map-container" style="margin-bottom:8px;"></div>
-            <button id="helpGeoBtn" style="width:100%;background:#1f3b4c;color:white;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;margin-bottom:12px;">
-                📍 Визначити моє місце
-            </button>
-            <div id="helpList"></div>
+        <button class="sos-main-btn" onclick="window.showSOSCoordinates()" style="font-size:0.95rem;padding:18px;">
+            📍 Надіслати координати службам
+        </button>
+        <div class="sos-info" style="margin-top:10px;">⚠️ Помилкові виклики є кримінально карними.</div>
+
+        <div style="background:#fff3cd;border-radius:20px;padding:16px;margin-top:12px;">
+            <div style="font-weight:800;margin-bottom:8px;color:#856404;">📋 При надзвичайній ситуації на воді:</div>
+            <div style="font-size:0.85rem;color:#856404;line-height:1.8;">
+                1️⃣ Збережіть спокій, тримайтесь за плавучий предмет<br>
+                2️⃣ Зателефонуйте 101 або 103<br>
+                3️⃣ Натисніть кнопку вище — координати відправляться<br>
+                4️⃣ Кричіть або використовуйте свисток<br>
+                5️⃣ Якщо є рятувальний жилет — надіньте його негайно
+            </div>
         </div>
     </div>`;
 
-    document.getElementById('backSOS').onclick = () => {
-        localStorage.setItem('mf_current_section', 'main');
-        renderMainMenu();
-    };
-    // Скидаємо секцію на main щоб при оновленні не відновлювався SOS
-    localStorage.setItem('mf_current_section', 'main');
+    document.getElementById('backSOS').onclick = () => renderMainMenu();
 
-    // Кнопка допомоги спільноти
-    document.getElementById('sosTab2').onclick = () => {
-        document.getElementById('sosSection1').style.display = 'none';
-        document.getElementById('sosSection2').style.display = 'block';
-        document.getElementById('sosTab2').style.display = 'none';
-        renderHelpMap();
-        renderHelpList();
-    };
+    // Кнопка допомоги спільноти — відкриває окрему сторінку
+    document.getElementById('openHelpBtn').onclick = () => renderHelpSection();
+}
 
-    // Кнопка геолокації під картою
+// Окрема сторінка допомоги спільноти
+function renderHelpSection() {
+    ensureLeafletFallback();
+    const app = document.getElementById('appRoot');
+    app.innerHTML = `
+    <div class="nickname-header">👤 ${currentUser.nickname}</div>
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h1>🤝 Допомога</h1>
+            <button id="backHelp" class="back-btn">← Назад</button>
+        </div>
+
+        <button id="askHelpBtn" style="width:100%;background:linear-gradient(135deg,#f39c12,#e67e22);color:white;border:none;border-radius:40px;padding:16px;font-weight:900;font-size:1rem;cursor:pointer;margin-bottom:16px;">
+            🤝 Попросити допомогу
+        </button>
+
+        <div style="font-size:0.78rem;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:8px;">ЗАПИТИ ПОРУЧ (20 КМ)</div>
+        <div id="helpMap" class="map-container" style="margin-bottom:8px;"></div>
+        <button id="helpGeoBtn" style="width:100%;background:#1f3b4c;color:white;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;margin-bottom:12px;">
+            📍 Визначити моє місце
+        </button>
+        <div id="helpList"></div>
+    </div>`;
+
+    document.getElementById('backHelp').onclick = () => renderSOS();
+    document.getElementById('askHelpBtn').onclick = () => window.showAskHelpModal();
+
     document.getElementById('helpGeoBtn').onclick = () => {
         document.getElementById('helpGeoBtn').textContent = '⏳ Визначаємо...';
         getUserLocation(ok => {
@@ -5628,220 +5622,133 @@ function renderSOS() {
         });
     };
 
-    // Завжди показуємо основний SOS при завантаженні
-    setTimeout(() => {
-        const s1 = document.getElementById('sosSection1');
-        const s2 = document.getElementById('sosSection2');
-        const tb = document.getElementById('sosTab2');
-        if (s1) s1.style.display = 'block';
-        if (s2) s2.style.display = 'none';
-        if (tb) tb.style.display = 'block';
-    }, 50);
-
-    // Кнопка назад до SOS
-    document.getElementById('backToSOS').onclick = () => {
-        document.getElementById('sosSection1').style.display = 'block';
-        document.getElementById('sosSection2').style.display = 'none';
-        document.getElementById('sosTab2').style.display = 'block';
-    };
-    // Кнопка попросити допомогу
-    document.getElementById('askHelpBtn').onclick = () => window.showAskHelpModal();
+    renderHelpMap();
+    renderHelpList();
 }
 
 function renderHelpMap() {
     const mapDiv = document.getElementById('helpMap');
     if (!mapDiv) return;
-    let helpMap = L.map(mapDiv).setView([49.5, 32], 6);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {attribution:'OSM'}).addTo(helpMap);
-    setTimeout(() => { try { helpMap.invalidateSize(); } catch(e){} }, 300);
-
-    const active = window.helpRequests.filter(r => r.status === 'active' && r.lat && r.lng);
-    if (currentLocation) {
-        helpMap.setView([currentLocation.lat, currentLocation.lng], 10);
-        L.marker([currentLocation.lat, currentLocation.lng]).addTo(helpMap).bindPopup('📍 Ви тут');
-    }
-    active.forEach(r => {
-        const cat = HELP_CATEGORIES.find(c => c.id === r.category) || HELP_CATEGORIES[6];
-        L.marker([r.lat, r.lng]).addTo(helpMap)
-            .bindPopup(`${cat.icon} <b>${cat.label}</b><br>👤 ${r.author}<br>📞 ${r.phone}`);
-    });
+    try {
+        const helpMap = L.map(mapDiv).setView([49.5,32], 6);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(helpMap);
+        setTimeout(() => { try { helpMap.invalidateSize(); } catch(e){} }, 300);
+        if (currentLocation) {
+            helpMap.setView([currentLocation.lat, currentLocation.lng], 10);
+            L.marker([currentLocation.lat, currentLocation.lng]).addTo(helpMap).bindPopup('📍 Ви тут');
+        }
+        window.helpRequests.filter(r => r.status==='active' && r.lat && r.lng).forEach(r => {
+            const cat = HELP_CATEGORIES.find(c=>c.id===r.category)||HELP_CATEGORIES[6];
+            L.marker([r.lat,r.lng]).addTo(helpMap).bindPopup(`${cat.icon} <b>${cat.label}</b><br>👤 ${r.author}<br>📞 ${r.phone}`);
+        });
+    } catch(e) {}
 }
 
 function renderHelpList() {
     const list = document.getElementById('helpList');
     if (!list) return;
-    const active = window.helpRequests.filter(r => r.status === 'active');
+    const active = window.helpRequests.filter(r => r.status==='active');
     if (!active.length) {
         list.innerHTML = '<div style="text-align:center;padding:30px;color:#aaa;">🤝 Поки немає активних запитів</div>';
         return;
     }
     list.innerHTML = active.map(r => {
-        const cat = HELP_CATEGORIES.find(c => c.id === r.category) || HELP_CATEGORIES[6];
-        const dist = currentLocation && r.lat ? Math.round(getDistance(currentLocation.lat, currentLocation.lng, r.lat, r.lng)/1000) : null;
+        const cat = HELP_CATEGORIES.find(c=>c.id===r.category)||HELP_CATEGORIES[6];
+        const dist = currentLocation && r.lat ? Math.round(getDistance(currentLocation.lat,currentLocation.lng,r.lat,r.lng)/1000) : null;
         return `<div style="background:white;border-radius:18px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-left:4px solid #f39c12;">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
                 <span style="font-size:1.8rem;">${cat.icon}</span>
                 <div style="flex:1;">
                     <div style="font-weight:800;font-size:0.95rem;color:#1f3b4c;">${cat.label}</div>
                     <div style="font-size:0.78rem;color:#888;">👤 ${r.author} · ${new Date(r.time).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})}</div>
-                    ${dist !== null ? `<div style="font-size:0.78rem;color:#27ae60;font-weight:700;">📏 ${dist} км від вас</div>` : ''}
+                    ${dist!==null?`<div style="font-size:0.78rem;color:#27ae60;font-weight:700;">📏 ${dist} км від вас</div>`:''}
                 </div>
             </div>
-            ${r.comment ? `<div style="font-size:0.85rem;color:#555;margin-bottom:8px;">💬 ${r.comment}</div>` : ''}
+            ${r.comment?`<div style="font-size:0.85rem;color:#555;margin-bottom:8px;">💬 ${r.comment}</div>`:''}
             <div style="display:flex;gap:8px;">
                 <a href="tel:${r.phone}" style="flex:1;background:#27ae60;color:white;padding:10px;border-radius:40px;text-decoration:none;font-weight:700;font-size:0.85rem;text-align:center;">📞 ${r.phone}</a>
-                <button onclick="window.open('https://www.google.com/maps?q=${r.lat},${r.lng}','_blank')" style="background:#3b82f6;color:white;border:none;padding:10px 14px;border-radius:40px;font-weight:700;cursor:pointer;font-size:0.85rem;">🗺️</button>
-                ${r.author === currentUser.nickname ? `<button onclick="window.closeHelpRequest('${r.id}')" style="background:#e74c3c;color:white;border:none;padding:10px 14px;border-radius:40px;font-weight:700;cursor:pointer;font-size:0.85rem;">✅ Закрити</button>` : ''}
+                <button onclick="window.open('https://www.google.com/maps?q=${r.lat},${r.lng}','_blank')" style="background:#3b82f6;color:white;border:none;padding:10px 14px;border-radius:40px;font-weight:700;cursor:pointer;">🗺️</button>
+                ${r.author===currentUser.nickname?`<button onclick="window.closeHelpRequest('${r.id}')" style="background:#e74c3c;color:white;border:none;padding:10px 14px;border-radius:40px;font-weight:700;cursor:pointer;">✅</button>`:''}
             </div>
         </div>`;
     }).join('');
 }
 
 window.closeHelpRequest = function(id) {
-    const r = window.helpRequests.find(x => x.id === id);
-    if (r) { r.status = 'closed'; saveHelpRequests(); renderHelpList(); }
+    const r = window.helpRequests.find(x=>x.id===id);
+    if (r) { r.status='closed'; saveHelpRequests(); renderHelpList(); }
 };
 
 window.showAskHelpModal = function() {
-    const phone = currentUser.phone || '';
+    const phone = currentUser.phone||'';
     if (!phone) { alert('❌ Додайте номер телефону в Налаштуваннях профілю!'); return; }
-
     const modal = openModal(`
         <h2 style="margin-bottom:4px;">🤝 Попросити допомогу</h2>
         <div style="font-size:0.82rem;color:#888;margin-bottom:16px;">Ваш запит побачать користувачі MagicFish в радіусі 20 км</div>
-
         <div style="font-size:0.85rem;font-weight:700;margin-bottom:8px;">Тип допомоги:</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
-            ${HELP_CATEGORIES.map(c => `
-                <button data-cat="${c.id}" style="padding:8px 14px;border:2px solid #eee;border-radius:40px;background:white;cursor:pointer;font-size:0.82rem;font-weight:600;">
-                    ${c.icon} ${c.label}
-                </button>`).join('')}
+            ${HELP_CATEGORIES.map(c=>`<button data-cat="${c.id}" style="padding:8px 14px;border:2px solid #eee;border-radius:40px;background:white;cursor:pointer;font-size:0.82rem;font-weight:600;">${c.icon} ${c.label}</button>`).join('')}
         </div>
-
-        <div class="input-group">
-            <label>Коментар (необов'язково)</label>
-            <input id="helpComment" placeholder="Де знаходитесь, деталі...">
-        </div>
-
+        <div class="input-group"><label>Коментар (необов'язково)</label><input id="helpComment" placeholder="Де знаходитесь, деталі..."></div>
         <div style="background:#e8f5e9;border-radius:16px;padding:12px;margin-bottom:14px;font-size:0.85rem;">
             <a href="tel:${phone}" style="color:#27ae60;font-weight:700;text-decoration:none;">📞 ${phone}</a><br>
             <span style="font-size:0.75rem;color:#888;">Буде видно тим хто відгукнеться</span>
         </div>
-
-        <div id="helpLocStatus" style="font-size:0.78rem;color:#888;text-align:center;margin-bottom:12px;min-height:16px;"></div>
-
         <button id="sendHelpReq" class="btn btn-block" style="background:#f39c12;">🤝 Надіслати запит</button>
         <button class="close-modal" style="margin-top:8px;width:100%;padding:10px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:700;">Скасувати</button>
     `);
-
     let selectedCat = null;
-    let helpLat = null, helpLng = null;
-
-    // Вибір категорії
+    const helpLat = currentLocation?.lat || null;
+    const helpLng = currentLocation?.lng || null;
     modal.querySelectorAll('[data-cat]').forEach(btn => {
         btn.onclick = () => {
-            modal.querySelectorAll('[data-cat]').forEach(b => { b.style.background='white'; b.style.borderColor='#eee'; });
-            btn.style.background = '#fff3cd';
-            btn.style.borderColor = '#f39c12';
+            modal.querySelectorAll('[data-cat]').forEach(b=>{b.style.background='white';b.style.borderColor='#eee';});
+            btn.style.background='#fff3cd'; btn.style.borderColor='#f39c12';
             selectedCat = btn.dataset.cat;
         };
     });
-
-    // Геолокація береться з currentLocation (вже визначена кнопкою під картою)
-    if (currentLocation) {
-        helpLat = currentLocation.lat;
-        helpLng = currentLocation.lng;
-        const st = document.getElementById('helpLocStatus');
-        if (st) st.innerHTML = `✅ ${helpLat.toFixed(4)}, ${helpLng.toFixed(4)}`;
-    }
-
     modal.querySelector('.close-modal').onclick = () => modal.remove();
-
     document.getElementById('sendHelpReq').onclick = () => {
         if (!selectedCat) { alert('Оберіть тип допомоги'); return; }
-        if (!helpLat) { alert('Визначте геолокацію'); return; }
-
-        const req = {
-            id: Date.now().toString(),
-            author: currentUser.nickname,
-            phone: currentUser.phone,
-            category: selectedCat,
+        if (!helpLat) { alert('Спочатку визначте геолокацію кнопкою на карті'); return; }
+        window.helpRequests.unshift({
+            id: Date.now().toString(), author: currentUser.nickname,
+            phone: currentUser.phone, category: selectedCat,
             comment: document.getElementById('helpComment').value.trim(),
-            lat: helpLat,
-            lng: helpLng,
-            time: Date.now(),
-            status: 'active',
-        };
-
-        window.helpRequests.unshift(req);
-        if (window.helpRequests.length > 100) window.helpRequests.pop();
+            lat: helpLat, lng: helpLng, time: Date.now(), status: 'active',
+        });
+        if (window.helpRequests.length>100) window.helpRequests.pop();
         saveHelpRequests();
         modal.remove();
-        alert('✅ Запит надіслано!\nКористувачі MagicFish поруч побачать ваш запит.');
-        // Показуємо список запитів без авто-кліку
-        const s1 = document.getElementById('sosSection1');
-        const s2 = document.getElementById('sosSection2');
-        const tb = document.getElementById('sosTab2');
-        if (s1) s1.style.display = 'none';
-        if (s2) s2.style.display = 'block';
-        if (tb) tb.style.display = 'none';
-        renderHelpMap();
+        alert('✅ Запит надіслано!');
         renderHelpList();
     };
 };
 
 window.showSOSCoordinates = function() {
     getUserLocation(ok => {
-        const coords = ok && currentLocation
-            ? `${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)}`
-            : 'GPS недоступний';
-        const mapsLink = ok && currentLocation
-            ? `https://maps.google.com/?q=${currentLocation.lat},${currentLocation.lng}`
-            : null;
-
+        const coords = ok&&currentLocation ? `${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)}` : 'GPS недоступний';
+        const mapsLink = ok&&currentLocation ? `https://maps.google.com/?q=${currentLocation.lat},${currentLocation.lng}` : null;
         const modal = openModal(`
             <h2 style="margin-bottom:4px;">📍 Ваші координати</h2>
             <div style="font-size:0.82rem;color:#888;margin-bottom:16px;">Повідомте оператору при дзвінку</div>
-
             <div style="background:#f5f5f5;border-radius:16px;padding:14px;margin-bottom:14px;text-align:center;">
                 <div style="font-size:1rem;font-weight:900;color:#1f3b4c;margin-bottom:6px;">${coords}</div>
-                ${mapsLink ? `<a href="${mapsLink}" target="_blank" style="font-size:0.82rem;color:#3b82f6;">🗺️ Відкрити на карті</a>` : ''}
+                ${mapsLink?`<a href="${mapsLink}" target="_blank" style="font-size:0.82rem;color:#3b82f6;">🗺️ Відкрити на карті</a>`:''}
             </div>
-
             <div style="background:#e3f2fd;border-radius:16px;padding:12px;margin-bottom:14px;">
                 <div style="font-size:0.82rem;font-weight:700;color:#1565c0;margin-bottom:4px;">⏳ Йде підключення до служб порятунку</div>
                 <div style="font-size:0.78rem;color:#555;">Поки скористуйтесь викликами спеціальних служб:</div>
             </div>
-
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
-                <a href="tel:101" style="background:#e74c3c;color:white;padding:14px 8px;border-radius:16px;text-decoration:none;text-align:center;font-weight:900;">
-                    🔥<br>101<br><span style="font-size:0.7rem;">Пожежна</span>
-                </a>
-                <a href="tel:102" style="background:#1f3b4c;color:white;padding:14px 8px;border-radius:16px;text-decoration:none;text-align:center;font-weight:900;">
-                    👮<br>102<br><span style="font-size:0.7rem;">Поліція</span>
-                </a>
-                <a href="tel:103" style="background:#f39c12;color:white;padding:14px 8px;border-radius:16px;text-decoration:none;text-align:center;font-weight:900;">
-                    🚑<br>103<br><span style="font-size:0.7rem;">Швидка</span>
-                </a>
+                <a href="tel:101" style="background:#e74c3c;color:white;padding:14px 8px;border-radius:16px;text-decoration:none;text-align:center;font-weight:900;">🔥<br>101<br><span style="font-size:0.7rem;">Пожежна</span></a>
+                <a href="tel:102" style="background:#1f3b4c;color:white;padding:14px 8px;border-radius:16px;text-decoration:none;text-align:center;font-weight:900;">👮<br>102<br><span style="font-size:0.7rem;">Поліція</span></a>
+                <a href="tel:103" style="background:#f39c12;color:white;padding:14px 8px;border-radius:16px;text-decoration:none;text-align:center;font-weight:900;">🚑<br>103<br><span style="font-size:0.7rem;">Швидка</span></a>
             </div>
-            <a href="tel:112" style="display:block;background:#e74c3c;color:white;padding:14px;border-radius:40px;text-decoration:none;text-align:center;font-weight:900;font-size:1rem;margin-bottom:12px;">
-                📞 112 — Єдина екстрена служба
-            </a>
-
+            <a href="tel:112" style="display:block;background:#e74c3c;color:white;padding:14px;border-radius:40px;text-decoration:none;text-align:center;font-weight:900;font-size:1rem;margin-bottom:12px;">📞 112 — Єдина екстрена служба</a>
             <button class="close-modal" style="width:100%;padding:12px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:700;">Закрити</button>
         `);
         modal.querySelector('.close-modal').onclick = () => modal.remove();
-    });
-};
-
-window.sendSOSAlert = function() {
-    if (!confirm('⚠️ Відправити сигнал SOS з вашими координатами?')) return;
-    getUserLocation(ok => {
-        if (ok) {
-            alert(`🆘 SOS відправлено!\n\n📍 Ваші координати:\n${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)}\n\nТерміново дзвоніть 101 / 102 / 103!`);
-        } else {
-            alert('🆘 SOS відправлено!\n\n⚠️ GPS недоступний — геолокацію заблоковано.\n\nТерміново дзвоніть 101 / 102 / 103!');
-        }
     });
 };
 
