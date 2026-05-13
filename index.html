@@ -2048,7 +2048,7 @@ function globalSearch(q) {
     if (typeof gtrShopProducts !== 'undefined') {
         gtrShopProducts.forEach(function(p) {
             if (p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)) {
-                results.push({ emoji: p.emoji||'📦', title: p.name, subtitle: '₴' + p.price + ' · GTR Shop', section:'alarm' });
+                results.push({ emoji: p.emoji||'📦', title: p.name, subtitle: '₴' + convertPrice(p.price, p.currency||'UAH', 'UAH') + ' · $' + convertPrice(p.price, p.currency||'UAH', 'USD') + ' · GTR Shop', section:'alarm' });
             }
         });
     }
@@ -2515,7 +2515,16 @@ function renderGTRShopInto(el) {
             '<div style="font-size:0.78rem;color:#888;">' + p.desc + '</div></div>' +
             '</div>' +
             '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-                '<div style="font-size:1.2rem;font-weight:900;color:#f39c12;">' + displayPrice(p.price, p.currency||'UAH', true) + '</div>' +
+                (function(price, cur) {
+                    var uah = price;
+                    var usd = Math.round(price * (exchangeRates.USD || 0.024));
+                    var eur = Math.round(price * (exchangeRates.EUR || 0.022));
+                    return '<div style="margin-bottom:4px;">' +
+                        '<span style="font-size:1.2rem;font-weight:900;color:#f39c12;">₴' + uah + '</span>' +
+                        '<span style="font-size:0.85rem;font-weight:700;color:#27ae60;margin-left:10px;">$' + usd + '</span>' +
+                        '<span style="font-size:0.85rem;font-weight:700;color:#3b82f6;margin-left:8px;">€' + eur + '</span>' +
+                    '</div>';
+                })(p.price, p.currency||'UAH') +
                 (isAdmin ? '<button data-edit-id="' + p.id + '" style="background:#3b82f6;color:#fff;border:none;border-radius:40px;padding:7px 14px;font-size:0.78rem;cursor:pointer;">✏️ Ред.</button>' : '') +
                 (p.available && !isAdmin ? '<button data-order-name="' + p.name + '" data-order-price="' + p.price + '" style="background:#1f3b4c;color:#fff;border:none;border-radius:40px;padding:8px 16px;font-weight:700;font-size:0.82rem;cursor:pointer;">🛒 Замовити</button>' : '') +
                 (!p.available ? '<span style="color:#bbb;font-size:0.78rem;">Немає</span>' : '') +
@@ -2704,7 +2713,7 @@ function renderGTRAdmin() {
             row.innerHTML = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
                 '<span style="font-size:1.8rem;">' + p.emoji + '</span>' +
                 '<div><div style="font-weight:700;">' + p.name + '</div>' +
-                '<div style="font-size:0.78rem;color:#888;">₴' + p.price + ' · ' + (p.available?'✅ є':'❌ немає') + '</div></div></div>';
+                '<div style="font-size:0.78rem;color:#888;">₴' + convertPrice(p.price, p.currency||'UAH', 'UAH') + ' · $' + convertPrice(p.price, p.currency||'UAH', 'USD') + ' · €' + convertPrice(p.price, p.currency||'UAH', 'EUR') + ' · ' + (p.available?'✅ є':'❌ немає') + '</div></div></div>';
             var btnRow = document.createElement('div');
             btnRow.style.cssText = 'display:flex;gap:8px;';
             var eBtn = document.createElement('button');
