@@ -5601,8 +5601,11 @@ function renderSOS() {
         document.getElementById('sosSection1').style.display = 'none';
         document.getElementById('sosSection2').style.display = 'block';
         document.getElementById('sosTab2').style.display = 'none';
-        renderHelpMap();
-        renderHelpList();
+        // Автоматично визначаємо геолокацію
+        getUserLocation(ok => {
+            renderHelpMap();
+            renderHelpList();
+        });
     };
 
     // Кнопка назад до SOS
