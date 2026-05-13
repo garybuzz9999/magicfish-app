@@ -5525,6 +5525,7 @@ const HELP_CATEGORIES = [
 
 function renderSOS() {
     localStorage.setItem('mf_current_section', 'sos');
+    // Скидаємо стан — завжди показуємо основний екран при відкритті
     ensureLeafletFallback();
     const app = document.getElementById('appRoot');
     app.innerHTML = `
@@ -5765,8 +5766,15 @@ window.showAskHelpModal = function() {
         saveHelpRequests();
         modal.remove();
         alert('✅ Запит надіслано!\nКористувачі MagicFish поруч побачать ваш запит.');
-        // Перемикаємось на вкладку допомоги
-        document.getElementById('sosTab2')?.click();
+        // Показуємо список запитів без авто-кліку
+        const s1 = document.getElementById('sosSection1');
+        const s2 = document.getElementById('sosSection2');
+        const tb = document.getElementById('sosTab2');
+        if (s1) s1.style.display = 'none';
+        if (s2) s2.style.display = 'block';
+        if (tb) tb.style.display = 'none';
+        renderHelpMap();
+        renderHelpList();
     };
 };
 
