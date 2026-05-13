@@ -5535,17 +5535,22 @@ function renderSOS() {
             <button id="backSOS" class="back-btn">← Назад</button>
         </div>
 
-        <!-- Вкладки -->
-        <div style="display:flex;gap:0;border-bottom:2px solid #eee;margin-bottom:16px;">
-            <button id="sosTab1" style="flex:1;padding:10px;border:none;background:#e74c3c;color:white;font-weight:700;cursor:pointer;font-size:0.82rem;border-radius:0;">🆘 Екстрений</button>
-            <button id="sosTab2" style="flex:1;padding:10px;border:none;background:#eee;color:#555;font-weight:600;cursor:pointer;font-size:0.82rem;border-radius:0;">🤝 Допомога</button>
-        </div>
+        <!-- Кнопка допомоги спільноти -->
+        <button id="sosTab2" style="width:100%;background:#3b82f6;color:white;border:none;border-radius:40px;padding:14px;font-weight:900;font-size:0.95rem;cursor:pointer;margin-bottom:16px;">
+            🤝 Допомога від спільноти MagicFish
+        </button>
 
         <!-- Екстрений SOS -->
-        <div id="sosSection1">
-            <div class="sos-info">⚠️ Використовуйте лише у реальних надзвичайних ситуаціях. Помилкові виклики є кримінально карними.</div>
-            <button class="sos-main-btn" onclick="window.sendSOSAlert()">🆘 SOS — НАДІСЛАТИ СИГНАЛ</button>
-            <div class="emergency-contacts">
+        <div id="sosSection1" style="display:block;">
+            <!-- Інформаційний банер -->
+            <div style="background:#e74c3c;border-radius:20px;padding:20px;text-align:center;margin-bottom:16px;">
+                <div style="font-size:1.3rem;font-weight:900;color:white;line-height:1.6;">
+                    🆘 При екстрених ситуаціях<br>викликайте служби порятунку
+                </div>
+            </div>
+
+            <!-- Кнопки служб -->
+            <div class="emergency-contacts" style="margin-bottom:16px;">
                 <a href="tel:101" class="emergency-btn ec-101" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;">
                     <div style="font-size:1.4rem;">🔥</div><div>101</div><div style="font-size:0.7rem;">Пожежна</div>
                 </a>
@@ -5556,6 +5561,12 @@ function renderSOS() {
                     <div style="font-size:1.4rem;">🚑</div><div>103</div><div style="font-size:0.7rem;">Швидка</div>
                 </a>
             </div>
+
+            <!-- SOS координати -->
+            <button class="sos-main-btn" onclick="window.showSOSCoordinates()" style="font-size:0.95rem;padding:18px;">
+                📍 Надіслати координати службам
+            </button>
+            <div class="sos-info" style="margin-top:10px;">⚠️ Помилкові виклики є кримінально карними.</div>
             <div style="background:#fff3cd;border-radius:20px;padding:16px;margin-top:8px;">
                 <div style="font-weight:800;margin-bottom:8px;color:#856404;">📋 При надзвичайній ситуації на воді:</div>
                 <div style="font-size:0.85rem;color:#856404;line-height:1.8;">
@@ -5570,6 +5581,9 @@ function renderSOS() {
 
         <!-- Взаємодопомога -->
         <div id="sosSection2" style="display:none;">
+            <button id="backToSOS" style="width:100%;background:#f5f5f5;color:#555;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;margin-bottom:12px;">
+                ← Повернутись до SOS
+            </button>
             <button id="askHelpBtn" style="width:100%;background:linear-gradient(135deg,#f39c12,#e67e22);color:white;border:none;border-radius:40px;padding:16px;font-weight:900;font-size:1rem;cursor:pointer;margin-bottom:16px;">
                 🤝 Попросити допомогу
             </button>
@@ -5582,26 +5596,21 @@ function renderSOS() {
 
     document.getElementById('backSOS').onclick = () => renderMainMenu();
 
-    // Вкладки
-    document.getElementById('sosTab1').onclick = () => {
-        document.getElementById('sosSection1').style.display = 'block';
-        document.getElementById('sosSection2').style.display = 'none';
-        document.getElementById('sosTab1').style.background = '#e74c3c';
-        document.getElementById('sosTab1').style.color = 'white';
-        document.getElementById('sosTab2').style.background = '#eee';
-        document.getElementById('sosTab2').style.color = '#555';
-    };
+    // Кнопка допомоги спільноти
     document.getElementById('sosTab2').onclick = () => {
         document.getElementById('sosSection1').style.display = 'none';
         document.getElementById('sosSection2').style.display = 'block';
-        document.getElementById('sosTab2').style.background = '#f39c12';
-        document.getElementById('sosTab2').style.color = 'white';
-        document.getElementById('sosTab1').style.background = '#eee';
-        document.getElementById('sosTab1').style.color = '#555';
+        document.getElementById('sosTab2').style.display = 'none';
         renderHelpMap();
         renderHelpList();
     };
 
+    // Кнопка назад до SOS
+    document.getElementById('backToSOS').onclick = () => {
+        document.getElementById('sosSection1').style.display = 'block';
+        document.getElementById('sosSection2').style.display = 'none';
+        document.getElementById('sosTab2').style.display = 'block';
+    };
     // Кнопка попросити допомогу
     document.getElementById('askHelpBtn').onclick = () => window.showAskHelpModal();
 }
@@ -5682,7 +5691,7 @@ window.showAskHelpModal = function() {
         </div>
 
         <div style="background:#e8f5e9;border-radius:16px;padding:12px;margin-bottom:14px;font-size:0.85rem;">
-            📞 Ваш телефон: <b>${phone}</b><br>
+            <a href="tel:${phone}" style="color:#27ae60;font-weight:700;text-decoration:none;">📞 ${phone}</a><br>
             <span style="font-size:0.75rem;color:#888;">Буде видно тим хто відгукнеться</span>
         </div>
 
@@ -5748,6 +5757,50 @@ window.showAskHelpModal = function() {
         // Перемикаємось на вкладку допомоги
         document.getElementById('sosTab2')?.click();
     };
+};
+
+window.showSOSCoordinates = function() {
+    getUserLocation(ok => {
+        const coords = ok && currentLocation
+            ? `${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)}`
+            : 'GPS недоступний';
+        const mapsLink = ok && currentLocation
+            ? `https://maps.google.com/?q=${currentLocation.lat},${currentLocation.lng}`
+            : null;
+
+        const modal = openModal(`
+            <h2 style="margin-bottom:4px;">📍 Ваші координати</h2>
+            <div style="font-size:0.82rem;color:#888;margin-bottom:16px;">Повідомте оператору при дзвінку</div>
+
+            <div style="background:#f5f5f5;border-radius:16px;padding:14px;margin-bottom:14px;text-align:center;">
+                <div style="font-size:1rem;font-weight:900;color:#1f3b4c;margin-bottom:6px;">${coords}</div>
+                ${mapsLink ? `<a href="${mapsLink}" target="_blank" style="font-size:0.82rem;color:#3b82f6;">🗺️ Відкрити на карті</a>` : ''}
+            </div>
+
+            <div style="background:#e3f2fd;border-radius:16px;padding:12px;margin-bottom:14px;">
+                <div style="font-size:0.82rem;font-weight:700;color:#1565c0;margin-bottom:4px;">⏳ Йде підключення до служб порятунку</div>
+                <div style="font-size:0.78rem;color:#555;">Поки скористуйтесь викликами спеціальних служб:</div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+                <a href="tel:101" style="background:#e74c3c;color:white;padding:14px 8px;border-radius:16px;text-decoration:none;text-align:center;font-weight:900;">
+                    🔥<br>101<br><span style="font-size:0.7rem;">Пожежна</span>
+                </a>
+                <a href="tel:102" style="background:#1f3b4c;color:white;padding:14px 8px;border-radius:16px;text-decoration:none;text-align:center;font-weight:900;">
+                    👮<br>102<br><span style="font-size:0.7rem;">Поліція</span>
+                </a>
+                <a href="tel:103" style="background:#f39c12;color:white;padding:14px 8px;border-radius:16px;text-decoration:none;text-align:center;font-weight:900;">
+                    🚑<br>103<br><span style="font-size:0.7rem;">Швидка</span>
+                </a>
+            </div>
+            <a href="tel:112" style="display:block;background:#e74c3c;color:white;padding:14px;border-radius:40px;text-decoration:none;text-align:center;font-weight:900;font-size:1rem;margin-bottom:12px;">
+                📞 112 — Єдина екстрена служба
+            </a>
+
+            <button class="close-modal" style="width:100%;padding:12px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:700;">Закрити</button>
+        `);
+        modal.querySelector('.close-modal').onclick = () => modal.remove();
+    });
 };
 
 window.sendSOSAlert = function() {
