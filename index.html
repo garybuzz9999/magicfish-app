@@ -2114,38 +2114,16 @@ function renderLogin() {
 
     // ---- Як користуватись ----
     document.getElementById('howToBtn').onclick = () => {
-        const steps = isUk ? [
-            { icon:'1️⃣', title:'Оберіть мову та країну', desc:'Натисніть кнопку мови у верхньому лівому куті.' },
-            { icon:'2️⃣', title:'Увійдіть через Google або Apple', desc:'Ніяких паролів — один клік і ви в системі.' },
-            { icon:'3️⃣', title:'Оберіть нікнейм', desc:'Придумайте унікальне рибальське ім\'я — так вас будуть знати інші рибалки.' },
-            { icon:'4️⃣', title:'Водойми та чекіни', desc:'Знайдіть водойму поруч. Натисніть «Клює» або «Не клює» — і всі рибалки побачать актуальний стан.' },
-            { icon:'5️⃣', title:'Прогноз кльову', desc:'Отримайте реальний прогноз на основі погоди, тиску та фази місяця.' },
-            { icon:'6️⃣', title:'SOS', desc:'В разі небезпеки натисніть SOS — координати отримають рибалки в радіусі 10 км і служби порятунку.' },
-            { icon:'7️⃣', title:'Дошка оголошень', desc:'Розміщуйте рекламні оголошення. 14 категорій — від гачків до катерів.' },
-            { icon:'8️⃣', title:'Турніри і тури', desc:'Беріть участь у рибальських змаганнях та турах по Україні.' },
-        ] : [
-            { icon:'1️⃣', title:'Choose language & country', desc:'Tap the language button in the top left corner.' },
-            { icon:'2️⃣', title:'Sign in with Google or Apple', desc:'No passwords — one tap and you\'re in.' },
-            { icon:'3️⃣', title:'Pick your nickname', desc:'Choose a unique fishing nickname — that\'s how other anglers will know you.' },
-            { icon:'4️⃣', title:'Fishing spots & check-ins', desc:'Find a spot near you. Tap "Biting" or "Not biting" — everyone sees live status.' },
-            { icon:'5️⃣', title:'Bite forecast', desc:'Get a real forecast based on weather, pressure and moon phase.' },
-            { icon:'6️⃣', title:'SOS', desc:'In danger? Tap SOS — fishers within 5km and rescue services get your coordinates.' },
-            { icon:'7️⃣', title:'Marketplace', desc:'Buy and sell used fishing gear. Earn points for activity.' },
-            { icon:'8️⃣', title:'Tournaments & Tours', desc:'Join fishing competitions and guided tours.' },
-        ];
+        const isUk = appLang === 'uk';
         const modal = openModal(`
-            <h3>${isUk?'❓ Як користуватись MagicFish':'❓ How to use MagicFish'}</h3>
-            <div style="display:flex;flex-direction:column;gap:10px;max-height:65vh;overflow-y:auto;">
-                ${steps.map(s=>`
-                <div style="background:#f5f7f0;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;">
-                    <div style="font-size:1.3rem;flex-shrink:0;">${s.icon}</div>
-                    <div>
-                        <div style="font-weight:700;font-size:0.9rem;color:#1f3b4c;margin-bottom:2px;">${s.title}</div>
-                        <div style="font-size:0.82rem;color:#666;">${s.desc}</div>
-                    </div>
-                </div>`).join('')}
+            <div style="text-align:center;padding:16px 0;">
+                <div style="font-size:3rem;margin-bottom:12px;">📖</div>
+                <h3 style="margin:0 0 10px;color:#1f3b4c;">${isUk ? 'Мануал' : 'Manual'}</h3>
+                <div style="background:#f5f7f0;border-radius:18px;padding:16px;font-size:0.9rem;color:#555;line-height:1.7;margin-bottom:16px;">
+                    ${isUk ? '🚧 Детальний мануал скоро буде!<br>Ми готуємо покрокову інструкцію по всіх функціях MagicFish.' : '🚧 Detailed manual coming soon!<br>We are preparing step-by-step instructions for all MagicFish features.'}
+                </div>
+                <button class="close-modal" style="width:100%;padding:12px;background:#1f3b4c;color:#fff;border:none;border-radius:40px;cursor:pointer;font-weight:700;">${isUk ? 'Зрозуміло' : 'Got it'}</button>
             </div>
-            <button class="close-modal" style="margin-top:14px;">${isUk?'Зрозуміло!':'Got it!'}</button>
         `);
         modal.querySelector('.close-modal').onclick = () => modal.remove();
     };
