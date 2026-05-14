@@ -1445,428 +1445,6 @@ let appLang = localStorage.getItem('mf_lang') || 'uk';
 let appCountry = localStorage.getItem('mf_country') || 'UA';
 let appCurrency = localStorage.getItem('mf_currency') || 'UAH';
 
-// ========== СИСТЕМА ПЕРЕКЛАДІВ ==========
-const I18N = {
-    uk: {
-        // Загальні
-        back: '← Назад',
-        logout: 'вийти',
-        save: 'Зберегти',
-        cancel: 'Скасувати',
-        close: 'Закрити',
-        search: '🔍 Пошук по сайту...',
-        yes: 'Так',
-        no: 'Ні',
-        loading: '⏳ Завантаження...',
-        error: '❌ Помилка',
-        success: '✅ Успіх',
-        confirm: 'Підтвердити',
-        add: 'Додати',
-        edit: '✏️ Редагувати',
-        delete: '🗑️ Видалити',
-        nothing_found: '🔍 Нічого не знайдено',
-        your_location: '📍 Визначити моє місце',
-        location_defined: '✅ Місце визначено',
-        location_error: '❌ Не вдалося визначити місце',
-        nearby_50: '📍 Поруч 50км',
-        you_are_here: '📍 Ви тут',
-        reviews_tab: 'Відгуки',
-        map_tab: 'Карта',
-        review_btn: '✍️ Відгук',
-        call_btn: '📞',
-        map_btn: '🗺️ Карта',
-        no_reviews: 'Без відгуків',
-        your_review: 'Ваш відгук',
-        // Меню
-        menu_waterbodies: 'Водойми',
-        menu_forecast: 'Прогноз клеву',
-        menu_resorts: 'Бази відпочинку',
-        menu_campings: 'Кемпінги',
-        menu_tours: 'Тури по Україні',
-        menu_marketplace: 'Дошка оголошень',
-        menu_stores: 'Магазини',
-        menu_news: 'Новини',
-        menu_forum: 'Форум',
-        menu_cabinet: 'Кабінет',
-        menu_reports: '🐟 Звіти',
-        menu_rating: 'Рейтинг',
-        menu_workshop: 'Майстерня',
-        menu_plans: 'Плани',
-        menu_winter: 'Зимова',
-        menu_methods: 'Способи ловлі',
-        menu_boats: 'Човни та мотори',
-        menu_underwater: 'Підводне полювання',
-        menu_sos: 'SOS',
-        menu_gtr: 'GTR Shop',
-        // Login
-        login_features_list: '🗺️ Водойми\n🔮 Прогноз клеву\n🏖️ Бази відпочинку\n🏕️ Кемпінги\n🚌 Тури по Україні\n📢 Дошка оголошень\n🏪 Магазини\n📰 Новини\n💬 Форум\n👤 Кабінет\n🐟 Звіти — CHECK IN\n⭐ Рейтинг снастей\n🔧 Майстерня\n📋 Плани рибалок\n❄️ Зимова рибалка\n🎣 Способи ловлі\n🚤 Човни та мотори\n🤿 Підводне полювання\n🆘 SOS — екстрена допомога\n📡 GTR Shop — сигналізатор клювання',
-        // SOS
-        sos_title: '🆘 SOS — Екстрена Допомога',
-        sos_btn: '🆘 НАДІСЛАТИ SOS',
-        sos_cancel: '✅ Я в безпеці — Скасувати SOS',
-        sos_sent: 'SOS АКТИВОВАНО',
-        sos_info: '📡 Ваші координати надіслані рибалкам поруч і службам рятування',
-        sos_hint: '⚠️ Натисніть SOS тільки в справжній небезпеці!',
-        sos_my_loc: '📍 Визначити моє місце',
-        sos_location_status: '',
-        sos_emergency: 'Екстрені служби',
-        // Водойми
-        waterbodies_title: '🗺️ Водойми',
-        waterbody_biting: '🟢 Клює!',
-        waterbody_not_biting: '🔴 Не клює',
-        waterbody_unknown: '❓ Невідомо',
-        waterbody_checkin_biting: '✅ Клює',
-        waterbody_checkin_notbiting: '❌ Не клює',
-        waterbody_paid: 'Платна',
-        waterbody_free: 'Безкоштовна',
-        // Форум
-        forum_title: '💬 Форум',
-        forum_new_topic: '+ Нова тема',
-        forum_all_cats: '🌐 Всі',
-        forum_no_topics: 'Поки немає тем',
-        forum_topics: 'теми',
-        forum_replies: 'відповіді',
-        // Прогноз
-        forecast_title: '🔮 Прогноз клювання',
-        forecast_get_location: '📍 Визначити моє місце для прогнозу',
-        forecast_excellent: '🟢 Відмінно',
-        forecast_good: '🟡 Задовільно',
-        forecast_bad: '🔴 Погано',
-        forecast_biting_today: 'клювання сьогодні',
-        forecast_moon: 'Місяць',
-        forecast_time: 'Час доби',
-        forecast_season: 'Сезон',
-        forecast_activity: 'Активність',
-        forecast_best_time: 'Кращий час',
-        forecast_ok_time: 'Непоганий',
-        forecast_bad_time: 'Не найкращий',
-        forecast_good_season: 'Сприятливий',
-        forecast_normal_season: 'Звичайний',
-        forecast_off_season: 'Не сезон',
-        forecast_high: 'Висока',
-        forecast_medium: 'Середня',
-        forecast_low: 'Низька',
-        forecast_temp: 'Температура',
-        forecast_wind: 'Вітер',
-        forecast_pressure: 'мм рт.ст.',
-        forecast_rain: 'Опади',
-        forecast_humidity: 'Вологість',
-        forecast_nearby_water: 'Водойми в радіусі 10км',
-        forecast_no_nearby: '🔍 Водойм у радіусі 10км не знайдено',
-        forecast_weather_loaded: '✅ Погода завантажена',
-        forecast_weather_error: '⚠️ Не вдалося завантажити погоду',
-        // Кемпінги
-        campings_title: '🏕️ Кемпінги',
-        campings_search: '🔍 Пошук кемпінгу, міста...',
-        // Бази відпочинку
-        resorts_title: '🏖️ Бази відпочинку',
-        resorts_search: '🔍 Пошук бази...',
-        // Магазини
-        stores_title: '🏪 Магазини',
-        stores_search: '🔍 Пошук магазину...',
-        // Турніри
-        tournaments_title: '🏆 Турніри',
-        tournament_register: 'Зареєструватись',
-        tournament_registered: '✅ Зареєстровано',
-        tournament_full: 'Місць немає',
-        tournament_participants: 'учасників',
-        tournament_fee: 'Внесок',
-        tournament_prize: 'Призи',
-        // Кабінет
-        cabinet_title: '👤 Кабінет',
-        cabinet_my_listings: 'Мої оголошення',
-        cabinet_subscription: 'Підписка',
-        cabinet_activity: 'Активність',
-        cabinet_edit_profile: '✏️ Редагувати профіль',
-        cabinet_become_partner: '🤝 Стати партнером',
-        cabinet_logout: '🚪 Вийти',
-        // Звіти
-        reports_title: '🐟 Звіти з риболовлі',
-        reports_add: '+ Додати звіт',
-        reports_no_reports: 'Звітів ще немає',
-        // Рейтинг
-        rating_title: '⭐ Рейтинг приманок',
-        rating_vote: '👍 Голосую',
-        // Майстерня
-        workshop_title: '🔧 Майстерня',
-        workshop_new: '+ Нова тема',
-        // Плани
-        plans_title: '📋 Плани рибалок',
-        plans_new: '+ Новий план',
-        plans_join: 'Приєднатись',
-        plans_joined: '✅ Приєднано',
-        // Зимова
-        winter_title: '❄️ Зимова рибалка',
-        winter_new: '+ Нова тема',
-        // Способи ловлі
-        methods_title: '🎣 Способи ловлі',
-        methods_new: '+ Нова тема',
-        // Човни
-        boats_title: '🚤 Човни та мотори',
-        boats_new: '+ Нова тема',
-        // Підводне полювання
-        underwater_title: '🤿 Підводне полювання',
-        underwater_new: '+ Нова тема',
-        // Новини
-        news_title: '📰 Новини',
-        news_add: '+ Додати новину',
-        // Тури
-        tours_title: '🚌 Рибальські Тури',
-        tours_book: '📅 Забронювати',
-        tours_spots_left: 'місць',
-        // Маркетплейс
-        marketplace_title: '📢 Дошка оголошень',
-        marketplace_new: '+ Нове оголошення',
-        marketplace_search: '🔍 Пошук...',
-        marketplace_price: 'Ціна',
-        marketplace_contact: 'Контакт',
-        // GTR
-        gtr_shop_title: '🛒 GTR Shop',
-        gtr_order: '🛒 Замовити',
-        gtr_settings: '📡 Налаштування GTR Phantom',
-        gtr_connect: '🔗 Підключити',
-        gtr_disconnect: '❌ Відключити',
-        gtr_connected: '🟢 підключено · GTR Phantom',
-        gtr_disconnected: 'не підключено',
-        gtr_bites_none: 'поклювань ще не було',
-        // Пошук водойм
-        wb_search: '🔍 Назва, місто, регіон...',
-        // Рейтинг снастей
-        lr_all: '🌐 Всі',
-        // GTR Admin
-        gtr_admin_btn: '⚙️ GTR Адмін панель',
-        gtr_admin_label: '👑 Адмін',
-        gtr_no_stock: 'Немає',
-        // GTR Phantom channel labels
-        gtr_active: 'АКТ.',
-        gtr_inactive: 'ВИМК.',
-        gtr_bites_count: 'поклювань',
-        gtr_sensitivity_low: 'низька',
-        gtr_sensitivity_med: 'середня',
-        gtr_sensitivity_high: 'висока',
-        // Рекламні банери
-        banner_ad: 'РЕКЛАМА',
-        banner_your_ad: 'Ваша реклама тут',
-        banner_place_ad: '📧 Розмістити рекламу → ckbbuild@gmail.com',
-        // Партнери
-        become_partner: '🤝 Стати партнером',
-        // Завантажити в
-        download_in: 'Завантажити в',
-    },
-    en: {
-        // General
-        back: '← Back',
-        logout: 'logout',
-        save: 'Save',
-        cancel: 'Cancel',
-        close: 'Close',
-        search: '🔍 Search the site...',
-        yes: 'Yes',
-        no: 'No',
-        loading: '⏳ Loading...',
-        error: '❌ Error',
-        success: '✅ Success',
-        confirm: 'Confirm',
-        add: 'Add',
-        edit: '✏️ Edit',
-        delete: '🗑️ Delete',
-        nothing_found: '🔍 Nothing found',
-        your_location: '📍 Detect my location',
-        location_defined: '✅ Location detected',
-        location_error: '❌ Could not detect location',
-        nearby_50: '📍 Nearby 50km',
-        you_are_here: '📍 You are here',
-        reviews_tab: 'Reviews',
-        map_tab: 'Map',
-        review_btn: '✍️ Review',
-        call_btn: '📞',
-        map_btn: '🗺️ Map',
-        no_reviews: 'No reviews',
-        your_review: 'Your review',
-        // Menu
-        menu_waterbodies: 'Fishing Spots',
-        menu_forecast: 'Bite Forecast',
-        menu_resorts: 'Fishing Resorts',
-        menu_campings: 'Campsites',
-        menu_tours: 'Fishing Tours',
-        menu_marketplace: 'Classifieds',
-        menu_stores: 'Shops',
-        menu_news: 'News',
-        menu_forum: 'Forum',
-        menu_cabinet: 'My Account',
-        menu_reports: '🐟 Reports',
-        menu_rating: 'Ratings',
-        menu_workshop: 'Workshop',
-        menu_plans: 'Plans',
-        menu_winter: 'Ice Fishing',
-        menu_methods: 'Fishing Methods',
-        menu_boats: 'Boats & Motors',
-        menu_underwater: 'Spearfishing',
-        menu_sos: 'SOS',
-        menu_gtr: 'GTR Shop',
-        // Login
-        login_features_list: '🗺️ Fishing Spots\n🔮 Bite Forecast\n🏖️ Fishing Resorts\n🏕️ Campsites\n🚌 Fishing Tours\n📢 Classifieds\n🏪 Shops\n📰 News\n💬 Forum\n👤 My Account\n🐟 Reports — CHECK IN\n⭐ Gear Ratings\n🔧 Workshop\n📋 Fishing Plans\n❄️ Ice Fishing\n🎣 Fishing Methods\n🚤 Boats & Motors\n🤿 Spearfishing\n🆘 SOS — Emergency\n📡 GTR Shop — bite alarm',
-        // SOS
-        sos_title: '🆘 SOS — Emergency Help',
-        sos_btn: '🆘 SEND SOS',
-        sos_cancel: '✅ I am safe — Cancel SOS',
-        sos_sent: 'SOS ACTIVATED',
-        sos_info: '📡 Your coordinates have been sent to nearby anglers and rescue services',
-        sos_hint: '⚠️ Press SOS only in real danger!',
-        sos_my_loc: '📍 Detect my location',
-        sos_location_status: '',
-        sos_emergency: 'Emergency Services',
-        // Waterbodies
-        waterbodies_title: '🗺️ Fishing Spots',
-        waterbody_biting: '🟢 Biting!',
-        waterbody_not_biting: '🔴 Not biting',
-        waterbody_unknown: '❓ Unknown',
-        waterbody_checkin_biting: '✅ Biting',
-        waterbody_checkin_notbiting: '❌ Not biting',
-        waterbody_paid: 'Paid',
-        waterbody_free: 'Free',
-        // Forum
-        forum_title: '💬 Forum',
-        forum_new_topic: '+ New topic',
-        forum_all_cats: '🌐 All',
-        forum_no_topics: 'No topics yet',
-        forum_topics: 'topics',
-        forum_replies: 'replies',
-        // Forecast
-        forecast_title: '🔮 Bite Forecast',
-        forecast_get_location: '📍 Detect my location for forecast',
-        forecast_excellent: '🟢 Excellent',
-        forecast_good: '🟡 Fair',
-        forecast_bad: '🔴 Poor',
-        forecast_biting_today: 'bite chance today',
-        forecast_moon: 'Moon',
-        forecast_time: 'Time of day',
-        forecast_season: 'Season',
-        forecast_activity: 'Activity',
-        forecast_best_time: 'Best time',
-        forecast_ok_time: 'Decent',
-        forecast_bad_time: 'Not ideal',
-        forecast_good_season: 'Favorable',
-        forecast_normal_season: 'Normal',
-        forecast_off_season: 'Off season',
-        forecast_high: 'High',
-        forecast_medium: 'Medium',
-        forecast_low: 'Low',
-        forecast_temp: 'Temperature',
-        forecast_wind: 'Wind',
-        forecast_pressure: 'mmHg',
-        forecast_rain: 'Precipitation',
-        forecast_humidity: 'Humidity',
-        forecast_nearby_water: 'Fishing spots within 10km',
-        forecast_no_nearby: '🔍 No fishing spots within 10km',
-        forecast_weather_loaded: '✅ Weather loaded',
-        forecast_weather_error: '⚠️ Could not load weather data',
-        // Campings
-        campings_title: '🏕️ Campsites',
-        campings_search: '🔍 Search campsites, city...',
-        // Resorts
-        resorts_title: '🏖️ Fishing Resorts',
-        resorts_search: '🔍 Search resort...',
-        // Shops
-        stores_title: '🏪 Fishing Shops',
-        stores_search: '🔍 Search shop...',
-        // Tournaments
-        tournaments_title: '🏆 Tournaments',
-        tournament_register: 'Register',
-        tournament_registered: '✅ Registered',
-        tournament_full: 'No spots left',
-        tournament_participants: 'participants',
-        tournament_fee: 'Entry fee',
-        tournament_prize: 'Prizes',
-        // Cabinet
-        cabinet_title: '👤 My Account',
-        cabinet_my_listings: 'My listings',
-        cabinet_subscription: 'Subscription',
-        cabinet_activity: 'Activity',
-        cabinet_edit_profile: '✏️ Edit profile',
-        cabinet_become_partner: '🤝 Become a partner',
-        cabinet_logout: '🚪 Logout',
-        // Reports
-        reports_title: '🐟 Fishing Reports',
-        reports_add: '+ Add report',
-        reports_no_reports: 'No reports yet',
-        // Rating
-        rating_title: '⭐ Lure Ratings',
-        rating_vote: '👍 Vote',
-        // Workshop
-        workshop_title: '🔧 Workshop',
-        workshop_new: '+ New topic',
-        // Plans
-        plans_title: '📋 Fishing Plans',
-        plans_new: '+ New plan',
-        plans_join: 'Join',
-        plans_joined: '✅ Joined',
-        // Winter
-        winter_title: '❄️ Ice Fishing',
-        winter_new: '+ New topic',
-        // Methods
-        methods_title: '🎣 Fishing Methods',
-        methods_new: '+ New topic',
-        // Boats
-        boats_title: '🚤 Boats & Motors',
-        boats_new: '+ New topic',
-        // Underwater
-        underwater_title: '🤿 Spearfishing',
-        underwater_new: '+ New topic',
-        // News
-        news_title: '📰 News',
-        news_add: '+ Add news',
-        // Tours
-        tours_title: '🚌 Fishing Tours',
-        tours_book: '📅 Book now',
-        tours_spots_left: 'spots',
-        // Marketplace
-        marketplace_title: '📢 Classifieds',
-        marketplace_new: '+ New listing',
-        marketplace_search: '🔍 Search...',
-        marketplace_price: 'Price',
-        marketplace_contact: 'Contact',
-        // GTR
-        gtr_shop_title: '🛒 GTR Shop',
-        gtr_order: '🛒 Order',
-        gtr_settings: '📡 GTR Phantom Settings',
-        gtr_connect: '🔗 Connect',
-        gtr_disconnect: '❌ Disconnect',
-        gtr_connected: '🟢 connected · GTR Phantom',
-        gtr_disconnected: 'not connected',
-        gtr_bites_none: 'no bites yet',
-        // Waterbodies search
-        wb_search: '🔍 Name, city, region...',
-        // Lure rating
-        lr_all: '🌐 All',
-        // GTR Admin
-        gtr_admin_btn: '⚙️ GTR Admin panel',
-        gtr_admin_label: '👑 Admin',
-        gtr_no_stock: 'Out of stock',
-        // GTR Phantom channel labels
-        gtr_active: 'ON',
-        gtr_inactive: 'OFF',
-        gtr_bites_count: 'bites',
-        gtr_sensitivity_low: 'low',
-        gtr_sensitivity_med: 'medium',
-        gtr_sensitivity_high: 'high',
-        // Ad banners
-        banner_ad: 'AD',
-        banner_your_ad: 'Your ad here',
-        banner_place_ad: '📧 Place ad → ckbbuild@gmail.com',
-        // Partners
-        become_partner: '🤝 Become a partner',
-        // Download
-        download_in: 'Download on',
-    }
-};
-
-// Функція перекладу — повертає рядок по ключу для поточної мови
-function T(key) {
-    const lang = appLang === 'uk' ? 'uk' : 'en';
-    return (I18N[lang] && I18N[lang][key]) || (I18N['uk'][key]) || key;
-}
-
 // ========== СИСТЕМА ВАЛЮТ ==========
 // Курси відносно UAH (оновлюються з НБУ)
 let exchangeRates = {
@@ -1944,103 +1522,6 @@ function getCountryFlag() {
 }
 
 // ========== ЛОГІН (новий міжнародний) ==========
-// ========== МАНУАЛ (глобальна функція) ==========
-function showManual() {
-    var isUk = appLang === 'uk';
-
-    var sections = isUk ? [
-        { icon:'🌐', title:'Крок 1 — Мова, країна та валюта', desc:'Натисніть кнопку мови (🇺🇦/🇬🇧) у верхньому лівому куті. Інтерфейс переключиться автоматично. Оберіть країну — валюта підлаштується: Україна→₴, Польща→zł, США→$. Курси НБУ оновлюються автоматично.' },
-        { icon:'🔑', title:'Крок 2 — Реєстрація та вхід', desc:'Введіть email → натисніть «Увійти через Email» → на пошту прийде 6-значний код. Введіть код і ви всередині. Також доступний вхід через Google одним кліком. Повністю безкоштовно.' },
-        { icon:'🎣', title:'Крок 3 — Нікнейм та профіль', desc:'Після першого входу оберіть нікнейм (2–24 символи). У Кабінеті можна додати фото, телефон, місто, і відстежувати рейтинг та активність.' },
-        { icon:'🗺️', title:'Крок 4 — Водойми та чекіни', desc:'Розділ «Водойми» показує ставки, озера, річки на карті. Визначте місце для сортування «Поруч». Статус: 🟢 Клює / 🔴 Не клює. Зробіть чекін після риболовлі — допоможіть іншим рибалкам!' },
-        { icon:'🔮', title:'Крок 5 — Прогноз клювання', desc:'Прогноз за реальними даними: температура, тиск, вітер, вологість + фаза місяця + сезон + час доби. Визначте геолокацію для точного прогнозу. 🟢 Чудово / 🟡 Задовільно / 🔴 Погано.' },
-        { icon:'🐟', title:'Крок 6 — Звіти та CHECK IN', desc:'Публікуйте фото улову! Вкажіть рибу, вагу, довжину, водойму, приманку. Звіти — як стрічка Instagram з лайками та коментарями. Кожен звіт = +5 очків рейтингу.' },
-        { icon:'📢', title:'Крок 7 — Дошка оголошень', desc:'Купуйте та продавайте б/у спорядження. 14 категорій: вудки, котушки, ехолоти, мотори, човни, приманки тощо. Розміщення безкоштовне. Ціна автоматично конвертується у валюту покупця.' },
-        { icon:'🏪', title:'Крок 8 — Магазини та GTR Shop', desc:'Рибальські магазини на карті — телефон, адреса, відгуки. GTR Shop — сигналізатор GTR Phantom BLE 4.0. Підключіть через Bluetooth: вібро-сповіщення, статистика клювань, прив&#39;язка до водойми.' },
-        { icon:'🏆', title:'Крок 9 — Турніри та тури', desc:'Турніри з призами — реєстрація одним кліком. Тури по Україні — організовані виїзди з гідом: Шацькі озера, Карпати, Дніпро тощо.' },
-        { icon:'💬', title:'Крок 10 — Спільнота та форум', desc:'Форум: обговорення, поради, питання. Майстерня: ремонт снастей, саморобки. Плани рибалок: організовуйте спільні виїзди. Окремі розділи: Зимова, Способи ловлі, Човни, Підводне полювання.' },
-        { icon:'⭐', title:'Крок 11 — Система рейтингу', desc:'Очки за активність: звіт +5, відгук +3, чекін +2, новина +10. Ранги: 🪱 Новачок → 🐟 Рибалка → 🎣 Досвідчений → 🏆 Майстер → 👑 Легенда. Рейтинг приманок — голосуйте за снасті та бренди.' },
-        { icon:'🆘', title:'Крок 12 — SOS та безпека', desc:'Кнопка SOS — відправляє GPS-координати рибалкам і службам порятунку. Номери: 101 (пожежна), 102 (поліція), 103 (швидка), 112 (єдина). Допомога від спільноти — попросіть допомоги у рибалок поруч.' },
-    ] : [
-        { icon:'🌐', title:'Step 1 — Language, Country & Currency', desc:'Tap the language button (🇺🇦/🇬🇧) in the top-left corner. Interface switches instantly. Select country — currency auto-adjusts: Ukraine→₴, Poland→zł, USA→$. Exchange rates update automatically.' },
-        { icon:'🔑', title:'Step 2 — Registration & Login', desc:'Enter email → tap "Sign in via Email" → a 6-digit code is sent to your inbox. Enter code and you&#39;re in. Google sign-in is also available in one tap. Completely free.' },
-        { icon:'🎣', title:'Step 3 — Nickname & Profile', desc:'After first login choose a nickname (2–24 chars). In My Account add a photo, phone, city, and track your rating and activity.' },
-        { icon:'🗺️', title:'Step 4 — Fishing Spots & Check-ins', desc:'"Fishing Spots" shows lakes, ponds, rivers on the map. Detect location to sort by "Nearby". Status: 🟢 Biting / 🔴 Not biting. Check in after fishing — help other anglers!' },
-        { icon:'🔮', title:'Step 5 — Bite Forecast', desc:'Forecast from real data: temperature, pressure, wind, humidity + moon phase + season + time of day. Detect location for accuracy. 🟢 Excellent / 🟡 Fair / 🔴 Poor.' },
-        { icon:'🐟', title:'Step 6 — Reports & CHECK IN', desc:'Share your catch photos! Enter fish, weight, length, water body, lure. Reports show as an Instagram-style feed with likes and comments. Each report = +5 rating points.' },
-        { icon:'📢', title:'Step 7 — Classifieds', desc:'Buy and sell used fishing gear. 14 categories: rods, reels, sonar, motors, boats, lures and more. Free listings. Price auto-converts to buyer&#39;s currency.' },
-        { icon:'🏪', title:'Step 8 — Shops & GTR Shop', desc:'Fishing shops on the map — phone, address, reviews. GTR Shop — GTR Phantom BLE 4.0 alarm. Connect via Bluetooth: vibration alerts, bite stats, water body linking.' },
-        { icon:'🏆', title:'Step 9 — Tournaments & Tours', desc:'Tournaments with prizes — register in one tap. Fishing Tours across Ukraine with a guide: Shatsk Lakes, Carpathians, Dnipro river and more.' },
-        { icon:'💬', title:'Step 10 — Community & Forum', desc:'Forum: discussions, tips, questions. Workshop: gear repair and DIY. Fishing Plans: organise group trips. Dedicated sections: Ice Fishing, Methods, Boats, Spearfishing.' },
-        { icon:'⭐', title:'Step 11 — Rating System', desc:'Points for activity: report +5, review +3, check-in +2, news +10. Ranks: 🪱 Beginner → 🐟 Angler → 🎣 Experienced → 🏆 Master → 👑 Legend. Gear Ratings — vote for lures and brands.' },
-        { icon:'🆘', title:'Step 12 — SOS & Safety', desc:'SOS button sends GPS coordinates to nearby anglers and rescue services. Numbers: 101 (fire), 102 (police), 103 (ambulance), 112 (unified). Community Help — request help from nearby anglers.' },
-    ];
-
-    var currentStep = 0;
-    var total = sections.length;
-
-    var modalEl = openModal(
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
-            '<h3 style="margin:0;font-size:1rem;color:#1f3b4c;">📖 ' + (isUk ? 'Як користуватись' : 'How to use') + ' MagicFish</h3>' +
-            '<div style="display:flex;gap:6px;">' +
-                '<button id="manualLangUk" style="background:' + (appLang==='uk'?'#1e3a3a':'#eee') + ';color:' + (appLang==='uk'?'#fff':'#333') + ';border:none;border-radius:20px;padding:5px 12px;font-size:0.82rem;cursor:pointer;font-weight:700;">🇺🇦</button>' +
-                '<button id="manualLangEn" style="background:' + (appLang!=='uk'?'#1e3a3a':'#eee') + ';color:' + (appLang!=='uk'?'#fff':'#333') + ';border:none;border-radius:20px;padding:5px 12px;font-size:0.82rem;cursor:pointer;font-weight:700;">🇬🇧</button>' +
-            '</div>' +
-        '</div>' +
-        '<div style="background:#eee;border-radius:40px;height:6px;margin-bottom:14px;overflow:hidden;">' +
-            '<div id="manualProgress" style="height:100%;border-radius:40px;background:linear-gradient(90deg,#1f3b4c,#3b82f6);transition:width 0.4s;width:8%;"></div>' +
-        '</div>' +
-        '<div id="manualStep" style="min-height:180px;"></div>' +
-        '<div style="display:flex;gap:10px;margin-top:14px;">' +
-            '<button id="manualPrev" style="flex:1;background:#eee;border:none;border-radius:40px;padding:11px;font-weight:700;cursor:pointer;font-size:0.9rem;opacity:0.4;">← ' + (isUk?'Назад':'Back') + '</button>' +
-            '<button id="manualNext" style="flex:2;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);color:white;border:none;border-radius:40px;padding:11px;font-weight:700;cursor:pointer;font-size:0.9rem;">' + (isUk?'Далі':'Next') + ' →</button>' +
-        '</div>' +
-        '<div style="text-align:center;margin-top:8px;"><span id="manualPageNum" style="font-size:0.75rem;color:#aaa;"></span></div>' +
-        '<button class="close-modal" style="margin-top:10px;width:100%;padding:10px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:600;">' + (isUk?'Закрити':'Close') + '</button>'
-    );
-
-    function renderStep() {
-        var s = sections[currentStep];
-        var isUkNow = appLang === 'uk';
-        document.getElementById('manualStep').innerHTML =
-            '<div style="text-align:center;margin-bottom:12px;">' +
-                '<div style="font-size:2.5rem;margin-bottom:8px;">' + s.icon + '</div>' +
-                '<div style="font-weight:900;font-size:0.95rem;color:#1f3b4c;margin-bottom:10px;">' + s.title + '</div>' +
-            '</div>' +
-            '<div style="background:#f5f7f0;border-radius:18px;padding:14px;font-size:0.86rem;color:#333;line-height:1.7;">' + s.desc + '</div>' +
-            '<div style="display:flex;justify-content:center;gap:5px;margin-top:12px;flex-wrap:wrap;">' +
-                sections.map(function(_,i){ return '<div style="width:' + (i===currentStep?'18px':'7px') + ';height:7px;border-radius:40px;background:' + (i===currentStep?'#1f3b4c':'#ddd') + ';transition:all 0.3s;"></div>'; }).join('') +
-            '</div>';
-        var pct = Math.round((currentStep + 1) / total * 100);
-        document.getElementById('manualProgress').style.width = pct + '%';
-        document.getElementById('manualPageNum').textContent = (currentStep + 1) + ' / ' + total;
-        document.getElementById('manualPrev').style.opacity = currentStep === 0 ? '0.4' : '1';
-        var nextBtn = document.getElementById('manualNext');
-        nextBtn.textContent = currentStep === total - 1
-            ? (isUkNow ? '✅ Зрозуміло!' : '✅ Got it!')
-            : (isUkNow ? 'Далі' : 'Next') + ' →';
-    }
-
-    renderStep();
-
-    document.getElementById('manualNext').onclick = function() {
-        if (currentStep < total - 1) { currentStep++; renderStep(); }
-        else { modalEl.remove(); }
-    };
-    document.getElementById('manualPrev').onclick = function() {
-        if (currentStep > 0) { currentStep--; renderStep(); }
-    };
-    document.getElementById('manualLangUk').onclick = function() {
-        appLang = 'uk'; localStorage.setItem('mf_lang', 'uk');
-        modalEl.remove(); showManual();
-    };
-    document.getElementById('manualLangEn').onclick = function() {
-        appLang = 'en'; localStorage.setItem('mf_lang', 'en');
-        modalEl.remove(); showManual();
-    };
-    modalEl.querySelector('.close-modal').onclick = function() { modalEl.remove(); };
-}
-
 function renderLogin() {
     const app = document.getElementById('appRoot');
     const selLang = LANGUAGES.find(l => l.code === appLang) || LANGUAGES[0];
@@ -2095,7 +1576,7 @@ function renderLogin() {
               style="background:rgba(255,255,255,0.15);color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
               <span style="font-size:1rem;">▶</span>
               <div>
-                <div style="font-size:0.5rem;opacity:0.7;line-height:1;">${isUk?'Завантажити в':'Get it on'}</div>
+                <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
                 <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">Google Play</div>
               </div>
             </a>
@@ -2103,7 +1584,7 @@ function renderLogin() {
               style="background:rgba(255,255,255,0.15);color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
               <span style="font-size:1rem;"></span>
               <div>
-                <div style="font-size:0.5rem;opacity:0.7;line-height:1;">${isUk?'Завантажити в':'Download on'}</div>
+                <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
                 <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">App Store</div>
               </div>
             </a>
@@ -2120,21 +1601,37 @@ function renderLogin() {
 
       <div style="padding:20px 24px 24px;">
         <!-- Фічі — компактний список -->
-        <div style="background:#f5f7f0;border-radius:20px;padding:10px 14px;margin-bottom:14px;font-size:0.78rem;line-height:1.7;color:#2c3e2f;max-height:180px;overflow-y:auto;">
-          ${appLang==='uk'?
-'🗺️ Водойми<br>🔮 Прогноз клеву<br>🏖️ Бази відпочинку<br>🏕️ Кемпінги<br>🚌 Тури по Україні<br>📢 Дошка оголошень<br>🏪 Магазини<br>📰 Новини<br>💬 Форум<br>👤 Кабінет<br>🐟 Звіти — CHECK IN<br>⭐ Рейтинг снастей<br>🔧 Майстерня<br>📋 Плани рибалок<br>❄️ Зимова рибалка<br>🎣 Способи ловлі<br>🚤 Човни та мотори<br>🤿 Підводне полювання<br>🆘 SOS — екстрена допомога<br>📡 GTR Shop — сигналізатор клювання'
-:
-'🗺️ Fishing Spots<br>🔮 Bite Forecast<br>🏖️ Fishing Resorts<br>🏕️ Campsites<br>🚌 Fishing Tours<br>📢 Classifieds<br>🏪 Shops<br>📰 News<br>💬 Forum<br>👤 My Account<br>🐟 Reports — CHECK IN<br>⭐ Gear Ratings<br>🔧 Workshop<br>📋 Fishing Plans<br>❄️ Ice Fishing<br>🎣 Fishing Methods<br>🚤 Boats & Motors<br>🤿 Spearfishing<br>🆘 SOS — Emergency<br>📡 GTR Shop — bite alarm'}
+        <div style="background:#f5f7f0;border-radius:20px;padding:12px 16px;margin-bottom:16px;font-size:0.9rem;line-height:1.95;color:#2c3e2f;">
+          🗺️ Водойми<br>
+          🔮 Прогноз клеву<br>
+          🏖️ Бази відпочинку<br>
+          🏕️ Кемпінги<br>
+          🚌 Тури по Україні<br>
+          📢 Дошка оголошень<br>
+          🏪 Магазини<br>
+          📰 Новини<br>
+          💬 Форум<br>
+          👤 Кабінет<br>
+          🐟 Звіти — CHECK IN<br>
+          ⭐ Рейтинг снастей<br>
+          🔧 Майстерня<br>
+          📋 Плани рибалок<br>
+          ❄️ Зимова рибалка<br>
+          🎣 Способи ловлі<br>
+          🚤 Човни та мотори<br>
+          🤿 Підводне полювання<br>
+          🆘 SOS — екстрена допомога<br>
+          📡 GTR Shop — сигналізатор клювання
         </div>
 
         <!-- Email вхід -->
         <div id="emailAuthBlock" style="margin-bottom:12px;">
-          <input id="authEmail" type="email" placeholder="${isUk ? '📧 Ваш email' : '📧 Your email'}" style="margin-bottom:8px;">
+          <input id="authEmail" type="email" placeholder="📧 Ваш email" style="margin-bottom:8px;">
           <div id="otpBlock" style="display:none;">
-            <input id="authOtp" type="number" placeholder="${isUk ? '🔢 Код з листа (6 цифр)' : '🔢 Code from email (6 digits)'}" style="margin-bottom:8px;letter-spacing:4px;font-size:1.1rem;text-align:center;">
+            <input id="authOtp" type="number" placeholder="🔢 Код з листа (6 цифр)" style="margin-bottom:8px;letter-spacing:4px;font-size:1.1rem;text-align:center;">
           </div>
           <button id="emailAuthBtn" class="btn btn-block" style="margin-bottom:10px;background:#1f3b4c;color:#fff;">
-            📧 ${isUk ? 'Увійти через Email' : 'Sign in via Email'}
+            📧 Увійти через Email
           </button>
           <div id="authStatus" style="font-size:0.82rem;text-align:center;min-height:20px;color:#e74c3c;"></div>
         </div>
@@ -2148,7 +1645,7 @@ function renderLogin() {
         <!-- Apple — заглушка -->
         <button id="appleBtn" class="btn btn-block btn-secondary" style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:1rem;margin-bottom:14px;opacity:0.6;">
           <svg width="20" height="20" viewBox="0 0 814 1000" fill="white"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105.5-57.8-155.5-127.4C46 454.9 0 330.2 0 209.4c0-54.3 9.4-108.7 28.2-160.6 26.4-69.1 98.9-123.4 177.5-123.4 79.5 0 130.3 51.9 172.1 51.9 40.8 0 103.7-55.9 194.1-55.9 33.6 0 135.2 3.9 204.8 101.1zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/></svg>
-          ${txt.apple} ${isUk ? '(скоро)' : '(soon)'}
+          ${txt.apple} (скоро)
         </button>
 
         <!-- Кнопка "Як користуватись" -->
@@ -2210,7 +1707,128 @@ function renderLogin() {
     };
 
     // ---- Як користуватись ----
-    document.getElementById('howToBtn').onclick = () => { showManual(); };
+    document.getElementById('howToBtn').onclick = () => {
+        const isUk = appLang === 'uk';
+
+        const steps = isUk ? [
+            { icon:'🌐', title:'Крок 1 — Мова, країна та валюта',
+              desc:'Натисніть кнопку мови (🇺🇦/🇬🇧) у верхньому лівому куті — інтерфейс перемкнеться миттєво. Оберіть країну та валюту: Україна→₴, Польща→zł, США→$. Курси НБУ оновлюються автоматично.' },
+            { icon:'🔑', title:'Крок 2 — Реєстрація та вхід',
+              desc:'Введіть email → «Увійти через Email» → на пошту прийде 6-значний код. Введіть код — і ви всередині. Також доступний вхід через Google одним кліком. Повністю безкоштовно.' },
+            { icon:'🎣', title:'Крок 3 — Нікнейм та профіль',
+              desc:'Після першого входу оберіть унікальний нікнейм (2–24 символи). У Кабінеті можна додати фото профілю, телефон, місто та відстежувати рейтинг і активність.' },
+            { icon:'🗺️', title:'Крок 4 — Водойми та чекіни',
+              desc:'Розділ «Водойми» показує ставки, озера та річки. Натисніть «Визначити моє місце» для сортування за відстанню. Після риболовлі зробіть чекін: 🟢 Клює / 🔴 Не клює — допоможіть іншим рибалкам!' },
+            { icon:'🔮', title:'Крок 5 — Прогноз клювання',
+              desc:'Прогноз розраховується за реальними даними погоди: температура, тиск, вітер, вологість + фаза місяця + сезон + час доби. Визначте геолокацію для точного прогнозу. 🟢 Відмінно / 🟡 Задовільно / 🔴 Погано.' },
+            { icon:'🐟', title:'Крок 6 — Звіти та CHECK IN',
+              desc:'Публікуйте фото улову! Вкажіть рибу, вагу, довжину, водойму, приманку та додайте фото. Звіти з лайками та коментарями. Кожен звіт = +5 очків рейтингу.' },
+            { icon:'📢', title:'Крок 7 — Дошка оголошень',
+              desc:'Купуйте та продавайте б/у спорядження. 14 категорій: вудки, котушки, ехолоти, мотори, човни, приманки. Розміщення безкоштовне. Ціна автоматично конвертується для покупця.' },
+            { icon:'🏪', title:'Крок 8 — Магазини та GTR Shop',
+              desc:'Рибальські магазини на карті — телефон, адреса, відгуки. GTR Shop — сигналізатор GTR Phantom BLE 4.0. Підключіть через Bluetooth: вібро-сповіщення та статистика клювань.' },
+            { icon:'🏆', title:'Крок 9 — Турніри та тури',
+              desc:'Турніри з призами — реєстрація одним кліком. Тури по Україні — організовані виїзди з гідом: Шацькі озера, Карпати, Дніпро та інші маршрути.' },
+            { icon:'💬', title:'Крок 10 — Спільнота та форум',
+              desc:'Форум: обговорення, поради, питання. Майстерня: ремонт снастей та саморобки. Плани рибалок: організовуйте спільні виїзди. Також: Зимова рибалка, Способи ловлі, Човни, Підводне полювання.' },
+            { icon:'⭐', title:'Крок 11 — Система рейтингу',
+              desc:'Очки за активність: звіт +5, відгук +3, чекін +2, новина +10. Ранги: 🪱 Новачок → 🐟 Рибалка → 🎣 Досвідчений → 🏆 Майстер → 👑 Легенда. Рейтинг приманок — голосуйте за снасті.' },
+            { icon:'🆘', title:'Крок 12 — SOS та безпека',
+              desc:'Кнопка SOS відправляє GPS-координати рибалкам поруч та службам порятунку. Екстрені номери: 101 (пожежна), 102 (поліція), 103 (швидка), 112 (єдина). Допомога від спільноти — попросіть допомоги у рибалок поруч.' },
+        ] : [
+            { icon:'🌐', title:'Step 1 — Language, Country & Currency',
+              desc:'Tap the language button (🇺🇦/🇬🇧) in the top-left corner — interface switches instantly. Select country and currency: Ukraine→₴, Poland→zł, USA→$. Exchange rates update automatically.' },
+            { icon:'🔑', title:'Step 2 — Registration & Login',
+              desc:'Enter email → "Sign in via Email" → a 6-digit code is sent to your inbox. Enter the code and you are in. Google sign-in also available in one tap. Completely free.' },
+            { icon:'🎣', title:'Step 3 — Nickname & Profile',
+              desc:'After first login choose a unique nickname (2–24 characters). In My Account add a profile photo, phone number, city and track your rating and activity.' },
+            { icon:'🗺️', title:'Step 4 — Fishing Spots & Check-ins',
+              desc:'"Fishing Spots" shows lakes, ponds and rivers. Tap "Detect my location" to sort by distance. After fishing check in: 🟢 Biting / 🔴 Not biting — help other anglers!' },
+            { icon:'🔮', title:'Step 5 — Bite Forecast',
+              desc:'Forecast from real weather data: temperature, pressure, wind, humidity + moon phase + season + time of day. Detect location for accuracy. 🟢 Excellent / 🟡 Fair / 🔴 Poor.' },
+            { icon:'🐟', title:'Step 6 — Reports & CHECK IN',
+              desc:'Share your catch! Enter fish, weight, length, water body, lure and add a photo. Feed with likes and comments. Each report = +5 rating points.' },
+            { icon:'📢', title:'Step 7 — Classifieds',
+              desc:'Buy and sell used fishing gear. 14 categories: rods, reels, sonar, motors, boats, lures. Free listings. Price auto-converts to the buyer currency.' },
+            { icon:'🏪', title:'Step 8 — Shops & GTR Shop',
+              desc:'Fishing shops on the map — phone, address, reviews. GTR Shop — GTR Phantom BLE 4.0 alarm. Connect via Bluetooth: vibration alerts and bite statistics.' },
+            { icon:'🏆', title:'Step 9 — Tournaments & Tours',
+              desc:'Tournaments with prizes — register in one tap. Fishing Tours across Ukraine with a guide: Shatsk Lakes, Carpathians, Dnipro river and more routes.' },
+            { icon:'💬', title:'Step 10 — Community & Forum',
+              desc:'Forum: discussions, tips, questions. Workshop: gear repair and DIY. Fishing Plans: organise group trips. Also: Ice Fishing, Fishing Methods, Boats, Spearfishing.' },
+            { icon:'⭐', title:'Step 11 — Rating System',
+              desc:'Points for activity: report +5, review +3, check-in +2, news +10. Ranks: 🪱 Beginner → 🐟 Angler → 🎣 Experienced → 🏆 Master → 👑 Legend. Gear Ratings — vote for lures.' },
+            { icon:'🆘', title:'Step 12 — SOS & Safety',
+              desc:'SOS button sends GPS coordinates to nearby anglers and rescue services. Emergency: 101 (fire), 102 (police), 103 (ambulance), 112 (unified). Community Help — request help from nearby anglers.' },
+        ];
+
+        let step = 0;
+        const total = steps.length;
+
+        const renderStep = () => {
+            const s = steps[step];
+            document.getElementById('manualBody').innerHTML = `
+                <div style="text-align:center;margin-bottom:14px;">
+                    <div style="font-size:2.8rem;margin-bottom:8px;">${s.icon}</div>
+                    <div style="font-weight:900;font-size:1rem;color:#1f3b4c;margin-bottom:12px;">${s.title}</div>
+                </div>
+                <div style="background:#f5f7f0;border-radius:18px;padding:14px;font-size:0.87rem;color:#333;line-height:1.75;">${s.desc}</div>
+                <div style="display:flex;justify-content:center;gap:5px;margin-top:14px;flex-wrap:wrap;">
+                    ${steps.map((_,i)=>`<div style="width:${i===step?'18px':'7px'};height:7px;border-radius:40px;background:${i===step?'#1f3b4c':'#ddd'};transition:all 0.3s;"></div>`).join('')}
+                </div>`;
+            document.getElementById('manualProgress').style.width = Math.round((step+1)/total*100)+'%';
+            document.getElementById('manualPageNum').textContent = (step+1)+' / '+total;
+            document.getElementById('manualPrev').style.opacity = step===0 ? '0.35' : '1';
+            const nb = document.getElementById('manualNext');
+            nb.textContent = step===total-1 ? (isUk?'✅ Зрозуміло!':'✅ Got it!') : (isUk?'Далі →':'Next →');
+        };
+
+        const modal = openModal(`
+            <div style="background:#eee;border-radius:40px;height:5px;margin-bottom:14px;overflow:hidden;">
+                <div id="manualProgress" style="height:100%;border-radius:40px;background:linear-gradient(90deg,#1f3b4c,#3b82f6);transition:width 0.4s;width:8%;"></div>
+            </div>
+            <div id="manualBody" style="min-height:220px;"></div>
+            <div style="display:flex;gap:10px;margin-top:16px;">
+                <button id="manualPrev" style="flex:1;background:#eee;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;">← ${isUk?'Назад':'Back'}</button>
+                <button id="manualNext" style="flex:2;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);color:#fff;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;">${isUk?'Далі →':'Next →'}</button>
+            </div>
+            <div style="text-align:center;margin-top:8px;"><span id="manualPageNum" style="font-size:0.75rem;color:#aaa;"></span></div>
+            <button class="close-modal" style="margin-top:10px;width:100%;padding:10px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:600;">${isUk?'Закрити':'Close'}</button>
+        `);
+
+        renderStep();
+
+        document.getElementById('manualNext').onclick = () => { if(step<total-1){step++;renderStep();}else{modal.remove();} };
+        document.getElementById('manualPrev').onclick = () => { if(step>0){step--;renderStep();} };
+        modal.querySelector('.close-modal').onclick = () => modal.remove();
+    };
+
+    // ---- Supabase Auth helpers ----
+    async function afterSupabaseLogin(user, restoreSection) {
+        // Перевіряємо чи вже є профіль у localStorage
+        const savedUser = localStorage.getItem('mf_user');
+        if (savedUser) {
+            try {
+                const parsed = JSON.parse(savedUser);
+                if (parsed.email === user.email && parsed.nickname) {
+                    currentUser = parsed;
+                    // Відновлюємо останній розділ після оновлення сторінки
+                    if (restoreSection) {
+                        const lastSection = localStorage.getItem('mf_current_section');
+                        if (lastSection && lastSection !== 'main' && lastSection !== 'login') {
+                            try { renderSection(lastSection); return; } catch(e) {}
+                        }
+                    }
+                    renderMainMenu();
+                    return;
+                }
+            } catch(e) {}
+        }
+        // Новий користувач — вибір нікнейму
+        currentUser = { nickname:'', email: user.email, role:'user', hasBasicPaid:true, lang:appLang, country:appCountry, currency:appCurrency, regDate: new Date().toISOString(), points: 0 };
+        saveAll();
+        renderPickNickname('supabase');
+    }
 
     // ---- Email OTP ----
     let otpSent = false;
@@ -2218,45 +1836,46 @@ function renderLogin() {
         const email = document.getElementById('authEmail').value.trim();
         const statusDiv = document.getElementById('authStatus');
         const btn = document.getElementById('emailAuthBtn');
-        const isUkNow = appLang === 'uk';
 
         if (!otpSent) {
+            // Крок 1 — надсилаємо OTP
             if (!email || !email.includes('@')) {
-                statusDiv.textContent = isUkNow ? '❌ Введіть коректний email' : '❌ Enter a valid email';
+                statusDiv.textContent = '❌ Введіть коректний email';
                 return;
             }
             btn.disabled = true;
-            btn.textContent = isUkNow ? '⏳ Надсилаємо код...' : '⏳ Sending code...';
+            btn.textContent = '⏳ Надсилаємо код...';
             statusDiv.textContent = '';
             const { error } = await supabaseClient.auth.signInWithOtp({ email });
             if (error) {
                 statusDiv.textContent = '❌ ' + error.message;
                 btn.disabled = false;
-                btn.textContent = isUkNow ? '📧 Увійти через Email' : '📧 Sign in via Email';
+                btn.textContent = '📧 Увійти через Email';
                 return;
             }
             otpSent = true;
             document.getElementById('authEmail').disabled = true;
             document.getElementById('otpBlock').style.display = 'block';
             btn.disabled = false;
-            btn.textContent = isUkNow ? '✅ Підтвердити код' : '✅ Confirm code';
+            btn.textContent = '✅ Підтвердити код';
             statusDiv.style.color = '#27ae60';
-            statusDiv.textContent = (isUkNow ? '📨 Код надіслано на ' : '📨 Code sent to ') + email;
+            statusDiv.textContent = '📨 Код надіслано на ' + email;
         } else {
+            // Крок 2 — перевіряємо OTP
             const otp = document.getElementById('authOtp').value.trim();
             if (otp.length !== 6) {
                 statusDiv.style.color = '#e74c3c';
-                statusDiv.textContent = isUkNow ? '❌ Введіть 6-значний код' : '❌ Enter the 6-digit code';
+                statusDiv.textContent = '❌ Введіть 6-значний код';
                 return;
             }
             btn.disabled = true;
-            btn.textContent = isUkNow ? '⏳ Перевіряємо...' : '⏳ Verifying...';
+            btn.textContent = '⏳ Перевіряємо...';
             const { data, error } = await supabaseClient.auth.verifyOtp({ email, token: otp, type: 'email' });
             if (error) {
                 statusDiv.style.color = '#e74c3c';
-                statusDiv.textContent = isUkNow ? '❌ Невірний код. Спробуйте ще раз.' : '❌ Invalid code. Please try again.';
+                statusDiv.textContent = '❌ Невірний код. Спробуйте ще раз.';
                 btn.disabled = false;
-                btn.textContent = isUkNow ? '✅ Підтвердити код' : '✅ Confirm code';
+                btn.textContent = '✅ Підтвердити код';
                 return;
             }
             await afterSupabaseLogin(data.user);
@@ -2274,42 +1893,449 @@ function renderLogin() {
 
     // ---- Apple — заглушка ----
     document.getElementById('appleBtn').onclick = function() {
-        const isUkNow = appLang === 'uk';
-        alert(isUkNow ? '🍎 Вхід через Apple буде доступний найближчим часом' : '🍎 Apple sign-in coming soon');
+        alert('🍎 Вхід через Apple буде доступний найближчим часом');
     };
-
-    // ---- Supabase Auth helpers ----
-    async function afterSupabaseLogin(user, restoreSection) {
-        const savedUser = localStorage.getItem('mf_user');
-        if (savedUser) {
-            try {
-                const parsed = JSON.parse(savedUser);
-                if (parsed.email === user.email && parsed.nickname) {
-                    currentUser = parsed;
-                    if (restoreSection) {
-                        const lastSection = localStorage.getItem('mf_current_section');
-                        if (lastSection && lastSection !== 'main' && lastSection !== 'login') {
-                            try { renderSection(lastSection); return; } catch(e) {}
-                        }
-                    }
-                    renderMainMenu();
-                    return;
-                }
-            } catch(e) {}
-        }
-        currentUser = { nickname:'', email: user.email, role:'user', hasBasicPaid:true, lang:appLang, country:appCountry, currency:appCurrency, regDate: new Date().toISOString(), points: 0 };
-        saveAll();
-        renderPickNickname('supabase');
-    }
 
     // ---- Перевірка сесії при завантаженні ----
     supabaseClient.auth.getSession().then(function(result) {
         const session = result.data && result.data.session;
         if (session && session.user) {
-            afterSupabaseLogin(session.user, true);
+            afterSupabaseLogin(session.user, true); // true = відновити секцію
+        }
+    });
+}
+
+// ========== ВИБІР НІКНЕЙМУ ПІСЛЯ ВХОДУ ==========
+function renderPickNickname(provider) {
+    const app = document.getElementById('appRoot');
+    app.innerHTML = `
+    <div class="card">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:2.5rem;">🎣</div>
+        <div style="font-size:1.3rem;font-weight:900;color:#1f3b4c;margin-top:8px;">Welcome to MagicFish!</div>
+        <div style="font-size:0.85rem;color:#888;margin-top:4px;">Signed in via ${provider === 'google' ? 'Google 🔵' : 'Apple 🍎'}</div>
+      </div>
+      <div style="background:#e8f5e9;border-radius:20px;padding:14px;margin-bottom:20px;font-size:0.85rem;color:#1b5e20;">
+        🎉 <strong>Вітаємо у MagicFish!</strong><br>
+        Оберіть унікальний нікнейм — так вас бачитимуть інші рибалки.<br>
+        <span style="opacity:0.8;">Доступ повністю безкоштовний 🐟</span>
+      </div>
+      <div class="input-group">
+        <label>🎣 Your unique nickname</label>
+        <input type="text" id="pickNick" placeholder="e.g. SomFisher, Щука_Pro, Carp_King" maxlength="24">
+        <div id="nickHint" style="font-size:0.78rem;color:#aaa;margin-top:4px;padding-left:12px;">2–24 characters, letters, numbers, _</div>
+      </div>
+      <button id="confirmNickBtn" class="btn btn-block" style="margin-top:8px;">✅ Confirm nickname →</button>
+    </div>`;
+
+    const nickInput = document.getElementById('pickNick');
+    const hint = document.getElementById('nickHint');
+    nickInput.oninput = () => {
+        const v = nickInput.value.trim();
+        const taken = ['admin','magicfish','support','gtr'];
+        if (v.length < 2) { hint.style.color='#aaa'; hint.textContent='2–24 characters'; }
+        else if (!/^[a-zA-Zа-яА-ЯіІїЇєЄёЁ0-9_]+$/.test(v)) { hint.style.color='#e74c3c'; hint.textContent='❌ Only letters, numbers, _'; }
+        else if (taken.includes(v.toLowerCase())) { hint.style.color='#e74c3c'; hint.textContent='❌ This nickname is taken'; }
+        else { hint.style.color='#27ae60'; hint.textContent=`✅ "${v}" is available!`; }
+    };
+
+    document.getElementById('confirmNickBtn').onclick = () => {
+        const nick = nickInput.value.trim();
+        if (nick.length < 2) { alert('Min 2 characters'); return; }
+        if (!/^[a-zA-Zа-яА-ЯіІїЇєЄёЁ0-9_]+$/.test(nick)) { alert('Only letters, numbers, _'); return; }
+        currentUser.nickname = nick;
+        saveAll();
+        currentUser.hasBasicPaid = true;
+        addPoints('first_login');
+        saveAll();
+        renderAskGeolocation();
+    };
+}
+
+// ========== ЗАПИТ ГЕОЛОКАЦІЇ ПІСЛЯ РЕЄСТРАЦІЇ ==========
+function renderAskGeolocation() {
+    const app = document.getElementById('appRoot');
+    app.innerHTML = '<div class="card" style="text-align:center;">' +
+      '<div style="font-size:3.5rem;margin-bottom:8px;">📍</div>' +
+      '<div style="font-size:1.25rem;font-weight:900;color:#1f3b4c;margin-bottom:8px;">Дозвольте визначити ваше місце</div>' +
+      '<div style="font-size:0.88rem;color:#555;margin-bottom:20px;line-height:1.6;">' +
+        'MagicFish використовує геолокацію для:<br>' +
+        '🎣 <b>Водойми поруч</b> — сортування за відстанню<br>' +
+        '🆘 <b>SOS</b> — точні координати для рятувальників<br>' +
+        '📍 <b>Чекіни</b> — підтвердження що ви на місці<br>' +
+        '🏕️ <b>Кемпінги і бази</b> — найближчі до вас' +
+      '</div>' +
+      '<button id="geoAllowBtn" class="btn btn-block" style="margin-bottom:12px;background:#27ae60;font-size:1rem;">' +
+        '📍 Дозволити геолокацію' +
+      '</button>' +
+      '<button id="geoSkipBtn" class="btn btn-block btn-secondary" style="font-size:0.9rem;">' +
+        '✖ Пропустити' +
+      '</button>' +
+      '<div id="geoStatus" style="margin-top:14px;font-size:0.82rem;color:#888;"></div>' +
+    '</div>';
+
+    document.getElementById('geoAllowBtn').onclick = function() {
+        var statusDiv = document.getElementById('geoStatus');
+        var allowBtn  = document.getElementById('geoAllowBtn');
+        allowBtn.disabled = true;
+        allowBtn.textContent = '⏳ Визначаємо...';
+        statusDiv.textContent = '';
+        if (!navigator.geolocation) {
+            statusDiv.innerHTML = '❌ Геолокація не підтримується браузером';
+            allowBtn.disabled = false;
+            allowBtn.textContent = '📍 Дозволити геолокацію';
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                currentLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy };
+                currentUser.locationDenied = false;
+                saveAll();
+                statusDiv.innerHTML = '✅ Визначено: ' + pos.coords.latitude.toFixed(4) + ', ' + pos.coords.longitude.toFixed(4) + ' (±' + Math.round(pos.coords.accuracy) + 'м)';
+                setTimeout(function() {
+                    const lastSection = localStorage.getItem('mf_current_section');
+                    if (lastSection && lastSection !== 'main' && lastSection !== 'login') {
+                        try { renderSection(lastSection); } catch(e) { renderMainMenu(); }
+                    } else { renderMainMenu(); }
+                }, 800);
+            },
+            function(err) {
+                statusDiv.innerHTML = '⚠️ Не вдалось визначити. Перевірте дозволи браузера.';
+                allowBtn.disabled = false;
+                allowBtn.textContent = '📍 Спробувати ще раз';
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    };
+
+    document.getElementById('geoSkipBtn').onclick = function() {
+        currentUser.locationDenied = true;
+        saveAll();
+        renderMainMenu();
+        setTimeout(function() { showGeoWarningBanner(); }, 300);
+    };
+}
+
+function showGeoWarningBanner() {
+    if (document.getElementById('geoWarningBanner')) return;
+    var warn = document.createElement('div');
+    warn.id = 'geoWarningBanner';
+    warn.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#e65100;color:#fff;padding:10px 16px;font-size:0.82rem;z-index:9999;display:flex;align-items:center;gap:10px;';
+    var span = document.createElement('span');
+    span.style.flex = '1';
+    span.textContent = '⚠️ Геолокація вимкнена — SOS, «Поруч» і чекіни будуть неточними';
+    var btn1 = document.createElement('button');
+    btn1.textContent = 'Увімкнути';
+    btn1.style.cssText = 'background:#fff;color:#e65100;border:none;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;';
+    btn1.onclick = function() { warn.remove(); renderAskGeolocation(); };
+    var btn2 = document.createElement('button');
+    btn2.textContent = '✕';
+    btn2.style.cssText = 'background:transparent;color:#fff;border:none;font-size:1.1rem;cursor:pointer;';
+    btn2.onclick = function() { warn.remove(); };
+    warn.appendChild(span);
+    warn.appendChild(btn1);
+    warn.appendChild(btn2);
+    document.body.appendChild(warn);
+}
+
+// ========== ГОЛОВНЕ МЕНЮ ==========
+// ========== ГЛОБАЛЬНИЙ ПОШУК ==========
+function globalSearch(q) {
+    var results = [];
+
+    // Водойми
+    if (typeof waterbodies !== 'undefined') {
+        waterbodies.forEach(function(w) {
+            if (w.name.toLowerCase().includes(q) || (w.city && w.city.toLowerCase().includes(q))) {
+                results.push({ emoji:'🗺️', title: w.name, subtitle: (w.city||'') + (w.paid ? ' · Платна' : ' · Безкоштовна'), section:'waterbodies' });
+            }
+        });
+    }
+
+    // Магазини
+    if (typeof fishStores !== 'undefined') {
+        fishStores.forEach(function(s) {
+            if (s.name.toLowerCase().includes(q) || (s.city && s.city.toLowerCase().includes(q))) {
+                results.push({ emoji:'🏪', title: s.name, subtitle: s.address || s.city || '', section:'stores' });
+            }
+        });
+    }
+
+    // Кемпінги
+    if (typeof campings !== 'undefined') {
+        campings.forEach(function(c) {
+            if (c.name.toLowerCase().includes(q)) {
+                results.push({ emoji:'🏕️', title: c.name, subtitle: c.region || '', section:'campings' });
+            }
+        });
+    }
+
+    // Бази відпочинку
+    if (typeof resorts !== 'undefined') {
+        resorts.forEach(function(r) {
+            if (r.name.toLowerCase().includes(q)) {
+                results.push({ emoji:'🏖️', title: r.name, subtitle: r.region || '', section:'resorts' });
+            }
+        });
+    }
+
+    // Звіти
+    var reports = JSON.parse(localStorage.getItem('mf_reports') || '[]');
+    reports.forEach(function(r) {
+        if ((r.title && r.title.toLowerCase().includes(q)) ||
+            (r.water && r.water.toLowerCase().includes(q)) ||
+            (r.author && r.author.toLowerCase().includes(q))) {
+            results.push({ emoji:'🐟', title: r.author + ': ' + (r.title||r.water||'Звіт'), subtitle: r.date + (r.water ? ' · ' + r.water : ''), section:'reports' });
         }
     });
 
+    // GTR товари
+    if (typeof gtrShopProducts !== 'undefined') {
+        gtrShopProducts.forEach(function(p) {
+            if (p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)) {
+                results.push({ emoji: p.emoji||'📦', title: p.name, subtitle: '₴' + convertPrice(p.price, p.currency||'UAH', 'UAH') + ' · $' + convertPrice(p.price, p.currency||'UAH', 'USD') + ' · GTR Shop', section:'alarm' });
+            }
+        });
+    }
+
+    // Розділи сайту
+    var sections = [
+        { emoji:'🗺️', title:'Водойми', subtitle:'Карта та список водойм', section:'waterbodies', keys:['водойм','озер','річк','ставок','водосховищ'] },
+        { emoji:'🔮', title:'Прогноз клювання', subtitle:'Коли краще ловити рибу', section:'forecast', keys:['прогноз','клюв','погод','ловити'] },
+        { emoji:'🏕️', title:'Кемпінги', subtitle:'Місця для відпочинку', section:'campings', keys:['кемпінг','намет','відпочин'] },
+        { emoji:'🏖️', title:'Бази відпочинку', subtitle:'Рибальські бази', section:'resorts', keys:['база','відпочин','котедж'] },
+        { emoji:'⭐', title:'Рейтинг приманок', subtitle:'Голосування за снасті', section:'lure_rating', keys:['рейтинг','приманк','воблер','блесн','силікон'] },
+        { emoji:'🔧', title:'Майстерня', subtitle:'Ремонт та саморобки', section:'workshop', keys:['майстерн','ремонт','саморобк'] },
+        { emoji:'❄️', title:'Зимова рибалка', subtitle:'Мормишка, жерлиці', section:'winter_fishing', keys:['зимов','мормишк','жерлиц','балансир','лід'] },
+        { emoji:'🎣', title:'Способи ловлі', subtitle:'Спінінг, фідер, нахлист', section:'fishing_methods', keys:['спінінг','фідер','нахлист','троллінг','джиг','карп'] },
+        { emoji:'🚤', title:'Човни та мотори', subtitle:'ПВХ, алюміній, мотори', section:'boats', keys:['човен','мотор','катер','пвх','алюмін'] },
+        { emoji:'🤿', title:'Підводне полювання', subtitle:'Рушниці, маски, костюми', section:'underwater', keys:['підводн','рушниц','маска','гідрокостюм'] },
+        { emoji:'📋', title:'Плани рибалок', subtitle:'Спільні виїзди', section:'fishing_plans', keys:['план','виїзд','спільн'] },
+        { emoji:'💬', title:'Форум', subtitle:'Обговорення', section:'forum', keys:['форум','обговор','питанн'] },
+        { emoji:'📢', title:'Дошка оголошень', subtitle:'Купити/продати', section:'marketplace', keys:['оголошен','купити','продати','барахолк'] },
+        { emoji:'🏪', title:'Магазини', subtitle:'Рибальські магазини України', section:'stores', keys:['магазин','купити','снасті'] },
+        { emoji:'🆘', title:'SOS', subtitle:'Екстрена допомога', section:'sos', keys:['sos','допомог','рятувал','екстрен'] },
+    ];
+
+    sections.forEach(function(s) {
+        if (s.title.toLowerCase().includes(q) || s.keys.some(function(k){ return k.includes(q) || q.includes(k); })) {
+            if (!results.find(function(r){ return r.section === s.section && r.title === s.title; })) {
+                results.push(s);
+            }
+        }
+    });
+
+    return results.slice(0, 8);
+}
+
+function renderMainMenu() {
+    localStorage.setItem('mf_current_section', 'main');
+    const app = document.getElementById('appRoot');
+    // Показуємо банер якщо геолокація відхилена і ще не визначена
+    if (currentUser?.locationDenied && !currentLocation) {
+        setTimeout(() => {
+            if (document.getElementById('geoWarningBanner')) return;
+            showGeoWarningBanner();
+        }, 400);
+    }
+    const activeTCount = getActiveTournamentsCount();
+    const totalP = getTotalParticipantsCount();
+    const flag = getCountryFlag();
+    const sym = getCurrencySymbol();
+
+    // Партнери — логотипи через текст/emoji (реальні SVG логотипи будуть після хостингу)
+    const partners = [
+        { name:'Shimano',    color:'#003087', bg:'#e8f0fb', emoji:'🎣' },
+        { name:'Daiwa',      color:'#c0392b', bg:'#fdf0f0', emoji:'🎣' },
+        { name:'Abu Garcia', color:'#1a1a2e', bg:'#f0f0f5', emoji:'🎣' },
+        { name:'Rapala',     color:'#e67e22', bg:'#fff3e0', emoji:'🐟' },
+        { name:'Fox Carp',   color:'#2c7a2c', bg:'#e8f5e9', emoji:'🦊' },
+        { name:'Nash',       color:'#1f3b4c', bg:'#e8f4fd', emoji:'🎣' },
+        { name:'Prologic',   color:'#6a1b9a', bg:'#f3e5f5', emoji:'🎣' },
+        { name:'Berkley',    color:'#c0392b', bg:'#fdf0f0', emoji:'🐟' },
+        { name:'Columbia',   color:'#1565c0', bg:'#e3f2fd', emoji:'🏕️' },
+        { name:'Humminbird', color:'#f57f17', bg:'#fffde7', emoji:'📡' },
+        { name:'Garmin',     color:'#007dc5', bg:'#e3f2fd', emoji:'🗺️' },
+        { name:'Primus',     color:'#e74c3c', bg:'#fdf0f0', emoji:'🔥' },
+    ];
+
+    let menuHtml = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="font-size:1.4rem;cursor:pointer;" onclick="showCurrencyRates()" title="Курси валют НБУ">
+        ${flag} <span style="font-size:0.8rem;color:#555;font-weight:600;">${appCountry} · ${appCurrency}</span>
+        <span style="font-size:0.7rem;color:#aaa;" id="rateIndicator"></span>
+      </div>
+      <div style="font-size:0.9rem;color:#1e3a3a;">👤 ${currentUser.nickname} | <span id="logoutBtn" style="text-decoration:underline;cursor:pointer;">вийти</span></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+        <div>
+          <h1 style="margin:0;">🎣 MagicFish</h1>
+          <div class="tagline" style="margin:0;">Рибальська спільнота</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:4px;">
+          <a href="#" onclick="alert('Google Play — незабаром! 🚀');return false;"
+            style="background:#1a1a2e;color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
+            <span style="font-size:1rem;">▶</span>
+            <div>
+              <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
+              <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">Google Play</div>
+            </div>
+          </a>
+          <a href="#" onclick="alert('App Store — незабаром! 🚀');return false;"
+            style="background:#1a1a2e;color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
+            <span style="font-size:1rem;"></span>
+            <div>
+              <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
+              <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">App Store</div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <!-- Глобальний пошук -->
+      <div style="position:relative;margin-bottom:14px;">
+        <input id="globalSearch" type="text" placeholder="🔍 Пошук по сайту..." style="width:100%;padding:11px 40px 11px 16px;border-radius:40px;border:1.5px solid #c8e6c9;background:#f8fff8;font-size:0.88rem;box-sizing:border-box;outline:none;">
+        <div id="globalSearchClear" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:#aaa;font-size:1rem;display:none;">✕</div>
+        <div id="globalSearchResults" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:1000;max-height:320px;overflow-y:auto;border:1px solid #eee;"></div>
+      </div>
+      <div class="menu-grid">`;
+
+    if (currentUser.hasBasicPaid) {
+        menuHtml += `
+            <div class="menu-card" data-section="waterbodies" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🗺️<br><span>Водойми</span></div>
+            <div class="menu-card" data-section="forecast" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔮<br><span>Прогноз клеву</span></div>
+            <div class="menu-card" data-section="resorts" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🏖️<br><span>Бази відпочинку</span></div>
+            <div class="menu-card" data-section="campings" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🏕️<br><span>Кемпінги</span></div>
+            <div class="menu-card" data-section="tours" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🚌<br><span>Тури по Україні</span></div>
+            <div class="menu-card" data-section="marketplace" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📢<br><span>Дошка оголошень</span></div>
+            <div class="menu-card" data-section="stores" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🏪<br><span>Магазини</span></div>
+            <div class="menu-card" data-section="news" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📰<br><span>Новини</span></div>
+            <div class="menu-card" data-section="forum" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">💬<br><span>Форум</span></div>
+            <div class="menu-card" data-section="cabinet" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">👤<br><span>Кабінет</span></div>
+            <div class="menu-card" data-section="reports" style="background:#e8f5e9;border:1.5px solid #c8e6c9;padding:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;">
+              <div style="font-size:0.75rem;font-weight:700;color:#1f3b4c;margin-top:10px;">🐟 Звіти</div>
+              <div style="margin:4px 8px 8px;background:linear-gradient(135deg,#4a7fc1,#2a5298);border-radius:40px;display:flex;align-items:center;gap:0;overflow:hidden;width:90%;">
+                <div style="background:rgba(255,255,255,0.2);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:3px;">📍</div>
+                <div style="color:#fff;font-weight:900;font-size:0.72rem;letter-spacing:1px;padding:0 8px 0 4px;">CHECK IN</div>
+              </div>
+            </div>
+            <div class="menu-card" data-section="lure_rating" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">⭐<br><span>Рейтинг</span></div>
+            <div class="menu-card" data-section="workshop" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔧<br><span>Майстерня</span></div>
+            <div class="menu-card" data-section="fishing_plans" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📋<br><span>Плани</span></div>
+            <div class="menu-card" data-section="winter_fishing" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">❄️<br><span>Зимова</span></div>
+            <div class="menu-card" data-section="fishing_methods" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🎣<br><span>Способи ловлі</span></div>
+            <div class="menu-card" data-section="boats" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🚤<br><span>Човни та мотори</span></div>
+            <div class="menu-card" data-section="underwater" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🤿<br><span>Підводне полювання</span></div>
+            <div class="menu-card" data-section="sos" style="background:#e74c3c;color:white;border:none;">🆘<br><span>SOS</span></div>
+            <div class="menu-card" data-section="alarm" style="background:#1a1a2e;color:white;border:none;">📡<br><span>GTR Shop</span></div>
+        `;
+    } else {
+        menuHtml += `<div class="menu-card" data-section="cabinet" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">👤<br><span>Кабінет</span></div>
+            <div class="menu-card" data-section="reports" style="background:#e8f5e9;border:1.5px solid #c8e6c9;padding:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;">
+              <div style="font-size:0.75rem;font-weight:700;color:#1f3b4c;margin-top:10px;">🐟 Звіти</div>
+              <div style="margin:4px 8px 8px;background:linear-gradient(135deg,#4a7fc1,#2a5298);border-radius:40px;display:flex;align-items:center;gap:0;overflow:hidden;width:90%;">
+                <div style="background:rgba(255,255,255,0.2);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:3px;">📍</div>
+                <div style="color:#fff;font-weight:900;font-size:0.72rem;letter-spacing:1px;padding:0 8px 0 4px;">CHECK IN</div>
+              </div>
+            </div>
+            <div class="menu-card" data-section="lure_rating" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">⭐<br><span>Рейтинг</span></div>
+            <div class="menu-card" data-section="workshop" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔧<br><span>Майстерня</span></div>
+            <div class="menu-card" data-section="fishing_plans" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📋<br><span>Плани</span></div>
+            <div class="menu-card" data-section="winter_fishing" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">❄️<br><span>Зимова</span></div>
+            <div class="menu-card" data-section="fishing_methods" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🎣<br><span>Способи ловлі</span></div>
+            <div class="menu-card" data-section="boats" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🚤<br><span>Човни та мотори</span></div>
+            <div class="menu-card" data-section="underwater" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🤿<br><span>Підводне полювання</span></div>
+            <div class="menu-card" data-section="sos" style="background:#e74c3c;color:white;border:none;">🆘<br><span>SOS</span></div>
+            <div class="menu-card" data-section="alarm" style="background:#1a1a2e;color:white;border:none;">📡<br><span>GTR Shop</span></div>`;
+    }
+
+    menuHtml += `</div>
+
+      <!-- Рекламні банери -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
+
+        <!-- Банер 1 -->
+        <div id="banner1" style="border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;">
+          <div style="color:rgba(255,255,255,0.3);font-size:0.7rem;position:absolute;top:8px;left:10px;">РЕКЛАМА</div>
+          <div style="font-size:2rem;margin-bottom:6px;">🎣</div>
+          <div style="color:#fff;font-weight:700;font-size:0.85rem;text-align:center;padding:0 8px;">Ваша реклама тут</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:4px;">magicfish.club</div>
+        </div>
+
+        <!-- Банер 2 -->
+        <div id="banner2" style="border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#2e7d32,#1b5e20);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;">
+          <div style="color:rgba(255,255,255,0.3);font-size:0.7rem;position:absolute;top:8px;left:10px;">РЕКЛАМА</div>
+          <div style="font-size:2rem;margin-bottom:6px;">🏪</div>
+          <div style="color:#fff;font-weight:700;font-size:0.85rem;text-align:center;padding:0 8px;">Ваша реклама тут</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:4px;">magicfish.club</div>
+        </div>
+
+      </div>
+      <div style="text-align:center;margin-top:8px;margin-bottom:4px;">
+        <a href="mailto:ckbbuild@gmail.com" style="font-size:0.72rem;color:#aaa;text-decoration:none;">📧 Розмістити рекламу → ckbbuild@gmail.com</a>
+      </div>
+
+      <!-- ПАРТНЕРИ + GTR PHANTOM -->
+    </div>`;
+
+    app.innerHTML = menuHtml;
+
+    // ===== ГЛОБАЛЬНИЙ ПОШУК =====
+    var searchInput = document.getElementById('globalSearch');
+    var searchResults = document.getElementById('globalSearchResults');
+    var searchClear = document.getElementById('globalSearchClear');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            var q = this.value.trim().toLowerCase();
+            if (searchClear) searchClear.style.display = q ? 'block' : 'none';
+            if (!q || q.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            var results = globalSearch(q);
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div style="padding:16px;text-align:center;color:#aaa;font-size:0.85rem;">🔍 Нічого не знайдено</div>';
+            } else {
+                searchResults.innerHTML = results.map(function(r) {
+                    return '<div class="sr-item" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;gap:10px;" data-sec="' + r.section + '">' +
+                        '<div style="font-size:1.3rem;flex-shrink:0;">' + r.emoji + '</div>' +
+                        '<div><div style="font-weight:700;font-size:0.88rem;color:#1f3b4c;">' + r.title + '</div>' +
+                        '<div style="font-size:0.73rem;color:#888;">' + r.subtitle + '</div></div>' +
+                        '</div>';
+                }).join('');
+                Array.from(searchResults.querySelectorAll('.sr-item')).forEach(function(el) {
+                    el.onclick = function() {
+                        var sec = this.getAttribute('data-sec');
+                        searchResults.style.display = 'none';
+                        searchInput.value = '';
+                        if (searchClear) searchClear.style.display = 'none';
+                        renderSection(sec);
+                    };
+                });
+            }
+            searchResults.style.display = 'block';
+        });
+
+        if (searchClear) searchClear.onclick = function() {
+            searchInput.value = '';
+            searchResults.style.display = 'none';
+            searchClear.style.display = 'none';
+            searchInput.focus();
+        };
+    }
+
+    // Банери onclick
+    var b1 = document.getElementById('banner1');
+    var b2 = document.getElementById('banner2');
+    if (b1) b1.onclick = function() { window.location.href = 'mailto:ckbbuild@gmail.com?subject=Реклама на MagicFish'; };
+    if (b2) b2.onclick = function() { window.location.href = 'mailto:ckbbuild@gmail.com?subject=Реклама на MagicFish'; };
+
+    app.querySelectorAll('[data-section]').forEach(c => c.addEventListener('click', () => {
+        const s = c.dataset.section;
+        if (s==='tournaments') renderTournaments();
+        else renderSection(s);
+    }));
     document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('mf_user'); currentUser=null; renderLogin(); };
     document.getElementById('becomePartnerBtn')?.addEventListener('click', () => {
         alert('📧 Для співпраці: partners@magicfish.app\n\nМи раді новим партнерам!');
@@ -2482,41 +2508,7 @@ var gtrShopProducts = [
 ];
 
 function saveGTRProducts() {
-    try {
-        localStorage.setItem('mf_gtr_products', JSON.stringify(gtrShopProducts));
-    } catch(e) {}
-}
-
-function loadGTRProducts() {
-    try {
-        var saved = localStorage.getItem('mf_gtr_products');
-        if (saved) {
-            var parsed = JSON.parse(saved);
-            // Мержимо: беремо базові дані з коду, але оновлюємо ціни та фото з localStorage
-            gtrShopProducts = gtrShopProducts.map(function(base) {
-                var stored = parsed.find(function(p){ return p.id === base.id; });
-                if (stored) {
-                    return Object.assign({}, base, {
-                        price:     stored.price     !== undefined ? stored.price     : base.price,
-                        priceUSD:  stored.priceUSD  !== undefined ? stored.priceUSD  : base.priceUSD,
-                        priceEUR:  stored.priceEUR  !== undefined ? stored.priceEUR  : base.priceEUR,
-                        available: stored.available !== undefined ? stored.available : base.available,
-                        photos:    stored.photos    || base.photos || [],
-                        name:      stored.name      || base.name,
-                        desc:      stored.desc      || base.desc,
-                        emoji:     stored.emoji     || base.emoji,
-                    });
-                }
-                return base;
-            });
-            // Додаємо нові товари що були додані через адмін-панель
-            parsed.forEach(function(stored) {
-                if (!gtrShopProducts.find(function(b){ return b.id === stored.id; })) {
-                    gtrShopProducts.push(stored);
-                }
-            });
-        }
-    } catch(e) {}
+    // gtrShopProducts завжди з коду, не кешуємо
 }
 
 function renderGTRShopInto(el) {
@@ -2737,7 +2729,7 @@ function renderGTRAdmin() {
     hdr.innerHTML = '<h1 style="margin:0;font-size:1.3rem;">👑 GTR Адмін</h1>';
     var backBtn = document.createElement('button');
     backBtn.className = 'back-btn';
-    backBtn.textContent = T('back');
+    backBtn.textContent = '← Назад';
     backBtn.onclick = function() { renderGTRProducts(); };
     hdr.appendChild(backBtn);
     card.appendChild(hdr);
@@ -2805,15 +2797,15 @@ function renderGTRProducts() {
     // Заголовок
     var hdr = document.createElement('div');
     hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;';
-    hdr.innerHTML = '<h1 style="margin:0;">' + T('gtr_shop_title') + '</h1>';
+    hdr.innerHTML = '<h1 style="margin:0;">🛒 GTR Shop</h1>';
     var phantomBtn = document.createElement('button');
     phantomBtn.style.cssText = 'background:#3b82f6;color:white;border:none;border-radius:40px;padding:0 18px;font-weight:800;cursor:pointer;font-size:0.88rem;height:100%;min-height:40px;white-space:nowrap;';
-    phantomBtn.textContent = T('gtr_settings');
+    phantomBtn.textContent = '📡 Налаштування GTR Phantom';
     phantomBtn.onclick = function() { renderGTRPhantom(); };
     hdr.appendChild(phantomBtn);
     var backBtn = document.createElement('button');
     backBtn.className = 'back-btn';
-    backBtn.textContent = T('back');
+    backBtn.textContent = '← Назад';
     backBtn.onclick = function() { renderMainMenu(); };
     hdr.appendChild(backBtn);
     card.appendChild(hdr);
@@ -2846,7 +2838,7 @@ function renderGTRProducts() {
             '</div>';
 
         var orderBtn = document.createElement('button');
-        
+        orderBtn.textContent = '🛒';
         orderBtn.style.cssText = 'background:#1f3b4c;color:#fff;border:none;border-radius:40px;padding:10px 16px;cursor:pointer;font-size:1rem;flex-shrink:0;margin-left:10px;';
         orderBtn.onclick = (function(name, price){ return function(){ showOrderForm(name, price); }; })(p.name, p.price);
         body.appendChild(orderBtn);
@@ -2856,7 +2848,7 @@ function renderGTRProducts() {
 
     // Кнопка адмін
     var adminBtn = document.createElement('button');
-    adminBtn.textContent = T('gtr_admin_btn');
+    adminBtn.textContent = '⚙️ GTR Адмін панель';
     adminBtn.style.cssText = 'width:100%;background:#1f3b4c;color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;cursor:pointer;margin-top:8px;';
     adminBtn.onclick = function() {
         var p = prompt('Пароль:');
@@ -2887,7 +2879,7 @@ function showGTRCases() {
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <h1>📦 GTR Чохли</h1>
-        <button id="backCases" class="back-btn">${T('back')}</button>
+        <button id="backCases" class="back-btn">← Назад</button>
       </div>
       <div style="background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:24px;padding:16px;color:white;margin-bottom:20px;text-align:center;">
         <div style="font-size:1.1rem;font-weight:700;">💧 Водонепроникний захист для гаджетів</div>
@@ -2946,7 +2938,7 @@ function showGTRBackpacks() {
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <h1>🎒 GTR Рюкзаки</h1>
-        <button id="backPacks" class="back-btn">${T('back')}</button>
+        <button id="backPacks" class="back-btn">← Назад</button>
       </div>
       <div style="background:linear-gradient(135deg,#10b981,#059669);border-radius:24px;padding:16px;color:white;margin-bottom:20px;text-align:center;">
         <div style="font-size:1.1rem;font-weight:700;">💧 Водонепроникні рюкзаки для риболовлі</div>
@@ -3193,7 +3185,7 @@ function renderGTRPhantom() {
             <div style="font-size:0.72rem;opacity:0.8;">Підключено: <span id="phConnCount">0</span> · Активних: <span id="phActCount">0</span></div>
           </div>
         </div>
-        <button id="backPhantom" class="back-btn">${T('back')}</button>
+        <button id="backPhantom" class="back-btn">← Назад</button>
       </div>
 
       <!-- Вкладки -->
@@ -3711,7 +3703,7 @@ function renderAlarm() {
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <h1>🛒 GTR Shop</h1>
-        <button id="backGTR" class="back-btn">${T('back')}</button>
+        <button id="backGTR" class="back-btn">← Назад</button>
       </div>
       <!-- Вкладки -->
       <div style="display:flex;gap:0;margin:0 0 16px;border-bottom:2px solid #eee;">
@@ -3896,10 +3888,10 @@ function renderAlarm() {
                 <div style="flex:1;">
                     <div style="font-weight:700;font-size:0.9rem;color:#1f3b4c;">${ch.name}</div>
                     <input value="${ch.rod}" data-id="${ch.id}" style="border:none;border-bottom:1px solid #eee;border-radius:0;padding:2px 0;font-size:0.8rem;color:#888;width:100%;margin:0;background:transparent;" placeholder="Назва вудки">
-                    <div style="font-size:0.75rem;color:#aaa;margin-top:2px;">🐟 ${ch.bites} ${T('gtr_bites_count')}</div>
+                    <div style="font-size:0.75rem;color:#aaa;margin-top:2px;">🐟 ${ch.bites} поклювань</div>
                 </div>
                 <button data-chid="${ch.id}" style="background:${ch.active ? ch.color : '#eee'};color:${ch.active ? 'white' : '#555'};border:none;border-radius:40px;padding:8px 16px;font-weight:700;cursor:pointer;font-size:0.8rem;">
-                    ${ch.active ? T('gtr_active') : T('gtr_inactive')}
+                    ${ch.active ? 'АКТ.' : 'ВИМК.'}
                 </button>
             `;
             div.querySelector('input').addEventListener('change', e => { ch.rod = e.target.value; });
@@ -3981,10 +3973,10 @@ function renderAlarm() {
         const disc = document.getElementById('gtrDisconnected');
         const conn = document.getElementById('gtrConnected');
         if (gtrConnected) {
-            btn.textContent = T('gtr_disconnect');
+            btn.textContent = '❌ Відключити';
             btn.style.background = '#e74c3c';
             btn.style.color = 'white';
-            status.textContent = T('gtr_connected');
+            status.textContent = '🟢 підключено · GTR Phantom';
             status.style.color = '#27ae60';
             disc.style.display = 'none';
             conn.style.display = 'block';
@@ -3992,10 +3984,10 @@ function renderAlarm() {
             renderLog();
             startSim();
         } else {
-            btn.textContent = T('gtr_connect');
+            btn.textContent = '🔗 Підключити';
             btn.style.background = '';
             btn.style.color = '';
-            status.textContent = T('gtr_disconnected');
+            status.textContent = 'не підключено';
             status.style.color = '#888';
             disc.style.display = 'block';
             conn.style.display = 'none';
@@ -4007,7 +3999,7 @@ function renderAlarm() {
         gtrVolume = this.value;
         document.getElementById('gtrVolLabel').textContent = gtrVolume + '%';
     });
-    const sensLabels = { '1':T('gtr_sensitivity_low'), '2':T('gtr_sensitivity_med'), '3':T('gtr_sensitivity_high') };
+    const sensLabels = { '1':'низька', '2':'середня', '3':'висока' };
     document.getElementById('gtrSensSlider').addEventListener('input', function() {
         gtrSens = this.value;
         document.getElementById('gtrSensLabel').textContent = sensLabels[this.value];
@@ -4053,14 +4045,14 @@ function renderResorts() {
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <h1>${T('resorts_title')}</h1>
-            <button id="backResorts" class="back-btn">${T('back')}</button>
+            <h1>🏖️ Бази відпочинку</h1>
+            <button id="backResorts" class="back-btn">← Назад</button>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <input id="resortSearch" placeholder="${T('resorts_search')}" style="flex:1;margin:0;">
-            <button id="resortNearbyBtn" class="btn btn-secondary" style="white-space:nowrap;">${T('nearby_50')}</button>
+            <input id="resortSearch" placeholder="🔍 Пошук бази..." style="flex:1;margin:0;">
+            <button id="resortNearbyBtn" class="btn btn-secondary" style="white-space:nowrap;">📍 Поруч 50км</button>
         </div>
-        <button id="getResortLocation" class="btn btn-location btn-block">${T('your_location')}</button>
+        <button id="getResortLocation" class="btn btn-location btn-block">📍 Визначити моє місце</button>
         <div id="resortLocationStatus" style="margin:8px 0;font-size:0.85rem;color:#888;text-align:center;"></div>
         <div id="resortMap" class="map-container"></div>
         <div id="resortList"></div>
@@ -4073,16 +4065,16 @@ function renderResorts() {
     document.getElementById('getResortLocation').onclick = () => {
         getUserLocation(ok => {
             if (ok) {
-                document.getElementById('resortLocationStatus').innerHTML = `' + T('location_defined') + '`;
+                document.getElementById('resortLocationStatus').innerHTML = `✅ Місце визначено`;
                 renderResortList();
             } else {
-                document.getElementById('resortLocationStatus').innerHTML = T('location_error');
+                document.getElementById('resortLocationStatus').innerHTML = '❌ Не вдалося визначити місце';
             }
         });
     };
 
     document.getElementById('resortNearbyBtn').onclick = () => {
-        if (!currentLocation) { alert('❌ '+T('your_location')); return; }
+        if (!currentLocation) { alert("❌ Спочатку натисніть 'Визначити моє місце'"); return; }
         nearbyOnly = !nearbyOnly;
         const btn = document.getElementById('resortNearbyBtn');
         btn.style.background = nearbyOnly ? '#27ae60' : '';
@@ -4118,12 +4110,12 @@ function renderResorts() {
         setTimeout(() => { try { resortMap.invalidateSize(); } catch(e){} }, 300);
         if (currentLocation) {
             resortMap.setView([currentLocation.lat,currentLocation.lng],8);
-            L.marker([currentLocation.lat,currentLocation.lng]).addTo(resortMap).bindPopup(T('you_are_here'));
+            L.marker([currentLocation.lat,currentLocation.lng]).addTo(resortMap).bindPopup('📍 Ви тут');
         }
 
         const listDiv = document.getElementById('resortList');
         if (filtered.length === 0) {
-            listDiv.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;">' + T('nothing_found') + '</div>';
+            listDiv.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;">🔍 Нічого не знайдено</div>';
             return;
         }
 
@@ -4140,9 +4132,9 @@ function renderResorts() {
             ).join('');
             const reviewCount = reviews.length
                 ? `<span style="font-size:0.78rem;color:#888;margin-left:4px;">(${reviews.length} відгук${reviews.length===1?'':reviews.length<5?'и':'ів'})</span>`
-                : '<span style="font-size:0.78rem;color:#bbb;margin-left:4px;">' + T('no_reviews') + '</span>';
+                : '<span style="font-size:0.78rem;color:#bbb;margin-left:4px;">Без відгуків</span>';
 
-            try { L.marker([b.lat,b.lng]).addTo(resortMap).bindPopup(`🏖️ <b>${b.name}</b><br>📍 ${b.city}<br>${avgRating?'👑'.repeat(avgRating):T('no_reviews')}`); } catch(e){}
+            try { L.marker([b.lat,b.lng]).addTo(resortMap).bindPopup(`🏖️ <b>${b.name}</b><br>📍 ${b.city}<br>${avgRating?'👑'.repeat(avgRating):'Без оцінки'}`); } catch(e){}
 
             return `<div style="background:white;border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-left:4px solid #27ae60;">
                 <div style="font-size:1.6rem;margin-bottom:8px;">🏖️</div>
@@ -4158,7 +4150,7 @@ function renderResorts() {
                 <!-- Кнопки -->
                 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
                     <button onclick="window.openResortReview('${b.name}')"
-                        style="background:#f5c518;color:#1a0a00;border:none;padding:10px 18px;border-radius:40px;font-weight:800;font-size:0.85rem;cursor:pointer;">${T('review_btn')}</button>
+                        style="background:#f5c518;color:#1a0a00;border:none;padding:10px 18px;border-radius:40px;font-weight:800;font-size:0.85rem;cursor:pointer;">✍️ Відгук</button>
                     <a href="tel:${b.phone}" style="background:#27ae60;color:white;padding:10px 14px;border-radius:40px;text-decoration:none;font-size:0.82rem;font-weight:700;">📞 ${b.phone}</a>
                     <button onclick="window.open('https://www.google.com/maps?q=${b.lat},${b.lng}','_blank')"
                         style="background:#3b82f6;color:white;border:none;padding:10px 14px;border-radius:40px;font-size:0.82rem;font-weight:700;cursor:pointer;">🗺️ Карта</button>
@@ -4247,10 +4239,10 @@ function renderForum() {
     <div class="card" style="padding:0;overflow:hidden;">
         <div style="background:linear-gradient(135deg,#1f3b4c,#2a5f7a);padding:16px 20px;border-radius:48px 48px 0 0;display:flex;align-items:center;justify-content:space-between;">
             <div>
-                <div style="color:white;font-size:1.4rem;font-weight:900;">${T('forum_title')}</div>
-                <div style="color:rgba(255,255,255,0.75);font-size:0.8rem;">${appLang==='uk'?'Обговорення · Поради · Запитання':'Discussion · Tips · Questions'}</div>
+                <div style="color:white;font-size:1.4rem;font-weight:900;">💬 Форум</div>
+                <div style="color:rgba(255,255,255,0.75);font-size:0.8rem;">Обговорення · Поради · Запитання</div>
             </div>
-            <button id="backForum" class="back-btn">${T('back')}</button>
+            <button id="backForum" class="back-btn">← Назад</button>
         </div>
         <div style="padding:16px;">
             <button id="newTopicBtn" class="btn btn-block" style="margin-bottom:16px;background:#27ae60;color:white;">➕ Нова тема</button>
@@ -4429,8 +4421,8 @@ function renderWaterbodies() {
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <h1>${T('waterbodies_title')}</h1>
-            <button id="backWater" class="back-btn">${T('back')}</button>
+            <h1>🗺️ Водойми</h1>
+            <button id="backWater" class="back-btn">← Назад</button>
         </div>
 
         <!-- Рядок пошуку + кнопки фільтрів -->
@@ -4442,8 +4434,8 @@ function renderWaterbodies() {
 
         <!-- Кнопки геолокації -->
         <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <button id="getWaterLocation" class="btn btn-location" style="flex:1;margin:0;">${T('sos_my_loc')}</button>
-            <button id="waterNearbyBtn" class="btn btn-secondary" style="white-space:nowrap;">${T('nearby_50')}</button>
+            <button id="getWaterLocation" class="btn btn-location" style="flex:1;margin:0;">📍 Визначити моє місце</button>
+            <button id="waterNearbyBtn" class="btn btn-secondary" style="white-space:nowrap;">📍 Поруч 50км</button>
         </div>
         <div id="waterLocationStatus" style="margin:4px 0 10px;font-size:0.85rem;color:#888;text-align:center;"></div>
 
@@ -4460,14 +4452,14 @@ function renderWaterbodies() {
                 document.getElementById('waterLocationStatus').innerHTML = `✅ Місце визначено${acc}`;
                 renderWaterList();
             } else {
-                document.getElementById('waterLocationStatus').innerHTML = T('location_error');
+                document.getElementById('waterLocationStatus').innerHTML = '❌ Не вдалося визначити місце';
             }
         });
     };
 
     document.getElementById('waterNearbyBtn').onclick = () => {
         if (!currentLocation) {
-            alert('❌ '+T('your_location'));
+            alert("❌ Спочатку натисніть 'Визначити моє місце'");
             return;
         }
         nearbyOnly = !nearbyOnly;
@@ -4528,13 +4520,13 @@ function renderWaterbodies() {
         setTimeout(() => { try { wMap.invalidateSize(); } catch(e){} }, 300);
         if (currentLocation) {
             wMap.setView([currentLocation.lat,currentLocation.lng], nearbyOnly ? 9 : 9);
-            L.marker([currentLocation.lat,currentLocation.lng]).addTo(wMap).bindPopup(T('you_are_here'));
+            L.marker([currentLocation.lat,currentLocation.lng]).addTo(wMap).bindPopup('📍 Ви тут');
         }
 
         // Список
         const listDiv = document.getElementById('waterList');
         if (filtered.length === 0) {
-            listDiv.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;">' + T('nothing_found') + '</div>';
+            listDiv.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;">🔍 Нічого не знайдено</div>';
             return;
         }
 
@@ -4555,9 +4547,9 @@ function renderWaterbodies() {
             ).join('');
             const reviewCount = reviews.length
                 ? `<span style="font-size:0.78rem;color:#888;margin-left:4px;">(${reviews.length} відгук${reviews.length===1?'':reviews.length<5?'и':'ів'})</span>`
-                : '<span style="font-size:0.78rem;color:#bbb;margin-left:4px;">' + T('no_reviews') + '</span>';
+                : '<span style="font-size:0.78rem;color:#bbb;margin-left:4px;">Без відгуків</span>';
 
-            try { L.marker([w.lat,w.lng]).addTo(wMap).bindPopup(`<b>${w.name}</b><br>${avgRating ? '👑'.repeat(avgRating) : T('no_reviews')}`); } catch(e){}
+            try { L.marker([w.lat,w.lng]).addTo(wMap).bindPopup(`<b>${w.name}</b><br>${avgRating ? '👑'.repeat(avgRating) : 'Без оцінки'}`); } catch(e){}
 
             return `<div class="water-card">
                 <div class="water-header">
@@ -4576,7 +4568,7 @@ function renderWaterbodies() {
                 <!-- Кнопки дій -->
                 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
                     <button onclick="window.openWaterReview(${w.id})"
-                        style="background:#f5c518;color:#1a0a00;border:none;padding:10px 18px;border-radius:40px;font-weight:800;font-size:0.85rem;cursor:pointer;">${T('review_btn')}</button>
+                        style="background:#f5c518;color:#1a0a00;border:none;padding:10px 18px;border-radius:40px;font-weight:800;font-size:0.85rem;cursor:pointer;">✍️ Відгук</button>
                     ${w.phone?`<a href="tel:${w.phone}" style="background:#27ae60;color:white;padding:10px 16px;border-radius:40px;text-decoration:none;font-size:0.82rem;font-weight:700;">📞 Дзвінок</a>`:''}
                     <button style="background:#3b82f6;color:white;border:none;padding:10px 16px;border-radius:40px;font-size:0.82rem;font-weight:700;cursor:pointer;"
                         onclick="window.open('https://www.google.com/maps?q=${w.lat},${w.lng}','_blank')">🗺️ Карта</button>
@@ -4675,13 +4667,13 @@ function renderForecast() {
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <h1>${T('forecast_title')}</h1>
-            <button id="backForecast" class="back-btn">${T('back')}</button>
+            <h1>🔮 Прогноз клювання</h1>
+            <button id="backForecast" class="back-btn">← Назад</button>
         </div>
 
         <!-- Геолокація -->
         <button id="getForecastLocation" class="btn btn-location btn-block" style="margin-bottom:8px;">
-            ${T('forecast_get_location')}
+            📍 Визначити моє місце для прогнозу
         </button>
         <div id="forecastLocationStatus" style="font-size:0.82rem;color:#888;text-align:center;margin-bottom:12px;"></div>
 
@@ -4730,7 +4722,7 @@ function renderForecast() {
             if (ok) {
                 showForecastForLocation(currentLocation.lat, currentLocation.lng);
             } else {
-                document.getElementById('forecastLocationStatus').innerHTML = T('location_error');
+                document.getElementById('forecastLocationStatus').innerHTML = '❌ Не вдалося визначити місце';
                 renderForecastBasic();
             }
         });
@@ -4742,33 +4734,33 @@ function renderForecast() {
         const seasonScore = (month>=3&&month<=5)?90:(month>=8&&month<=10)?85:(month>=6&&month<=7)?70:55;
         const totalScore = Math.round((timeScore+seasonScore)/2);
         const scoreColor = totalScore>=75?'#27ae60':totalScore>=50?'#f39c12':'#e74c3c';
-        const scoreLabel = totalScore>=75?T('forecast_excellent'):totalScore>=50?T('forecast_good'):T('forecast_bad');
+        const scoreLabel = totalScore>=75?'🟢 Відмінно':totalScore>=50?'🟡 Задовільно':'🔴 Погано';
         document.getElementById('forecastMain').innerHTML = `
         <div style="text-align:center;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:28px;padding:24px;color:white;margin-bottom:16px;">
             <div style="font-size:3.5rem;font-weight:900;color:${scoreColor};">${totalScore}%</div>
-            <div style="font-size:1.1rem;font-weight:700;margin-top:4px;">${scoreLabel} ${T('forecast_biting_today')}</div>
+            <div style="font-size:1.1rem;font-weight:700;margin-top:4px;">${scoreLabel} клювання сьогодні</div>
             <div style="font-size:0.85rem;opacity:0.8;margin-top:8px;">${now.toLocaleDateString('uk-UA',{weekday:'long',day:'numeric',month:'long'})}</div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;">
             <div style="background:#f0fdf4;border-radius:20px;padding:14px;text-align:center;">
                 <div style="font-size:1.8rem;">${moonPhase}</div>
-                <div style="font-weight:700;margin-top:4px;">${T('forecast_moon')}</div>
+                <div style="font-weight:700;margin-top:4px;">Місяць</div>
                 <div style="font-size:0.8rem;color:#666;">Фаза ${Math.floor((now.getDate()%30)/4)+1}/8</div>
             </div>
             <div style="background:#fff3e0;border-radius:20px;padding:14px;text-align:center;">
                 <div style="font-size:1.8rem;">⏰</div>
-                <div style="font-weight:700;margin-top:4px;">${T('forecast_time')}</div>
-                <div style="font-size:0.8rem;color:#666;">${timeScore>=75?T('forecast_best_time'):timeScore>=50?T('forecast_ok_time'):T('forecast_bad_time')}</div>
+                <div style="font-weight:700;margin-top:4px;">Час доби</div>
+                <div style="font-size:0.8rem;color:#666;">${timeScore>=75?'Кращий час':timeScore>=50?'Непоганий':'Не найкращий'}</div>
             </div>
             <div style="background:#e8f5e9;border-radius:20px;padding:14px;text-align:center;">
                 <div style="font-size:1.8rem;">🌿</div>
-                <div style="font-weight:700;margin-top:4px;">${T('forecast_season')}</div>
-                <div style="font-size:0.8rem;color:#666;">${seasonScore>=75?T('forecast_good_season'):seasonScore>=50?T('forecast_normal_season'):T('forecast_off_season')}</div>
+                <div style="font-weight:700;margin-top:4px;">Сезон</div>
+                <div style="font-size:0.8rem;color:#666;">${seasonScore>=75?'Сприятливий':seasonScore>=50?'Звичайний':'Не сезон'}</div>
             </div>
             <div style="background:#e3f2fd;border-radius:20px;padding:14px;text-align:center;">
                 <div style="font-size:1.8rem;">📊</div>
-                <div style="font-weight:700;margin-top:4px;">${T('forecast_activity')}</div>
-                <div style="font-size:0.8rem;color:#666;">${totalScore>=75?T('forecast_high'):totalScore>=50?T('forecast_medium'):T('forecast_low')}</div>
+                <div style="font-weight:700;margin-top:4px;">Активність</div>
+                <div style="font-size:0.8rem;color:#666;">${totalScore>=75?'Висока':totalScore>=50?'Середня':'Низька'}</div>
             </div>
         </div>`;
     }
@@ -4836,9 +4828,9 @@ function renderForecast() {
 
             const totalScore = Math.round((timeScore + seasonScore + weatherScore + pressureScore) / 4);
             const scoreColor = totalScore>=75?'#27ae60':totalScore>=50?'#f39c12':'#e74c3c';
-            const scoreLabel = totalScore>=75?T('forecast_excellent'):totalScore>=50?T('forecast_good'):T('forecast_bad');
+            const scoreLabel = totalScore>=75?'🟢 Відмінно':totalScore>=50?'🟡 Задовільно':'🔴 Погано';
 
-            document.getElementById('forecastLocationStatus').innerHTML = `' + T('forecast_weather_loaded') + ' · ${nearWater.length} ${T('forecast_nearby_water').toLowerCase()}`;
+            document.getElementById('forecastLocationStatus').innerHTML = `✅ Погода завантажена · ${nearWater.length} водойм в радіусі 10км`;
 
             document.getElementById('forecastMain').innerHTML = `
             <!-- Головний індекс -->
@@ -4854,50 +4846,50 @@ function renderForecast() {
                 <div style="background:#fff8e1;border-radius:20px;padding:14px;text-align:center;">
                     <div style="font-size:2rem;">🌡️</div>
                     <div style="font-weight:800;font-size:1.3rem;margin-top:2px;">${temp}°C</div>
-                    <div style="font-size:0.78rem;color:#888;">${T('forecast_temp')}</div>
+                    <div style="font-size:0.78rem;color:#888;">Температура</div>
                 </div>
                 <div style="background:#e3f2fd;border-radius:20px;padding:14px;text-align:center;">
                     <div style="font-size:2rem;">💨</div>
                     <div style="font-weight:800;font-size:1.3rem;margin-top:2px;">${wind} м/с</div>
-                    <div style="font-size:0.78rem;color:#888;">${T('forecast_wind')} ${windDirName}</div>
+                    <div style="font-size:0.78rem;color:#888;">Вітер ${windDirName}</div>
                 </div>
                 <div style="background:#f3e5f5;border-radius:20px;padding:14px;text-align:center;">
                     <div style="font-size:2rem;">🔵</div>
                     <div style="font-weight:800;font-size:1.3rem;margin-top:2px;">${pressure}</div>
-                    <div style="font-size:0.78rem;color:#888;">${T('forecast_pressure')}</div>
+                    <div style="font-size:0.78rem;color:#888;">мм рт.ст.</div>
                 </div>
                 <div style="background:#e8f5e9;border-radius:20px;padding:14px;text-align:center;">
                     <div style="font-size:2rem;">🌧️</div>
                     <div style="font-weight:800;font-size:1.3rem;margin-top:2px;">${rain} мм</div>
-                    <div style="font-size:0.78rem;color:#888;">${T('forecast_rain')}</div>
+                    <div style="font-size:0.78rem;color:#888;">Опади</div>
                 </div>
                 <div style="background:#f0fdf4;border-radius:20px;padding:14px;text-align:center;">
                     <div style="font-size:2rem;">${moonPhase}</div>
-                    <div style="font-weight:700;font-size:0.95rem;margin-top:2px;">${T('forecast_moon')}</div>
+                    <div style="font-weight:700;font-size:0.95rem;margin-top:2px;">Місяць</div>
                     <div style="font-size:0.78rem;color:#888;">Фаза ${Math.floor((now.getDate()%30)/4)+1}/8</div>
                 </div>
                 <div style="background:#fff3e0;border-radius:20px;padding:14px;text-align:center;">
                     <div style="font-size:2rem;">💧</div>
                     <div style="font-weight:800;font-size:1.3rem;margin-top:2px;">${humidity}%</div>
-                    <div style="font-size:0.78rem;color:#888;">${T('forecast_humidity')}</div>
+                    <div style="font-size:0.78rem;color:#888;">Вологість</div>
                 </div>
             </div>
 
             <!-- Водойми поруч -->
             ${nearWater.length ? `
             <div style="background:#e8f5e9;border-radius:20px;padding:14px;margin-bottom:8px;">
-                <div style="font-weight:800;color:#2e7d32;margin-bottom:8px;">' + T('forecast_nearby_water') + ' (${nearWater.length}):</div>
+                <div style="font-weight:800;color:#2e7d32;margin-bottom:8px;">🗺️ Водойми в радіусі 10км (${nearWater.length}):</div>
                 ${nearWater.map(w=>`
                 <div style="font-size:0.85rem;color:#555;padding:4px 0;border-bottom:1px solid #c8e6c9;">
                     🎣 ${w.name} · ${Math.round(getDistance(lat,lng,w.lat,w.lng)/1000)} км
                 </div>`).join('')}
             </div>` : `
             <div style="background:#fff3cd;border-radius:20px;padding:12px;margin-bottom:8px;font-size:0.85rem;color:#856404;">
-                ' + T('forecast_no_nearby') + '
+                🔍 Водойм у радіусі 10км не знайдено
             </div>`}`;
 
         } catch(err) {
-            document.getElementById('forecastLocationStatus').innerHTML = T('forecast_weather_error');
+            document.getElementById('forecastLocationStatus').innerHTML = '⚠️ Не вдалося завантажити погоду';
             renderForecastBasic();
         }
     }
@@ -4913,14 +4905,14 @@ function renderCampings() {
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <h1>${T('campings_title')}</h1>
-            <button id="backCampings" class="back-btn">${T('back')}</button>
+            <h1>🏕️ Кемпінги</h1>
+            <button id="backCampings" class="back-btn">← Назад</button>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <input id="campingSearch" placeholder="${T('campings_search')}" style="flex:1;margin:0;">
-            <button id="campingNearbyBtn" class="btn btn-secondary" style="white-space:nowrap;">${T('nearby_50')}</button>
+            <input id="campingSearch" placeholder="🔍 Пошук кемпінгу, міста..." style="flex:1;margin:0;">
+            <button id="campingNearbyBtn" class="btn btn-secondary" style="white-space:nowrap;">📍 Поруч 50км</button>
         </div>
-        <button id="getCampingLocation" class="btn btn-location btn-block">${T('your_location')}</button>
+        <button id="getCampingLocation" class="btn btn-location btn-block">📍 Визначити моє місце</button>
         <div id="campingLocationStatus" style="margin:8px 0;font-size:0.85rem;color:#888;text-align:center;"></div>
         <div id="campingMap" class="map-container"></div>
         <div id="campingList"></div>
@@ -4929,13 +4921,13 @@ function renderCampings() {
     document.getElementById('getCampingLocation').onclick = () => {
         getUserLocation(ok => {
             if (ok) {
-                document.getElementById('campingLocationStatus').innerHTML = `' + T('location_defined') + '`;
+                document.getElementById('campingLocationStatus').innerHTML = `✅ Місце визначено`;
                 renderCampingList();
-            } else { document.getElementById('campingLocationStatus').innerHTML = T('location_error'); }
+            } else { document.getElementById('campingLocationStatus').innerHTML = '❌ Не вдалося визначити місце'; }
         });
     };
     document.getElementById('campingNearbyBtn').onclick = () => {
-        if (!currentLocation) { alert('❌ '+T('your_location')); return; }
+        if (!currentLocation) { alert("❌ Спочатку натисніть 'Визначити моє місце'"); return; }
         nearbyOnly = !nearbyOnly;
         const btn = document.getElementById('campingNearbyBtn');
         btn.style.background = nearbyOnly ? '#27ae60' : '';
@@ -4957,17 +4949,17 @@ function renderCampings() {
         cMap = L.map(mapDiv).setView([49.5,26],6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(cMap);
         setTimeout(() => { try { cMap.invalidateSize(); } catch(e){} }, 300);
-        if (currentLocation) { cMap.setView([currentLocation.lat,currentLocation.lng],9); L.marker([currentLocation.lat,currentLocation.lng]).addTo(cMap).bindPopup(T('you_are_here')); }
+        if (currentLocation) { cMap.setView([currentLocation.lat,currentLocation.lng],9); L.marker([currentLocation.lat,currentLocation.lng]).addTo(cMap).bindPopup('📍 Ви тут'); }
         const listDiv = document.getElementById('campingList');
-        if (!filtered.length) { listDiv.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;">' + T('nothing_found') + '</div>'; return; }
+        if (!filtered.length) { listDiv.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;">🔍 Нічого не знайдено</div>'; return; }
         listDiv.innerHTML = filtered.map(c => {
             if (!c.reviews) c.reviews = [];
             const reviews = c.reviews;
             const avg = reviews.length ? Math.round(reviews.reduce((s,r)=>s+(r.rating||0),0)/reviews.length) : 0;
             const crowns = [1,2,3,4,5].map(i=>`<span style="font-size:1.3rem;cursor:pointer;opacity:${i<=avg?1:0.22};" onclick="window.openCampingReview('${c.name}')">👑</span>`).join('');
-            const revCount = reviews.length ? `<span style="font-size:0.78rem;color:#888;margin-left:4px;">(${reviews.length} відгук${reviews.length===1?'':reviews.length<5?'и':'ів'})</span>` : '<span style="font-size:0.78rem;color:#bbb;margin-left:4px;">' + T('no_reviews') + '</span>';
+            const revCount = reviews.length ? `<span style="font-size:0.78rem;color:#888;margin-left:4px;">(${reviews.length} відгук${reviews.length===1?'':reviews.length<5?'и':'ів'})</span>` : '<span style="font-size:0.78rem;color:#bbb;margin-left:4px;">Без відгуків</span>';
             const dist = currentLocation ? `<span style="color:#27ae60;font-weight:700;font-size:0.82rem;">📏 ${Math.round(getDistance(currentLocation.lat,currentLocation.lng,c.lat,c.lng)/1000)} км</span>` : '';
-            try { L.marker([c.lat,c.lng]).addTo(cMap).bindPopup(`🏕️ <b>${c.name}</b><br>📍 ${c.city}<br>${avg?'👑'.repeat(avg):T('no_reviews')}`); } catch(e){}
+            try { L.marker([c.lat,c.lng]).addTo(cMap).bindPopup(`🏕️ <b>${c.name}</b><br>📍 ${c.city}<br>${avg?'👑'.repeat(avg):'Без оцінки'}`); } catch(e){}
             return `<div class="camping-card">
                 <div class="camping-img">🏕️</div>
                 <div class="camping-body">
@@ -4976,7 +4968,7 @@ function renderCampings() {
                     <div style="font-size:0.83rem;color:#555;margin-bottom:10px;">${c.services}</div>
                     <div style="display:flex;align-items:center;gap:2px;margin-bottom:10px;">${crowns}${revCount}</div>
                     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                        <button onclick="window.openCampingReview('${c.name}')" style="background:#f5c518;color:#1a0a00;border:none;padding:10px 18px;border-radius:40px;font-weight:800;font-size:0.85rem;cursor:pointer;">${T('review_btn')}</button>
+                        <button onclick="window.openCampingReview('${c.name}')" style="background:#f5c518;color:#1a0a00;border:none;padding:10px 18px;border-radius:40px;font-weight:800;font-size:0.85rem;cursor:pointer;">✍️ Відгук</button>
                         <a href="tel:${c.phone}" style="background:#27ae60;color:white;padding:10px 14px;border-radius:40px;text-decoration:none;font-size:0.82rem;font-weight:700;">📞 ${c.phone}</a>
                         <button onclick="window.open('https://www.google.com/maps?q=${c.lat},${c.lng}','_blank')" style="background:#3b82f6;color:white;border:none;padding:10px 14px;border-radius:40px;font-size:0.82rem;font-weight:700;cursor:pointer;">🗺️ Карта</button>
                     </div>
@@ -5027,8 +5019,8 @@ function renderTours() {
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <h1>${T('menu_tours')}</h1>
-            <button id="backTours" class="back-btn">${T('back')}</button>
+            <h1>🚌 Тури по Україні</h1>
+            <button id="backTours" class="back-btn">← Назад</button>
         </div>
         <div style="background:#e8f5e9;border-radius:20px;padding:12px 16px;font-size:0.85rem;color:#2e7d32;margin-bottom:16px;">
             🎣 Рибальські тури з досвідченими гідами. Все включено!
@@ -5085,13 +5077,13 @@ function renderMarketplace() {
         <div class="nickname-header">👤 ${currentUser.nickname}</div>
         <div class="card" style="padding:0;overflow:hidden;">
             <div style="background:linear-gradient(135deg,#1f3b4c,#2a5f7a);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-radius:48px 48px 0 0;">
-                <div style="color:white;font-size:1.3rem;font-weight:900;">${T('marketplace_title')}</div>
-                <button id="backMarket" class="back-btn">${T('back')}</button>
+                <div style="color:white;font-size:1.3rem;font-weight:900;">📢 Дошка оголошень</div>
+                <button id="backMarket" class="back-btn">← Назад</button>
             </div>
             <div style="padding:12px 16px 0;">
 
                 <div style="display:flex;gap:8px;margin-bottom:12px;">
-                    <input id="marketSearch" placeholder="${T('marketplace_search')}" value="${searchQ}" style="flex:1;margin:0;">
+                    <input id="marketSearch" placeholder="🔍 Пошук..." value="${searchQ}" style="flex:1;margin:0;">
                     ${canAddListing()?'<button id="addListingBtn" class="btn" style="white-space:nowrap;padding:10px 16px;">+ Додати</button>':''}
                 </div>
                 <div class="category-tabs" style="margin-bottom:12px;">
@@ -5168,14 +5160,14 @@ function renderStores() {
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <h1>${T('stores_title')}</h1>
-            <button id="backStores" class="back-btn">${T('back')}</button>
+            <h1>🏪 Магазини</h1>
+            <button id="backStores" class="back-btn">← Назад</button>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <input id="storeSearch" placeholder="${T('stores_search')}" style="flex:1;margin:0;">
-            <button id="storeNearbyBtn" class="btn btn-secondary" style="white-space:nowrap;">${T('nearby_50')}</button>
+            <input id="storeSearch" placeholder="🔍 Пошук магазину, міста..." style="flex:1;margin:0;">
+            <button id="storeNearbyBtn" class="btn btn-secondary" style="white-space:nowrap;">📍 Поруч 50км</button>
         </div>
-        <button id="getStoreLocation" class="btn btn-location btn-block">${T('your_location')}</button>
+        <button id="getStoreLocation" class="btn btn-location btn-block">📍 Визначити моє місце</button>
         <div id="storeLocationStatus" style="margin:8px 0;font-size:0.85rem;color:#888;text-align:center;"></div>
         <div id="storeMap" class="map-container"></div>
         <div id="storeList"></div>
@@ -5184,13 +5176,13 @@ function renderStores() {
     document.getElementById('getStoreLocation').onclick = () => {
         getUserLocation(ok => {
             if (ok) {
-                document.getElementById('storeLocationStatus').innerHTML = `' + T('location_defined') + '`;
+                document.getElementById('storeLocationStatus').innerHTML = `✅ Місце визначено`;
                 renderStoreList();
             } else { document.getElementById('storeLocationStatus').innerHTML = '❌ Не вдалося'; }
         });
     };
     document.getElementById('storeNearbyBtn').onclick = () => {
-        if (!currentLocation) { alert('❌ '+T('your_location')); return; }
+        if (!currentLocation) { alert("❌ Спочатку натисніть 'Визначити моє місце'"); return; }
         nearbyOnly = !nearbyOnly;
         const btn = document.getElementById('storeNearbyBtn');
         btn.style.background = nearbyOnly ? '#27ae60' : '';
@@ -5212,17 +5204,17 @@ function renderStores() {
         sMap = L.map(mapDiv).setView([49.5,32],6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'OSM'}).addTo(sMap);
         setTimeout(() => { try { sMap.invalidateSize(); } catch(e){} }, 300);
-        if (currentLocation) { sMap.setView([currentLocation.lat,currentLocation.lng],10); L.marker([currentLocation.lat,currentLocation.lng]).addTo(sMap).bindPopup(T('you_are_here')); }
+        if (currentLocation) { sMap.setView([currentLocation.lat,currentLocation.lng],10); L.marker([currentLocation.lat,currentLocation.lng]).addTo(sMap).bindPopup('📍 Ви тут'); }
         const listDiv = document.getElementById('storeList');
-        if (!filtered.length) { listDiv.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;">' + T('nothing_found') + '</div>'; return; }
+        if (!filtered.length) { listDiv.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;">🔍 Нічого не знайдено</div>'; return; }
         listDiv.innerHTML = filtered.map(s => {
             if (!s.reviews) s.reviews = [];
             const reviews = s.reviews;
             const avg = reviews.length ? Math.round(reviews.reduce((a,r)=>a+(r.rating||0),0)/reviews.length) : 0;
             const crowns = [1,2,3,4,5].map(i=>`<span style="font-size:1.3rem;cursor:pointer;opacity:${i<=avg?1:0.22};" onclick="window.openStoreReview('${s.name}')">👑</span>`).join('');
-            const revCount = reviews.length ? `<span style="font-size:0.78rem;color:#888;margin-left:4px;">(${reviews.length} відгук${reviews.length===1?'':reviews.length<5?'и':'ів'})</span>` : '<span style="font-size:0.78rem;color:#bbb;margin-left:4px;">' + T('no_reviews') + '</span>';
+            const revCount = reviews.length ? `<span style="font-size:0.78rem;color:#888;margin-left:4px;">(${reviews.length} відгук${reviews.length===1?'':reviews.length<5?'и':'ів'})</span>` : '<span style="font-size:0.78rem;color:#bbb;margin-left:4px;">Без відгуків</span>';
             const dist = currentLocation ? `<span style="color:#27ae60;font-size:0.82rem;font-weight:700;">📏 ${Math.round(getDistance(currentLocation.lat,currentLocation.lng,s.lat,s.lng)/1000)} км від вас</span>` : '';
-            try { L.marker([s.lat,s.lng]).addTo(sMap).bindPopup(`🏪 <b>${s.name}</b><br>📍 ${s.address}<br>${avg?'👑'.repeat(avg):T('no_reviews')}`); } catch(e){}
+            try { L.marker([s.lat,s.lng]).addTo(sMap).bindPopup(`🏪 <b>${s.name}</b><br>📍 ${s.address}<br>${avg?'👑'.repeat(avg):'Без оцінки'}`); } catch(e){}
             return `<div class="store-card">
                 <div style="font-weight:800;font-size:1.05rem;color:#1f3b4c;margin-bottom:4px;">🏪 ${s.name}</div>
                 <div style="font-size:0.83rem;color:#888;margin-bottom:4px;">📍 ${s.address}</div>
@@ -5230,7 +5222,7 @@ function renderStores() {
                 <div style="font-size:0.82rem;color:#555;margin-bottom:10px;">🛒 ${s.gear}</div>
                 <div style="display:flex;align-items:center;gap:2px;margin-bottom:10px;">${crowns}${revCount}</div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-                    <button onclick="window.openStoreReview('${s.name}')" style="background:#f5c518;color:#1a0a00;border:none;padding:10px 18px;border-radius:40px;font-weight:800;font-size:0.85rem;cursor:pointer;">${T('review_btn')}</button>
+                    <button onclick="window.openStoreReview('${s.name}')" style="background:#f5c518;color:#1a0a00;border:none;padding:10px 18px;border-radius:40px;font-weight:800;font-size:0.85rem;cursor:pointer;">✍️ Відгук</button>
                     <a href="tel:${s.phone}" style="background:#27ae60;color:white;padding:10px 14px;border-radius:40px;text-decoration:none;font-size:0.82rem;font-weight:700;">📞 ${s.phone}</a>
                     <button onclick="window.open('https://www.google.com/maps?q=${s.lat},${s.lng}','_blank')" style="background:#3b82f6;color:white;border:none;padding:10px 14px;border-radius:40px;font-size:0.82rem;font-weight:700;cursor:pointer;">🗺️ Карта</button>
                     ${s.site
@@ -5242,7 +5234,7 @@ function renderStores() {
                 <!-- Рекламний блок MagicFish (якщо немає сайту) -->
                 ${!s.site ? `<div style="margin-top:10px;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
                     <div style="color:white;font-size:0.78rem;">
-                        <div style="font-weight:800;font-size:0.9rem;">${appLang==='uk'?'Немає свого сайту? Зробимо!':'No website? We\'ll make one!'}</div>
+                        <div style="font-weight:800;font-size:0.9rem;">Немає свого сайту? Зробимо!</div>
                     </div>
                     <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${encodeURIComponent(s.name)}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
                 </div>` : ''}
@@ -5309,10 +5301,10 @@ function renderNews() {
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <h1>${T('news_title')}</h1>
-            <button id="backNews" class="back-btn">${T('back')}</button>
+            <h1>📰 Новини</h1>
+            <button id="backNews" class="back-btn">← Назад</button>
         </div>
-        ${isAdmin?'<button id="addNewsBtn" class="btn btn-block" style="margin-bottom:16px;">+ ' + T('news_add') + '</button>':''}
+        ${isAdmin?'<button id="addNewsBtn" class="btn btn-block" style="margin-bottom:16px;">+ Додати новину</button>':''}
         <div id="newsList">
         ${newsItems.length===0?'<div style="text-align:center;padding:40px;color:#aaa;">📭 Новин поки немає</div>':
         newsItems.map((n,i)=>`
@@ -5383,17 +5375,17 @@ function renderCabinet() {
             </div>
         </div>
         <div class="cabinet-stats">
-            <div class="stat-card"><div class="stat-num">${activeList.length}</div><div class="stat-label">${appLang==='uk'?'Активних':'Active'}</div></div>
-            <div class="stat-card"><div class="stat-num">${soldList.length}</div><div class="stat-label">${appLang==='uk'?'Продано':'Sold'}</div></div>
-            <div class="stat-card"><div class="stat-num">${myList.reduce((s,l)=>s+(l.views||0),0)}</div><div class="stat-label">${appLang==='uk'?'Переглядів':'Views'}</div></div>
+            <div class="stat-card"><div class="stat-num">${activeList.length}</div><div class="stat-label">Активних</div></div>
+            <div class="stat-card"><div class="stat-num">${soldList.length}</div><div class="stat-label">Продано</div></div>
+            <div class="stat-card"><div class="stat-num">${myList.reduce((s,l)=>s+(l.views||0),0)}</div><div class="stat-label">Переглядів</div></div>
         </div>
         <div class="cabinet-tabs">
-            <button class="cabinet-tab active" id="tabMyAds">📢 ${T('menu_marketplace')}</button>
-            <button class="cabinet-tab" id="tabSettings">⚙️ ${appLang==='uk'?'Налаштування':'Settings'}</button>
-            <button class="cabinet-tab" id="tabPartner">🤝 ${appLang==='uk'?'Партнерство':'Partnership'}</button>
+            <button class="cabinet-tab active" id="tabMyAds">📢 Оголошення</button>
+            <button class="cabinet-tab" id="tabSettings">⚙️ Налаштування</button>
+            <button class="cabinet-tab" id="tabPartner">🤝 Партнерство</button>
         </div>
         <div id="cabinetContent"></div>
-        <button id="backCabinet" class="btn btn-block btn-secondary" style="margin-top:16px;">${T('back')}</button>
+        <button id="backCabinet" class="btn btn-block btn-secondary" style="margin-top:16px;">← На головну</button>
     </div>`;
     document.getElementById('backCabinet').onclick = () => renderMainMenu();
     function showMyAds() {
@@ -5599,7 +5591,7 @@ function renderSOS() {
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <h1>🆘 SOS</h1>
-            <button id="backSOS" class="back-btn">${T('back')}</button>
+            <button id="backSOS" class="back-btn">← Назад</button>
         </div>
 
         <!-- Синя кнопка допомоги спільноти -->
@@ -5659,7 +5651,7 @@ function renderHelpSection() {
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <h1>🤝 Допомога</h1>
-            <button id="backHelp" class="back-btn">${T('back')}</button>
+            <button id="backHelp" class="back-btn">← Назад</button>
         </div>
 
         <button id="askHelpBtn" style="width:100%;background:linear-gradient(135deg,#f39c12,#e67e22);color:white;border:none;border-radius:40px;padding:16px;font-weight:900;font-size:1rem;cursor:pointer;margin-bottom:16px;">
@@ -5703,7 +5695,7 @@ function renderHelpMap() {
         setTimeout(() => { try { helpMap.invalidateSize(); } catch(e){} }, 300);
         if (currentLocation) {
             helpMap.setView([currentLocation.lat, currentLocation.lng], 10);
-            L.marker([currentLocation.lat, currentLocation.lng]).addTo(helpMap).bindPopup(T('you_are_here'));
+            L.marker([currentLocation.lat, currentLocation.lng]).addTo(helpMap).bindPopup('📍 Ви тут');
         }
         window.helpRequests.filter(r => r.status==='active' && r.lat && r.lng).forEach(r => {
             const cat = HELP_CATEGORIES.find(c=>c.id===r.category)||HELP_CATEGORIES[6];
@@ -5850,7 +5842,7 @@ function renderSection(section) {
 
 // ========== СТАРТ ==========
 loadAll();
-loadGTRProducts();
+// ТЕСТ-РЕЖИМ: вхід пропущено
 if (!currentUser) {
     currentUser = { nickname:'Тест', email:'test@test.com', role:'user', hasBasicPaid:true, lang:'uk', country:'UA', currency:'UAH' };
     saveAll();
@@ -5894,13 +5886,13 @@ function renderReports() {
 
     // Шапка
     html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 16px 12px;">';
-    html += '<h1 style="margin:0;font-size:1.3rem;">' + T('reports_title') + '</h1>';
-    html += '<button onclick="renderMainMenu()" class="back-btn">' + T('back') + '</button>';
+    html += '<h1 style="margin:0;font-size:1.3rem;">🐟 Звіти з рибалки</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button>';
     html += '</div>';
 
     // Кнопка чекіну
     html += '<div style="padding:0 16px 14px;">';
-    html += '<button id="addReportBtn" style="width:100%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;font-size:0.95rem;cursor:pointer;">' + T('reports_add') + '</button>';
+    html += '<button id="addReportBtn" style="width:100%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;font-size:0.95rem;cursor:pointer;">📍 Зробити чекін з рибалки</button>';
     html += '</div>';
 
     if (reports.length === 0) {
@@ -6303,8 +6295,8 @@ function renderLureRating() {
     var html = '<div class="nickname-header">👤 ' + (currentUser ? currentUser.nickname : '') + '</div>';
     html += '<div class="card">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
-    html += '<h1 style="margin:0;">⭐ ' + T('menu_rating') + '</h1>';
-    html += '<button onclick="renderMainMenu()" class="back-btn">' + T('back') + '</button>';
+    html += '<h1 style="margin:0;">⭐ Рейтинг</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button>';
     html += '</div>';
 
     // Вкладки категорій
@@ -6644,10 +6636,10 @@ function renderWorkshop() {
     var html = '<div class="nickname-header">👤 ' + (currentUser ? currentUser.nickname : '') + '</div>';
     html += '<div class="card">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
-    html += '<h1 style="margin:0;">' + T('workshop_title') + '</h1>';
-    html += '<button onclick="renderMainMenu()" class="back-btn">' + T('back') + '</button>';
+    html += '<h1 style="margin:0;">🔧 Майстерня</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button>';
     html += '</div>';
-    html += '<button id="addWorkshopBtn" style="width:100%;background:#1f3b4c;color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;cursor:pointer;margin-bottom:16px;">' + T('forum_new_topic') + '</button>';
+    html += '<button id="addWorkshopBtn" style="width:100%;background:#1f3b4c;color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;cursor:pointer;margin-bottom:16px;">+ Нова тема</button>';
 
     if (posts.length === 0) {
         html += '<div style="text-align:center;padding:32px;color:#aaa;"><div style="font-size:3rem;">🔧</div><div>Поки немає тем. Поділіться досвідом!</div></div>';
@@ -6690,8 +6682,8 @@ function renderFishingPlans() {
     var html = '<div class="nickname-header">👤 ' + (currentUser ? currentUser.nickname : '') + '</div>';
     html += '<div class="card">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
-    html += '<h1 style="margin:0;">' + T('plans_title') + '</h1>';
-    html += '<button onclick="renderMainMenu()" class="back-btn">' + T('back') + '</button>';
+    html += '<h1 style="margin:0;">📋 Плани рибалок</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button>';
     html += '</div>';
     html += '<div style="font-size:0.82rem;color:#888;margin-bottom:14px;">Організовуйте спільні виїзди на рибалку</div>';
     html += '<button id="addPlanBtn" style="width:100%;background:#f39c12;color:#1a0a00;border:none;border-radius:14px;padding:13px;font-weight:700;cursor:pointer;margin-bottom:16px;">📅 Запланувати виїзд</button>';
@@ -6754,13 +6746,13 @@ function renderWinterFishing() {
     var html = '<div class="nickname-header">👤 ' + (currentUser?currentUser.nickname:'') + '</div>';
     html += '<div class="card">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
-    html += '<h1 style="margin:0;">' + T('winter_title') + '</h1>';
-    html += '<button onclick="renderMainMenu()" class="back-btn">' + T('back') + '</button></div>';
+    html += '<h1 style="margin:0;">❄️ Зимова рибалка</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button></div>';
 
     // Вкладки
     var selCat = localStorage.getItem('mf_winter_cat') || 'all';
     html += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;" id="winterCatTabs"></div>';
-    html += '<button id="addWinterBtn" style="width:100%;background:#e3f2fd;border:2px dashed #1976d2;border-radius:14px;padding:13px;color:#1976d2;font-weight:700;cursor:pointer;margin-bottom:14px;">' + T('forum_new_topic') + '</button>';
+    html += '<button id="addWinterBtn" style="width:100%;background:#e3f2fd;border:2px dashed #1976d2;border-radius:14px;padding:13px;color:#1976d2;font-weight:700;cursor:pointer;margin-bottom:14px;">+ Нова тема</button>';
 
     var filtered = selCat === 'all' ? posts : posts.filter(function(p){ return p.cat === selCat; });
     if (filtered.length === 0) {
@@ -6784,7 +6776,7 @@ function renderWinterFishing() {
     ['all'].concat(cats).forEach(function(c) {
         var active = c === selCat;
         var btn = document.createElement('button');
-        btn.textContent = c === 'all' ? T('forum_all_cats') : c;
+        btn.textContent = c === 'all' ? '🌐 Всі' : c;
         btn.style.cssText = 'background:' + (active?'#1976d2':'#f0f0f0') + ';color:' + (active?'#fff':'#333') + ';border:none;border-radius:40px;padding:6px 12px;font-size:0.78rem;cursor:pointer;margin:2px;';
         btn.onclick = (function(cat){ return function(){ localStorage.setItem('mf_winter_cat', cat); renderWinterFishing(); }; })(c);
         tabs.appendChild(btn);
@@ -6830,8 +6822,8 @@ function renderFishingMethods() {
     var html = '<div class="nickname-header">👤 ' + (currentUser?currentUser.nickname:'') + '</div>';
     html += '<div class="card">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
-    html += '<h1 style="margin:0;">' + T('methods_title') + '</h1>';
-    html += '<button onclick="renderMainMenu()" class="back-btn">' + T('back') + '</button></div>';
+    html += '<h1 style="margin:0;">🎣 Способи ловлі</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button></div>';
 
     methods.forEach(function(m) {
         html += '<div id="method_' + m.id + '" style="background:#f9f9f9;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px;border-left:4px solid ' + m.color + ';">';
@@ -6862,7 +6854,7 @@ function renderMethodDetail(method) {
     html += '<div class="card">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
     html += '<h1 style="margin:0;">' + method.emoji + ' ' + method.name + '</h1>';
-    html += '<button id="methodBackBtn" class="back-btn">' + T('back') + '</button></div>';
+    html += '<button id="methodBackBtn" class="back-btn">← Назад</button></div>';
     html += '<div style="background:#f0f7ff;border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:0.85rem;color:#555;">' + method.desc + '</div>';
     html += '<button id="addMethodBtn" style="width:100%;background:#e8f5e9;border:2px dashed ' + method.color + ';border-radius:14px;padding:13px;color:' + method.color + ';font-weight:700;cursor:pointer;margin-bottom:14px;">+ Додати пораду / питання</button>';
 
@@ -6907,12 +6899,12 @@ function renderBoats() {
     var html = '<div class="nickname-header">👤 ' + (currentUser?currentUser.nickname:'') + '</div>';
     html += '<div class="card">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
-    html += '<h1 style="margin:0;">' + T('boats_title') + '</h1>';
-    html += '<button onclick="renderMainMenu()" class="back-btn">' + T('back') + '</button></div>';
+    html += '<h1 style="margin:0;">🚤 Човни та мотори</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button></div>';
 
     var selCat = localStorage.getItem('mf_boats_cat') || 'all';
     html += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;" id="boatsCatTabs"></div>';
-    html += '<button id="addBoatBtn" style="width:100%;background:#fff3e0;border:2px dashed #e65100;border-radius:14px;padding:13px;color:#e65100;font-weight:700;cursor:pointer;margin-bottom:14px;">' + T('forum_new_topic') + '</button>';
+    html += '<button id="addBoatBtn" style="width:100%;background:#fff3e0;border:2px dashed #e65100;border-radius:14px;padding:13px;color:#e65100;font-weight:700;cursor:pointer;margin-bottom:14px;">+ Нова тема</button>';
 
     var filtered = selCat === 'all' ? posts : posts.filter(function(p){ return p.cat === selCat; });
     if (filtered.length === 0) {
@@ -6935,7 +6927,7 @@ function renderBoats() {
     ['all'].concat(cats).forEach(function(c) {
         var active = c === selCat;
         var btn = document.createElement('button');
-        btn.textContent = c === 'all' ? T('forum_all_cats') : c;
+        btn.textContent = c === 'all' ? '🌐 Всі' : c;
         btn.style.cssText = 'background:' + (active?'#e65100':'#f0f0f0') + ';color:' + (active?'#fff':'#333') + ';border:none;border-radius:40px;padding:6px 12px;font-size:0.78rem;cursor:pointer;margin:2px;';
         btn.onclick = (function(cat){ return function(){ localStorage.setItem('mf_boats_cat', cat); renderBoats(); }; })(c);
         tabs.appendChild(btn);
@@ -6966,12 +6958,12 @@ function renderUnderwater() {
     var html = '<div class="nickname-header">👤 ' + (currentUser?currentUser.nickname:'') + '</div>';
     html += '<div class="card">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
-    html += '<h1 style="margin:0;">' + T('underwater_title') + '</h1>';
-    html += '<button onclick="renderMainMenu()" class="back-btn">' + T('back') + '</button></div>';
+    html += '<h1 style="margin:0;">🤿 Підводне полювання</h1>';
+    html += '<button onclick="renderMainMenu()" class="back-btn">← Назад</button></div>';
 
     var selCat = localStorage.getItem('mf_under_cat') || 'all';
     html += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;" id="underCatTabs"></div>';
-    html += '<button id="addUnderBtn" style="width:100%;background:#e0f7fa;border:2px dashed #006064;border-radius:14px;padding:13px;color:#006064;font-weight:700;cursor:pointer;margin-bottom:14px;">' + T('forum_new_topic') + '</button>';
+    html += '<button id="addUnderBtn" style="width:100%;background:#e0f7fa;border:2px dashed #006064;border-radius:14px;padding:13px;color:#006064;font-weight:700;cursor:pointer;margin-bottom:14px;">+ Нова тема</button>';
 
     var filtered = selCat === 'all' ? posts : posts.filter(function(p){ return p.cat === selCat; });
     if (filtered.length === 0) {
@@ -6994,7 +6986,7 @@ function renderUnderwater() {
     ['all'].concat(cats).forEach(function(c) {
         var active = c === selCat;
         var btn = document.createElement('button');
-        btn.textContent = c === 'all' ? T('forum_all_cats') : c;
+        btn.textContent = c === 'all' ? '🌐 Всі' : c;
         btn.style.cssText = 'background:' + (active?'#006064':'#f0f0f0') + ';color:' + (active?'#fff':'#333') + ';border:none;border-radius:40px;padding:6px 12px;font-size:0.78rem;cursor:pointer;margin:2px;';
         btn.onclick = (function(cat){ return function(){ localStorage.setItem('mf_under_cat', cat); renderUnderwater(); }; })(c);
         tabs.appendChild(btn);
