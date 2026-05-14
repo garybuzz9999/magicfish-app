@@ -1944,6 +1944,103 @@ function getCountryFlag() {
 }
 
 // ========== ЛОГІН (новий міжнародний) ==========
+// ========== МАНУАЛ (глобальна функція) ==========
+function showManual() {
+    var isUk = appLang === 'uk';
+
+    var sections = isUk ? [
+        { icon:'🌐', title:'Крок 1 — Мова, країна та валюта', desc:'Натисніть кнопку мови (🇺🇦/🇬🇧) у верхньому лівому куті. Інтерфейс переключиться автоматично. Оберіть країну — валюта підлаштується: Україна→₴, Польща→zł, США→$. Курси НБУ оновлюються автоматично.' },
+        { icon:'🔑', title:'Крок 2 — Реєстрація та вхід', desc:'Введіть email → натисніть «Увійти через Email» → на пошту прийде 6-значний код. Введіть код і ви всередині. Також доступний вхід через Google одним кліком. Повністю безкоштовно.' },
+        { icon:'🎣', title:'Крок 3 — Нікнейм та профіль', desc:'Після першого входу оберіть нікнейм (2–24 символи). У Кабінеті можна додати фото, телефон, місто, і відстежувати рейтинг та активність.' },
+        { icon:'🗺️', title:'Крок 4 — Водойми та чекіни', desc:'Розділ «Водойми» показує ставки, озера, річки на карті. Визначте місце для сортування «Поруч». Статус: 🟢 Клює / 🔴 Не клює. Зробіть чекін після риболовлі — допоможіть іншим рибалкам!' },
+        { icon:'🔮', title:'Крок 5 — Прогноз клювання', desc:'Прогноз за реальними даними: температура, тиск, вітер, вологість + фаза місяця + сезон + час доби. Визначте геолокацію для точного прогнозу. 🟢 Чудово / 🟡 Задовільно / 🔴 Погано.' },
+        { icon:'🐟', title:'Крок 6 — Звіти та CHECK IN', desc:'Публікуйте фото улову! Вкажіть рибу, вагу, довжину, водойму, приманку. Звіти — як стрічка Instagram з лайками та коментарями. Кожен звіт = +5 очків рейтингу.' },
+        { icon:'📢', title:'Крок 7 — Дошка оголошень', desc:'Купуйте та продавайте б/у спорядження. 14 категорій: вудки, котушки, ехолоти, мотори, човни, приманки тощо. Розміщення безкоштовне. Ціна автоматично конвертується у валюту покупця.' },
+        { icon:'🏪', title:'Крок 8 — Магазини та GTR Shop', desc:'Рибальські магазини на карті — телефон, адреса, відгуки. GTR Shop — сигналізатор GTR Phantom BLE 4.0. Підключіть через Bluetooth: вібро-сповіщення, статистика клювань, прив&#39;язка до водойми.' },
+        { icon:'🏆', title:'Крок 9 — Турніри та тури', desc:'Турніри з призами — реєстрація одним кліком. Тури по Україні — організовані виїзди з гідом: Шацькі озера, Карпати, Дніпро тощо.' },
+        { icon:'💬', title:'Крок 10 — Спільнота та форум', desc:'Форум: обговорення, поради, питання. Майстерня: ремонт снастей, саморобки. Плани рибалок: організовуйте спільні виїзди. Окремі розділи: Зимова, Способи ловлі, Човни, Підводне полювання.' },
+        { icon:'⭐', title:'Крок 11 — Система рейтингу', desc:'Очки за активність: звіт +5, відгук +3, чекін +2, новина +10. Ранги: 🪱 Новачок → 🐟 Рибалка → 🎣 Досвідчений → 🏆 Майстер → 👑 Легенда. Рейтинг приманок — голосуйте за снасті та бренди.' },
+        { icon:'🆘', title:'Крок 12 — SOS та безпека', desc:'Кнопка SOS — відправляє GPS-координати рибалкам і службам порятунку. Номери: 101 (пожежна), 102 (поліція), 103 (швидка), 112 (єдина). Допомога від спільноти — попросіть допомоги у рибалок поруч.' },
+    ] : [
+        { icon:'🌐', title:'Step 1 — Language, Country & Currency', desc:'Tap the language button (🇺🇦/🇬🇧) in the top-left corner. Interface switches instantly. Select country — currency auto-adjusts: Ukraine→₴, Poland→zł, USA→$. Exchange rates update automatically.' },
+        { icon:'🔑', title:'Step 2 — Registration & Login', desc:'Enter email → tap "Sign in via Email" → a 6-digit code is sent to your inbox. Enter code and you&#39;re in. Google sign-in is also available in one tap. Completely free.' },
+        { icon:'🎣', title:'Step 3 — Nickname & Profile', desc:'After first login choose a nickname (2–24 chars). In My Account add a photo, phone, city, and track your rating and activity.' },
+        { icon:'🗺️', title:'Step 4 — Fishing Spots & Check-ins', desc:'"Fishing Spots" shows lakes, ponds, rivers on the map. Detect location to sort by "Nearby". Status: 🟢 Biting / 🔴 Not biting. Check in after fishing — help other anglers!' },
+        { icon:'🔮', title:'Step 5 — Bite Forecast', desc:'Forecast from real data: temperature, pressure, wind, humidity + moon phase + season + time of day. Detect location for accuracy. 🟢 Excellent / 🟡 Fair / 🔴 Poor.' },
+        { icon:'🐟', title:'Step 6 — Reports & CHECK IN', desc:'Share your catch photos! Enter fish, weight, length, water body, lure. Reports show as an Instagram-style feed with likes and comments. Each report = +5 rating points.' },
+        { icon:'📢', title:'Step 7 — Classifieds', desc:'Buy and sell used fishing gear. 14 categories: rods, reels, sonar, motors, boats, lures and more. Free listings. Price auto-converts to buyer&#39;s currency.' },
+        { icon:'🏪', title:'Step 8 — Shops & GTR Shop', desc:'Fishing shops on the map — phone, address, reviews. GTR Shop — GTR Phantom BLE 4.0 alarm. Connect via Bluetooth: vibration alerts, bite stats, water body linking.' },
+        { icon:'🏆', title:'Step 9 — Tournaments & Tours', desc:'Tournaments with prizes — register in one tap. Fishing Tours across Ukraine with a guide: Shatsk Lakes, Carpathians, Dnipro river and more.' },
+        { icon:'💬', title:'Step 10 — Community & Forum', desc:'Forum: discussions, tips, questions. Workshop: gear repair and DIY. Fishing Plans: organise group trips. Dedicated sections: Ice Fishing, Methods, Boats, Spearfishing.' },
+        { icon:'⭐', title:'Step 11 — Rating System', desc:'Points for activity: report +5, review +3, check-in +2, news +10. Ranks: 🪱 Beginner → 🐟 Angler → 🎣 Experienced → 🏆 Master → 👑 Legend. Gear Ratings — vote for lures and brands.' },
+        { icon:'🆘', title:'Step 12 — SOS & Safety', desc:'SOS button sends GPS coordinates to nearby anglers and rescue services. Numbers: 101 (fire), 102 (police), 103 (ambulance), 112 (unified). Community Help — request help from nearby anglers.' },
+    ];
+
+    var currentStep = 0;
+    var total = sections.length;
+
+    var modalEl = openModal(
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
+            '<h3 style="margin:0;font-size:1rem;color:#1f3b4c;">📖 ' + (isUk ? 'Як користуватись' : 'How to use') + ' MagicFish</h3>' +
+            '<div style="display:flex;gap:6px;">' +
+                '<button id="manualLangUk" style="background:' + (appLang==='uk'?'#1e3a3a':'#eee') + ';color:' + (appLang==='uk'?'#fff':'#333') + ';border:none;border-radius:20px;padding:5px 12px;font-size:0.82rem;cursor:pointer;font-weight:700;">🇺🇦</button>' +
+                '<button id="manualLangEn" style="background:' + (appLang!=='uk'?'#1e3a3a':'#eee') + ';color:' + (appLang!=='uk'?'#fff':'#333') + ';border:none;border-radius:20px;padding:5px 12px;font-size:0.82rem;cursor:pointer;font-weight:700;">🇬🇧</button>' +
+            '</div>' +
+        '</div>' +
+        '<div style="background:#eee;border-radius:40px;height:6px;margin-bottom:14px;overflow:hidden;">' +
+            '<div id="manualProgress" style="height:100%;border-radius:40px;background:linear-gradient(90deg,#1f3b4c,#3b82f6);transition:width 0.4s;width:8%;"></div>' +
+        '</div>' +
+        '<div id="manualStep" style="min-height:180px;"></div>' +
+        '<div style="display:flex;gap:10px;margin-top:14px;">' +
+            '<button id="manualPrev" style="flex:1;background:#eee;border:none;border-radius:40px;padding:11px;font-weight:700;cursor:pointer;font-size:0.9rem;opacity:0.4;">← ' + (isUk?'Назад':'Back') + '</button>' +
+            '<button id="manualNext" style="flex:2;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);color:white;border:none;border-radius:40px;padding:11px;font-weight:700;cursor:pointer;font-size:0.9rem;">' + (isUk?'Далі':'Next') + ' →</button>' +
+        '</div>' +
+        '<div style="text-align:center;margin-top:8px;"><span id="manualPageNum" style="font-size:0.75rem;color:#aaa;"></span></div>' +
+        '<button class="close-modal" style="margin-top:10px;width:100%;padding:10px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:600;">' + (isUk?'Закрити':'Close') + '</button>'
+    );
+
+    function renderStep() {
+        var s = sections[currentStep];
+        var isUkNow = appLang === 'uk';
+        document.getElementById('manualStep').innerHTML =
+            '<div style="text-align:center;margin-bottom:12px;">' +
+                '<div style="font-size:2.5rem;margin-bottom:8px;">' + s.icon + '</div>' +
+                '<div style="font-weight:900;font-size:0.95rem;color:#1f3b4c;margin-bottom:10px;">' + s.title + '</div>' +
+            '</div>' +
+            '<div style="background:#f5f7f0;border-radius:18px;padding:14px;font-size:0.86rem;color:#333;line-height:1.7;">' + s.desc + '</div>' +
+            '<div style="display:flex;justify-content:center;gap:5px;margin-top:12px;flex-wrap:wrap;">' +
+                sections.map(function(_,i){ return '<div style="width:' + (i===currentStep?'18px':'7px') + ';height:7px;border-radius:40px;background:' + (i===currentStep?'#1f3b4c':'#ddd') + ';transition:all 0.3s;"></div>'; }).join('') +
+            '</div>';
+        var pct = Math.round((currentStep + 1) / total * 100);
+        document.getElementById('manualProgress').style.width = pct + '%';
+        document.getElementById('manualPageNum').textContent = (currentStep + 1) + ' / ' + total;
+        document.getElementById('manualPrev').style.opacity = currentStep === 0 ? '0.4' : '1';
+        var nextBtn = document.getElementById('manualNext');
+        nextBtn.textContent = currentStep === total - 1
+            ? (isUkNow ? '✅ Зрозуміло!' : '✅ Got it!')
+            : (isUkNow ? 'Далі' : 'Next') + ' →';
+    }
+
+    renderStep();
+
+    document.getElementById('manualNext').onclick = function() {
+        if (currentStep < total - 1) { currentStep++; renderStep(); }
+        else { modalEl.remove(); }
+    };
+    document.getElementById('manualPrev').onclick = function() {
+        if (currentStep > 0) { currentStep--; renderStep(); }
+    };
+    document.getElementById('manualLangUk').onclick = function() {
+        appLang = 'uk'; localStorage.setItem('mf_lang', 'uk');
+        modalEl.remove(); showManual();
+    };
+    document.getElementById('manualLangEn').onclick = function() {
+        appLang = 'en'; localStorage.setItem('mf_lang', 'en');
+        modalEl.remove(); showManual();
+    };
+    modalEl.querySelector('.close-modal').onclick = function() { modalEl.remove(); };
+}
+
 function renderLogin() {
     const app = document.getElementById('appRoot');
     const selLang = LANGUAGES.find(l => l.code === appLang) || LANGUAGES[0];
@@ -2023,7 +2120,7 @@ function renderLogin() {
 
       <div style="padding:20px 24px 24px;">
         <!-- Фічі — компактний список -->
-        <div style="background:#f5f7f0;border-radius:20px;padding:12px 16px;margin-bottom:16px;font-size:0.9rem;line-height:1.95;color:#2c3e2f;">
+        <div style="background:#f5f7f0;border-radius:20px;padding:10px 14px;margin-bottom:14px;font-size:0.78rem;line-height:1.7;color:#2c3e2f;max-height:180px;overflow-y:auto;">
           ${appLang==='uk'?
 '🗺️ Водойми<br>🔮 Прогноз клеву<br>🏖️ Бази відпочинку<br>🏕️ Кемпінги<br>🚌 Тури по Україні<br>📢 Дошка оголошень<br>🏪 Магазини<br>📰 Новини<br>💬 Форум<br>👤 Кабінет<br>🐟 Звіти — CHECK IN<br>⭐ Рейтинг снастей<br>🔧 Майстерня<br>📋 Плани рибалок<br>❄️ Зимова рибалка<br>🎣 Способи ловлі<br>🚤 Човни та мотори<br>🤿 Підводне полювання<br>🆘 SOS — екстрена допомога<br>📡 GTR Shop — сигналізатор клювання'
 :
@@ -2113,198 +2210,9 @@ function renderLogin() {
     };
 
     // ---- Як користуватись ----
-    document.getElementById('howToBtn').onclick = () => {
-        const isUk = appLang === 'uk';
+    document.getElementById('howToBtn').onclick = () => { showManual(); };
 
-        const sections = isUk ? [
-            {
-                icon: '🌐', title: 'Крок 1 — Мова, країна та валюта',
-                desc: 'Натисніть кнопку мови (🇺🇦 / 🇬🇧) у верхньому лівому куті екрану. Оберіть свою мову — інтерфейс автоматично переключиться. Потім оберіть країну та валюту. Валюта автоматично підлаштовується під країну: Україна → ₴, Польща → zł, США → $ тощо. Курси НБУ оновлюються автоматично.'
-            },
-            {
-                icon: '🔑', title: 'Крок 2 — Реєстрація та вхід',
-                desc: 'Введіть email і натисніть «Увійти через Email» — на пошту прийде 6-значний код підтвердження. Введіть код і ви всередині. Також доступний вхід через Google одним кліком. Ніяких паролів не потрібно — усе безкоштовно.'
-            },
-            {
-                icon: '🎣', title: 'Крок 3 — Нікнейм та профіль',
-                desc: 'Після першого входу оберіть унікальний нікнейм (2–24 символи, літери/цифри/_). Саме так вас бачитимуть інші рибалки. У Кабінеті можна додати фото профілю, телефон, місто, і відстежувати свою активність та рейтинг.'
-            },
-            {
-                icon: '🗺️', title: 'Крок 4 — Водойми та чекіни',
-                desc: 'Розділ «Водойми» показує ставки, озера та річки на карті. Натисніть «Визначити моє місце» щоб побачити водойми поруч. Для кожної водойми є статус: 🟢 Клює / 🔴 Не клює / ❓ Невідомо. Зробіть чекін — натисніть «Клює» або «Не клює» після риболовлі, щоб допомогти іншим рибалкам. Також можна залишити відгук з оцінкою 👑.'
-            },
-            {
-                icon: '🔮', title: 'Крок 5 — Прогноз клювання',
-                desc: 'Прогноз розраховується за реальними даними погоди (Open-Meteo): температура, тиск, вітер, вологість, опади + фаза місяця + сезон + час доби. Визначте геолокацію для точного прогнозу. Чим більший %, тим краще клює. Зелений — відмінно, жовтий — задовільно, червоний — погано.'
-            },
-            {
-                icon: '🐟', title: 'Крок 6 — Звіти та CHECK IN',
-                desc: 'Публікуйте фото свого улову! Натисніть «📍 Зробити чекін» — оберіть рибу, вкажіть вагу, довжину, водойму, приманку, додайте фото. Звіти показуються як стрічка з лайками та коментарями. Кожен звіт дає +2 очки рейтингу.'
-            },
-            {
-                icon: '📢', title: 'Крок 7 — Дошка оголошень',
-                desc: 'Купуйте та продавайте б/у рибальське спорядження. 14 категорій: вудки, котушки, ехолоти, мотори, човни, приманки тощо. Розміщуйте оголошення безкоштовно. Вказуйте ціну в будь-якій валюті — автоматично конвертується для покупця.'
-            },
-            {
-                icon: '🏪', title: 'Крок 8 — Магазини та GTR Shop',
-                desc: 'Знайдіть рибальські магазини поруч на карті — телефон, адреса, відгуки. GTR Shop — офіційний магазин сигналізаторів клювання GTR Phantom BLE 4.0. Підключіть сигналізатор до додатку через Bluetooth — отримуйте вібро-сповіщення, статистику клювань, прив\'язку до водойми.'
-            },
-            {
-                icon: '🏆', title: 'Крок 9 — Турніри та тури',
-                desc: 'Беріть участь у рибальських змаганнях — реєструйтесь одним кліком. Турніри з призами, організовані спільнотою та партнерами. Тури по Україні — організовані виїзди на кращі водойми з гідом: Шацькі озера, Карпати, Дніпро та інші маршрути.'
-            },
-            {
-                icon: '💬', title: 'Крок 10 — Спільнота та форум',
-                desc: 'Форум — обговорення, поради, питання. Майстерня — ремонт снастей, саморобки. Плани рибалок — організовуйте спільні виїзди. Зимова рибалка, способи ловлі, човни та мотори, підводне полювання — окремі розділи для кожного напряму.'
-            },
-            {
-                icon: '⭐', title: 'Крок 11 — Система рейтингу',
-                desc: 'За активність нараховуються очки: звіт = +5, відгук = +3, чекін = +2, новина = +10. Ранги: 🪱 Новачок → 🐟 Рибалка → 🎣 Досвідчений → 🏆 Майстер → 👑 Легенда. Рейтинг приманок — голосуйте за снасті та виробників, залишайте відгуки.'
-            },
-            {
-                icon: '🆘', title: 'Крок 12 — SOS та безпека',
-                desc: 'Кнопка SOS — у надзвичайних ситуаціях відправляє ваші GPS-координати рибалкам поруч та службам порятунку. Екстрені номери: 101 (пожежна), 102 (поліція), 103 (швидка), 112 (єдина). Розділ «Допомога від спільноти» — попросіть допомоги у рибалок поруч (домкрат, буксир, ліки тощо).'
-            },
-        ] : [
-            {
-                icon: '🌐', title: 'Step 1 — Language, Country & Currency',
-                desc: 'Tap the language button (🇺🇦 / 🇬🇧) in the top-left corner. Choose your language — the interface switches instantly. Then select your country and currency. Currency auto-adjusts: Ukraine → ₴, Poland → zł, USA → $ etc. Exchange rates are updated automatically from NBU.'
-            },
-            {
-                icon: '🔑', title: 'Step 2 — Registration & Login',
-                desc: 'Enter your email and tap "Sign in via Email" — a 6-digit code will be sent to your inbox. Enter the code and you\'re in. Google sign-in is also available in one tap. No passwords required — completely free.'
-            },
-            {
-                icon: '🎣', title: 'Step 3 — Nickname & Profile',
-                desc: 'After your first login, choose a unique nickname (2–24 characters, letters/digits/_). That\'s how other anglers will see you. In My Account you can add a profile photo, phone number, city, and track your activity and ranking.'
-            },
-            {
-                icon: '🗺️', title: 'Step 4 — Fishing Spots & Check-ins',
-                desc: 'The "Fishing Spots" section shows lakes, ponds and rivers on a map. Tap "Detect my location" to see nearby spots. Each spot shows a status: 🟢 Biting / 🔴 Not biting / ❓ Unknown. Check in after fishing — tap "Biting" or "Not biting" to help other anglers. You can also leave a rated review 👑.'
-            },
-            {
-                icon: '🔮', title: 'Step 5 — Bite Forecast',
-                desc: 'The forecast is calculated from real weather data (Open-Meteo): temperature, pressure, wind, humidity, precipitation + moon phase + season + time of day. Detect your location for an accurate forecast. The higher the %, the better the bite. Green = excellent, yellow = fair, red = poor.'
-            },
-            {
-                icon: '🐟', title: 'Step 6 — Reports & CHECK IN',
-                desc: 'Share your catch photos! Tap "📍 Check in" — choose the fish, enter weight, length, water body, lure, add a photo. Reports appear as a feed with likes and comments. Each report earns +2 rating points.'
-            },
-            {
-                icon: '📢', title: 'Step 7 — Classifieds',
-                desc: 'Buy and sell used fishing gear. 14 categories: rods, reels, sonar, motors, boats, lures and more. Post listings for free. Set your price in any currency — it automatically converts for the buyer.'
-            },
-            {
-                icon: '🏪', title: 'Step 8 — Shops & GTR Shop',
-                desc: 'Find fishing shops nearby on the map — phone, address, reviews. GTR Shop — official store for the GTR Phantom BLE 4.0 bite alarm. Connect the alarm to the app via Bluetooth — get vibration alerts, bite statistics, and water body linking.'
-            },
-            {
-                icon: '🏆', title: 'Step 9 — Tournaments & Tours',
-                desc: 'Join fishing competitions — register with one tap. Tournaments with prizes, organised by the community and partners. Fishing Tours across Ukraine — guided trips to the best spots: Shatsk Lakes, Carpathians, Dnipro river and more.'
-            },
-            {
-                icon: '💬', title: 'Step 10 — Community & Forum',
-                desc: 'Forum — discussions, tips, questions. Workshop — gear repair and DIY. Fishing Plans — organise group trips. Ice Fishing, Fishing Methods, Boats & Motors, Spearfishing — dedicated sections for every style.'
-            },
-            {
-                icon: '⭐', title: 'Step 11 — Rating System',
-                desc: 'Earn points for activity: report = +5, review = +3, check-in = +2, news = +10. Ranks: 🪱 Beginner → 🐟 Angler → 🎣 Experienced → 🏆 Master → 👑 Legend. Gear Ratings — vote for lures and brands, leave reviews.'
-            },
-            {
-                icon: '🆘', title: 'Step 12 — SOS & Safety',
-                desc: 'The SOS button sends your GPS coordinates to nearby anglers and rescue services in an emergency. Emergency numbers: 101 (fire), 102 (police), 103 (ambulance), 112 (unified). "Community Help" section — request help from nearby anglers (jack, tow, medicine etc.).'
-            },
-        ];
-
-        const modalEl = openModal(`
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-                <h3 style="margin:0;font-size:1.1rem;color:#1f3b4c;">
-                    ${isUk ? '📖 Як користуватись MagicFish' : '📖 How to use MagicFish'}
-                </h3>
-                <div style="display:flex;gap:6px;">
-                    <button id="manualLangUk" style="background:${appLang==='uk'?'#1e3a3a':'#eee'};color:${appLang==='uk'?'#fff':'#333'};border:none;border-radius:20px;padding:5px 12px;font-size:0.82rem;cursor:pointer;font-weight:700;">🇺🇦</button>
-                    <button id="manualLangEn" style="background:${appLang!=='uk'?'#1e3a3a':'#eee'};color:${appLang!=='uk'?'#fff':'#333'};border:none;border-radius:20px;padding:5px 12px;font-size:0.82rem;cursor:pointer;font-weight:700;">🇬🇧</button>
-                </div>
-            </div>
-
-            <!-- Прогрес-бар -->
-            <div style="background:#eee;border-radius:40px;height:6px;margin-bottom:16px;overflow:hidden;">
-                <div id="manualProgress" style="height:100%;border-radius:40px;background:linear-gradient(90deg,#1f3b4c,#3b82f6);transition:width 0.4s;width:${Math.round(100/sections.length)}%;"></div>
-            </div>
-
-            <!-- Контент кроку -->
-            <div id="manualStep" style="min-height:200px;"></div>
-
-            <!-- Навігація -->
-            <div style="display:flex;gap:10px;margin-top:16px;">
-                <button id="manualPrev" style="flex:1;background:#eee;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;font-size:0.9rem;">← ${isUk?'Назад':'Back'}</button>
-                <button id="manualNext" style="flex:2;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);color:white;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;font-size:0.9rem;">${isUk?'Далі':'Next'} →</button>
-            </div>
-            <div style="text-align:center;margin-top:10px;">
-                <span id="manualPageNum" style="font-size:0.78rem;color:#aaa;"></span>
-            </div>
-            <button class="close-modal" style="margin-top:10px;width:100%;padding:10px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:600;">${isUk?'Закрити':'Close'}</button>
-        `);
-
-        let currentStep = 0;
-
-        function renderManualStep(steps) {
-            const s = steps[currentStep];
-            const total = steps.length;
-            document.getElementById('manualStep').innerHTML = `
-                <div style="text-align:center;margin-bottom:14px;">
-                    <div style="font-size:3rem;margin-bottom:8px;">${s.icon}</div>
-                    <div style="font-weight:900;font-size:1rem;color:#1f3b4c;margin-bottom:12px;">${s.title}</div>
-                </div>
-                <div style="background:#f5f7f0;border-radius:20px;padding:16px;font-size:0.88rem;color:#333;line-height:1.75;">${s.desc}</div>
-                <div style="display:flex;justify-content:center;gap:6px;margin-top:14px;flex-wrap:wrap;">
-                    ${steps.map((_,i) => `<div style="width:${i===currentStep?'20px':'8px'};height:8px;border-radius:40px;background:${i===currentStep?'#1f3b4c':'#ddd'};transition:all 0.3s;"></div>`).join('')}
-                </div>
-            `;
-            const progress = Math.round((currentStep + 1) / total * 100);
-            document.getElementById('manualProgress').style.width = progress + '%';
-            document.getElementById('manualPageNum').textContent = (currentStep + 1) + ' / ' + total;
-            document.getElementById('manualPrev').style.opacity = currentStep === 0 ? '0.4' : '1';
-            const nextBtn = document.getElementById('manualNext');
-            const isUkNow = appLang === 'uk';
-            nextBtn.textContent = currentStep === total - 1
-                ? (isUkNow ? '✅ Зрозуміло!' : '✅ Got it!')
-                : (isUkNow ? 'Далі' : 'Next') + ' →';
-        }
-
-        renderManualStep(sections);
-
-        document.getElementById('manualNext').onclick = () => {
-            if (currentStep < sections.length - 1) {
-                currentStep++;
-                renderManualStep(sections);
-            } else {
-                modalEl.remove();
-            }
-        };
-        document.getElementById('manualPrev').onclick = () => {
-            if (currentStep > 0) {
-                currentStep--;
-                renderManualStep(sections);
-            }
-        };
-
-        // Перемикання мови прямо в мануалі
-        document.getElementById('manualLangUk').onclick = () => {
-            appLang = 'uk'; localStorage.setItem('mf_lang', 'uk');
-            modalEl.remove();
-            document.getElementById('howToBtn').click();
-        };
-        document.getElementById('manualLangEn').onclick = () => {
-            appLang = 'en'; localStorage.setItem('mf_lang', 'en');
-            modalEl.remove();
-            document.getElementById('howToBtn').click();
-        };
-
-        modalEl.querySelector('.close-modal').onclick = () => modalEl.remove();
-    };
-
-document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('mf_user'); currentUser=null; renderLogin(); };
+    document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('mf_user'); currentUser=null; renderLogin(); };
     document.getElementById('becomePartnerBtn')?.addEventListener('click', () => {
         alert('📧 Для співпраці: partners@magicfish.app\n\nМи раді новим партнерам!');
     });
