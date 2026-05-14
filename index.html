@@ -2114,197 +2114,561 @@ function renderLogin() {
 
     // ---- Як користуватись ----
     document.getElementById('howToBtn').onclick = () => {
-        const isUk = appLang === 'uk';
-
-        const sections = isUk ? [
-            {
-                icon: '🌐', title: 'Крок 1 — Мова, країна та валюта',
-                desc: 'Натисніть кнопку мови (🇺🇦 / 🇬🇧) у верхньому лівому куті екрану. Оберіть свою мову — інтерфейс автоматично переключиться. Потім оберіть країну та валюту. Валюта автоматично підлаштовується під країну: Україна → ₴, Польща → zł, США → $ тощо. Курси НБУ оновлюються автоматично.'
-            },
-            {
-                icon: '🔑', title: 'Крок 2 — Реєстрація та вхід',
-                desc: 'Введіть email і натисніть «Увійти через Email» — на пошту прийде 6-значний код підтвердження. Введіть код і ви всередині. Також доступний вхід через Google одним кліком. Ніяких паролів не потрібно — усе безкоштовно.'
-            },
-            {
-                icon: '🎣', title: 'Крок 3 — Нікнейм та профіль',
-                desc: 'Після першого входу оберіть унікальний нікнейм (2–24 символи, літери/цифри/_). Саме так вас бачитимуть інші рибалки. У Кабінеті можна додати фото профілю, телефон, місто, і відстежувати свою активність та рейтинг.'
-            },
-            {
-                icon: '🗺️', title: 'Крок 4 — Водойми та чекіни',
-                desc: 'Розділ «Водойми» показує ставки, озера та річки на карті. Натисніть «Визначити моє місце» щоб побачити водойми поруч. Для кожної водойми є статус: 🟢 Клює / 🔴 Не клює / ❓ Невідомо. Зробіть чекін — натисніть «Клює» або «Не клює» після риболовлі, щоб допомогти іншим рибалкам. Також можна залишити відгук з оцінкою 👑.'
-            },
-            {
-                icon: '🔮', title: 'Крок 5 — Прогноз клювання',
-                desc: 'Прогноз розраховується за реальними даними погоди (Open-Meteo): температура, тиск, вітер, вологість, опади + фаза місяця + сезон + час доби. Визначте геолокацію для точного прогнозу. Чим більший %, тим краще клює. Зелений — відмінно, жовтий — задовільно, червоний — погано.'
-            },
-            {
-                icon: '🐟', title: 'Крок 6 — Звіти та CHECK IN',
-                desc: 'Публікуйте фото свого улову! Натисніть «📍 Зробити чекін» — оберіть рибу, вкажіть вагу, довжину, водойму, приманку, додайте фото. Звіти показуються як стрічка з лайками та коментарями. Кожен звіт дає +2 очки рейтингу.'
-            },
-            {
-                icon: '📢', title: 'Крок 7 — Дошка оголошень',
-                desc: 'Купуйте та продавайте б/у рибальське спорядження. 14 категорій: вудки, котушки, ехолоти, мотори, човни, приманки тощо. Розміщуйте оголошення безкоштовно. Вказуйте ціну в будь-якій валюті — автоматично конвертується для покупця.'
-            },
-            {
-                icon: '🏪', title: 'Крок 8 — Магазини та GTR Shop',
-                desc: 'Знайдіть рибальські магазини поруч на карті — телефон, адреса, відгуки. GTR Shop — офіційний магазин сигналізаторів клювання GTR Phantom BLE 4.0. Підключіть сигналізатор до додатку через Bluetooth — отримуйте вібро-сповіщення, статистику клювань, прив\'язку до водойми.'
-            },
-            {
-                icon: '🏆', title: 'Крок 9 — Турніри та тури',
-                desc: 'Беріть участь у рибальських змаганнях — реєструйтесь одним кліком. Турніри з призами, організовані спільнотою та партнерами. Тури по Україні — організовані виїзди на кращі водойми з гідом: Шацькі озера, Карпати, Дніпро та інші маршрути.'
-            },
-            {
-                icon: '💬', title: 'Крок 10 — Спільнота та форум',
-                desc: 'Форум — обговорення, поради, питання. Майстерня — ремонт снастей, саморобки. Плани рибалок — організовуйте спільні виїзди. Зимова рибалка, способи ловлі, човни та мотори, підводне полювання — окремі розділи для кожного напряму.'
-            },
-            {
-                icon: '⭐', title: 'Крок 11 — Система рейтингу',
-                desc: 'За активність нараховуються очки: звіт = +5, відгук = +3, чекін = +2, новина = +10. Ранги: 🪱 Новачок → 🐟 Рибалка → 🎣 Досвідчений → 🏆 Майстер → 👑 Легенда. Рейтинг приманок — голосуйте за снасті та виробників, залишайте відгуки.'
-            },
-            {
-                icon: '🆘', title: 'Крок 12 — SOS та безпека',
-                desc: 'Кнопка SOS — у надзвичайних ситуаціях відправляє ваші GPS-координати рибалкам поруч та службам порятунку. Екстрені номери: 101 (пожежна), 102 (поліція), 103 (швидка), 112 (єдина). Розділ «Допомога від спільноти» — попросіть допомоги у рибалок поруч (домкрат, буксир, ліки тощо).'
-            },
+        const steps = isUk ? [
+            { icon:'1️⃣', title:'Оберіть мову та країну', desc:'Натисніть кнопку мови у верхньому лівому куті.' },
+            { icon:'2️⃣', title:'Увійдіть через Google або Apple', desc:'Ніяких паролів — один клік і ви в системі.' },
+            { icon:'3️⃣', title:'Оберіть нікнейм', desc:'Придумайте унікальне рибальське ім\'я — так вас будуть знати інші рибалки.' },
+            { icon:'4️⃣', title:'Водойми та чекіни', desc:'Знайдіть водойму поруч. Натисніть «Клює» або «Не клює» — і всі рибалки побачать актуальний стан.' },
+            { icon:'5️⃣', title:'Прогноз кльову', desc:'Отримайте реальний прогноз на основі погоди, тиску та фази місяця.' },
+            { icon:'6️⃣', title:'SOS', desc:'В разі небезпеки натисніть SOS — координати отримають рибалки в радіусі 10 км і служби порятунку.' },
+            { icon:'7️⃣', title:'Дошка оголошень', desc:'Розміщуйте рекламні оголошення. 14 категорій — від гачків до катерів.' },
+            { icon:'8️⃣', title:'Турніри і тури', desc:'Беріть участь у рибальських змаганнях та турах по Україні.' },
         ] : [
-            {
-                icon: '🌐', title: 'Step 1 — Language, Country & Currency',
-                desc: 'Tap the language button (🇺🇦 / 🇬🇧) in the top-left corner. Choose your language — the interface switches instantly. Then select your country and currency. Currency auto-adjusts: Ukraine → ₴, Poland → zł, USA → $ etc. Exchange rates are updated automatically from NBU.'
-            },
-            {
-                icon: '🔑', title: 'Step 2 — Registration & Login',
-                desc: 'Enter your email and tap "Sign in via Email" — a 6-digit code will be sent to your inbox. Enter the code and you\'re in. Google sign-in is also available in one tap. No passwords required — completely free.'
-            },
-            {
-                icon: '🎣', title: 'Step 3 — Nickname & Profile',
-                desc: 'After your first login, choose a unique nickname (2–24 characters, letters/digits/_). That\'s how other anglers will see you. In My Account you can add a profile photo, phone number, city, and track your activity and ranking.'
-            },
-            {
-                icon: '🗺️', title: 'Step 4 — Fishing Spots & Check-ins',
-                desc: 'The "Fishing Spots" section shows lakes, ponds and rivers on a map. Tap "Detect my location" to see nearby spots. Each spot shows a status: 🟢 Biting / 🔴 Not biting / ❓ Unknown. Check in after fishing — tap "Biting" or "Not biting" to help other anglers. You can also leave a rated review 👑.'
-            },
-            {
-                icon: '🔮', title: 'Step 5 — Bite Forecast',
-                desc: 'The forecast is calculated from real weather data (Open-Meteo): temperature, pressure, wind, humidity, precipitation + moon phase + season + time of day. Detect your location for an accurate forecast. The higher the %, the better the bite. Green = excellent, yellow = fair, red = poor.'
-            },
-            {
-                icon: '🐟', title: 'Step 6 — Reports & CHECK IN',
-                desc: 'Share your catch photos! Tap "📍 Check in" — choose the fish, enter weight, length, water body, lure, add a photo. Reports appear as a feed with likes and comments. Each report earns +2 rating points.'
-            },
-            {
-                icon: '📢', title: 'Step 7 — Classifieds',
-                desc: 'Buy and sell used fishing gear. 14 categories: rods, reels, sonar, motors, boats, lures and more. Post listings for free. Set your price in any currency — it automatically converts for the buyer.'
-            },
-            {
-                icon: '🏪', title: 'Step 8 — Shops & GTR Shop',
-                desc: 'Find fishing shops nearby on the map — phone, address, reviews. GTR Shop — official store for the GTR Phantom BLE 4.0 bite alarm. Connect the alarm to the app via Bluetooth — get vibration alerts, bite statistics, and water body linking.'
-            },
-            {
-                icon: '🏆', title: 'Step 9 — Tournaments & Tours',
-                desc: 'Join fishing competitions — register with one tap. Tournaments with prizes, organised by the community and partners. Fishing Tours across Ukraine — guided trips to the best spots: Shatsk Lakes, Carpathians, Dnipro river and more.'
-            },
-            {
-                icon: '💬', title: 'Step 10 — Community & Forum',
-                desc: 'Forum — discussions, tips, questions. Workshop — gear repair and DIY. Fishing Plans — organise group trips. Ice Fishing, Fishing Methods, Boats & Motors, Spearfishing — dedicated sections for every style.'
-            },
-            {
-                icon: '⭐', title: 'Step 11 — Rating System',
-                desc: 'Earn points for activity: report = +5, review = +3, check-in = +2, news = +10. Ranks: 🪱 Beginner → 🐟 Angler → 🎣 Experienced → 🏆 Master → 👑 Legend. Gear Ratings — vote for lures and brands, leave reviews.'
-            },
-            {
-                icon: '🆘', title: 'Step 12 — SOS & Safety',
-                desc: 'The SOS button sends your GPS coordinates to nearby anglers and rescue services in an emergency. Emergency numbers: 101 (fire), 102 (police), 103 (ambulance), 112 (unified). "Community Help" section — request help from nearby anglers (jack, tow, medicine etc.).'
-            },
+            { icon:'1️⃣', title:'Choose language & country', desc:'Tap the language button in the top left corner.' },
+            { icon:'2️⃣', title:'Sign in with Google or Apple', desc:'No passwords — one tap and you\'re in.' },
+            { icon:'3️⃣', title:'Pick your nickname', desc:'Choose a unique fishing nickname — that\'s how other anglers will know you.' },
+            { icon:'4️⃣', title:'Fishing spots & check-ins', desc:'Find a spot near you. Tap "Biting" or "Not biting" — everyone sees live status.' },
+            { icon:'5️⃣', title:'Bite forecast', desc:'Get a real forecast based on weather, pressure and moon phase.' },
+            { icon:'6️⃣', title:'SOS', desc:'In danger? Tap SOS — fishers within 5km and rescue services get your coordinates.' },
+            { icon:'7️⃣', title:'Marketplace', desc:'Buy and sell used fishing gear. Earn points for activity.' },
+            { icon:'8️⃣', title:'Tournaments & Tours', desc:'Join fishing competitions and guided tours.' },
         ];
-
-        const modalEl = openModal(`
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-                <h3 style="margin:0;font-size:1.1rem;color:#1f3b4c;">
-                    ${isUk ? '📖 Як користуватись MagicFish' : '📖 How to use MagicFish'}
-                </h3>
-                <div style="display:flex;gap:6px;">
-                    <button id="manualLangUk" style="background:${appLang==='uk'?'#1e3a3a':'#eee'};color:${appLang==='uk'?'#fff':'#333'};border:none;border-radius:20px;padding:5px 12px;font-size:0.82rem;cursor:pointer;font-weight:700;">🇺🇦</button>
-                    <button id="manualLangEn" style="background:${appLang!=='uk'?'#1e3a3a':'#eee'};color:${appLang!=='uk'?'#fff':'#333'};border:none;border-radius:20px;padding:5px 12px;font-size:0.82rem;cursor:pointer;font-weight:700;">🇬🇧</button>
-                </div>
+        const modal = openModal(`
+            <h3>${isUk?'❓ Як користуватись MagicFish':'❓ How to use MagicFish'}</h3>
+            <div style="display:flex;flex-direction:column;gap:10px;max-height:65vh;overflow-y:auto;">
+                ${steps.map(s=>`
+                <div style="background:#f5f7f0;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;">
+                    <div style="font-size:1.3rem;flex-shrink:0;">${s.icon}</div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.9rem;color:#1f3b4c;margin-bottom:2px;">${s.title}</div>
+                        <div style="font-size:0.82rem;color:#666;">${s.desc}</div>
+                    </div>
+                </div>`).join('')}
             </div>
-
-            <!-- Прогрес-бар -->
-            <div style="background:#eee;border-radius:40px;height:6px;margin-bottom:16px;overflow:hidden;">
-                <div id="manualProgress" style="height:100%;border-radius:40px;background:linear-gradient(90deg,#1f3b4c,#3b82f6);transition:width 0.4s;width:${Math.round(100/sections.length)}%;"></div>
-            </div>
-
-            <!-- Контент кроку -->
-            <div id="manualStep" style="min-height:200px;"></div>
-
-            <!-- Навігація -->
-            <div style="display:flex;gap:10px;margin-top:16px;">
-                <button id="manualPrev" style="flex:1;background:#eee;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;font-size:0.9rem;">← ${isUk?'Назад':'Back'}</button>
-                <button id="manualNext" style="flex:2;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);color:white;border:none;border-radius:40px;padding:12px;font-weight:700;cursor:pointer;font-size:0.9rem;">${isUk?'Далі':'Next'} →</button>
-            </div>
-            <div style="text-align:center;margin-top:10px;">
-                <span id="manualPageNum" style="font-size:0.78rem;color:#aaa;"></span>
-            </div>
-            <button class="close-modal" style="margin-top:10px;width:100%;padding:10px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:600;">${isUk?'Закрити':'Close'}</button>
+            <button class="close-modal" style="margin-top:14px;">${isUk?'Зрозуміло!':'Got it!'}</button>
         `);
-
-        let currentStep = 0;
-
-        function renderManualStep(steps) {
-            const s = steps[currentStep];
-            const total = steps.length;
-            document.getElementById('manualStep').innerHTML = `
-                <div style="text-align:center;margin-bottom:14px;">
-                    <div style="font-size:3rem;margin-bottom:8px;">${s.icon}</div>
-                    <div style="font-weight:900;font-size:1rem;color:#1f3b4c;margin-bottom:12px;">${s.title}</div>
-                </div>
-                <div style="background:#f5f7f0;border-radius:20px;padding:16px;font-size:0.88rem;color:#333;line-height:1.75;">${s.desc}</div>
-                <div style="display:flex;justify-content:center;gap:6px;margin-top:14px;flex-wrap:wrap;">
-                    ${steps.map((_,i) => `<div style="width:${i===currentStep?'20px':'8px'};height:8px;border-radius:40px;background:${i===currentStep?'#1f3b4c':'#ddd'};transition:all 0.3s;"></div>`).join('')}
-                </div>
-            `;
-            const progress = Math.round((currentStep + 1) / total * 100);
-            document.getElementById('manualProgress').style.width = progress + '%';
-            document.getElementById('manualPageNum').textContent = (currentStep + 1) + ' / ' + total;
-            document.getElementById('manualPrev').style.opacity = currentStep === 0 ? '0.4' : '1';
-            const nextBtn = document.getElementById('manualNext');
-            const isUkNow = appLang === 'uk';
-            nextBtn.textContent = currentStep === total - 1
-                ? (isUkNow ? '✅ Зрозуміло!' : '✅ Got it!')
-                : (isUkNow ? 'Далі' : 'Next') + ' →';
-        }
-
-        renderManualStep(sections);
-
-        document.getElementById('manualNext').onclick = () => {
-            if (currentStep < sections.length - 1) {
-                currentStep++;
-                renderManualStep(sections);
-            } else {
-                modalEl.remove();
-            }
-        };
-        document.getElementById('manualPrev').onclick = () => {
-            if (currentStep > 0) {
-                currentStep--;
-                renderManualStep(sections);
-            }
-        };
-
-        // Перемикання мови прямо в мануалі
-        document.getElementById('manualLangUk').onclick = () => {
-            appLang = 'uk'; localStorage.setItem('mf_lang', 'uk');
-            modalEl.remove();
-            document.getElementById('howToBtn').click();
-        };
-        document.getElementById('manualLangEn').onclick = () => {
-            appLang = 'en'; localStorage.setItem('mf_lang', 'en');
-            modalEl.remove();
-            document.getElementById('howToBtn').click();
-        };
-
-        modalEl.querySelector('.close-modal').onclick = () => modalEl.remove();
+        modal.querySelector('.close-modal').onclick = () => modal.remove();
     };
 
-document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('mf_user'); currentUser=null; renderLogin(); };
+    // ---- Supabase Auth helpers ----
+    async function afterSupabaseLogin(user, restoreSection) {
+        // Перевіряємо чи вже є профіль у localStorage
+        const savedUser = localStorage.getItem('mf_user');
+        if (savedUser) {
+            try {
+                const parsed = JSON.parse(savedUser);
+                if (parsed.email === user.email && parsed.nickname) {
+                    currentUser = parsed;
+                    // Відновлюємо останній розділ після оновлення сторінки
+                    if (restoreSection) {
+                        const lastSection = localStorage.getItem('mf_current_section');
+                        if (lastSection && lastSection !== 'main' && lastSection !== 'login') {
+                            try { renderSection(lastSection); return; } catch(e) {}
+                        }
+                    }
+                    renderMainMenu();
+                    return;
+                }
+            } catch(e) {}
+        }
+        // Новий користувач — вибір нікнейму
+        currentUser = { nickname:'', email: user.email, role:'user', hasBasicPaid:true, lang:appLang, country:appCountry, currency:appCurrency, regDate: new Date().toISOString(), points: 0 };
+        saveAll();
+        renderPickNickname('supabase');
+    }
+
+    // ---- Email OTP ----
+    let otpSent = false;
+    document.getElementById('emailAuthBtn').onclick = async function() {
+        const email = document.getElementById('authEmail').value.trim();
+        const statusDiv = document.getElementById('authStatus');
+        const btn = document.getElementById('emailAuthBtn');
+
+        if (!otpSent) {
+            // Крок 1 — надсилаємо OTP
+            if (!email || !email.includes('@')) {
+                statusDiv.textContent = '❌ Введіть коректний email';
+                return;
+            }
+            btn.disabled = true;
+            btn.textContent = '⏳ Надсилаємо код...';
+            statusDiv.textContent = '';
+            const { error } = await supabaseClient.auth.signInWithOtp({ email });
+            if (error) {
+                statusDiv.textContent = '❌ ' + error.message;
+                btn.disabled = false;
+                btn.textContent = '📧 Увійти через Email';
+                return;
+            }
+            otpSent = true;
+            document.getElementById('authEmail').disabled = true;
+            document.getElementById('otpBlock').style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = '✅ Підтвердити код';
+            statusDiv.style.color = '#27ae60';
+            statusDiv.textContent = '📨 Код надіслано на ' + email;
+        } else {
+            // Крок 2 — перевіряємо OTP
+            const otp = document.getElementById('authOtp').value.trim();
+            if (otp.length !== 6) {
+                statusDiv.style.color = '#e74c3c';
+                statusDiv.textContent = '❌ Введіть 6-значний код';
+                return;
+            }
+            btn.disabled = true;
+            btn.textContent = '⏳ Перевіряємо...';
+            const { data, error } = await supabaseClient.auth.verifyOtp({ email, token: otp, type: 'email' });
+            if (error) {
+                statusDiv.style.color = '#e74c3c';
+                statusDiv.textContent = '❌ Невірний код. Спробуйте ще раз.';
+                btn.disabled = false;
+                btn.textContent = '✅ Підтвердити код';
+                return;
+            }
+            await afterSupabaseLogin(data.user);
+        }
+    };
+
+    // ---- Google OAuth ----
+    document.getElementById('googleBtn').onclick = async function() {
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: window.location.href }
+        });
+        if (error) alert('❌ ' + error.message);
+    };
+
+    // ---- Apple — заглушка ----
+    document.getElementById('appleBtn').onclick = function() {
+        alert('🍎 Вхід через Apple буде доступний найближчим часом');
+    };
+
+    // ---- Перевірка сесії при завантаженні ----
+    supabaseClient.auth.getSession().then(function(result) {
+        const session = result.data && result.data.session;
+        if (session && session.user) {
+            afterSupabaseLogin(session.user, true); // true = відновити секцію
+        }
+    });
+}
+
+// ========== ВИБІР НІКНЕЙМУ ПІСЛЯ ВХОДУ ==========
+function renderPickNickname(provider) {
+    const app = document.getElementById('appRoot');
+    app.innerHTML = `
+    <div class="card">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:2.5rem;">🎣</div>
+        <div style="font-size:1.3rem;font-weight:900;color:#1f3b4c;margin-top:8px;">Welcome to MagicFish!</div>
+        <div style="font-size:0.85rem;color:#888;margin-top:4px;">Signed in via ${provider === 'google' ? 'Google 🔵' : 'Apple 🍎'}</div>
+      </div>
+      <div style="background:#e8f5e9;border-radius:20px;padding:14px;margin-bottom:20px;font-size:0.85rem;color:#1b5e20;">
+        🎉 <strong>Вітаємо у MagicFish!</strong><br>
+        Оберіть унікальний нікнейм — так вас бачитимуть інші рибалки.<br>
+        <span style="opacity:0.8;">Доступ повністю безкоштовний 🐟</span>
+      </div>
+      <div class="input-group">
+        <label>🎣 Your unique nickname</label>
+        <input type="text" id="pickNick" placeholder="e.g. SomFisher, Щука_Pro, Carp_King" maxlength="24">
+        <div id="nickHint" style="font-size:0.78rem;color:#aaa;margin-top:4px;padding-left:12px;">2–24 characters, letters, numbers, _</div>
+      </div>
+      <button id="confirmNickBtn" class="btn btn-block" style="margin-top:8px;">✅ Confirm nickname →</button>
+    </div>`;
+
+    const nickInput = document.getElementById('pickNick');
+    const hint = document.getElementById('nickHint');
+    nickInput.oninput = () => {
+        const v = nickInput.value.trim();
+        const taken = ['admin','magicfish','support','gtr'];
+        if (v.length < 2) { hint.style.color='#aaa'; hint.textContent='2–24 characters'; }
+        else if (!/^[a-zA-Zа-яА-ЯіІїЇєЄёЁ0-9_]+$/.test(v)) { hint.style.color='#e74c3c'; hint.textContent='❌ Only letters, numbers, _'; }
+        else if (taken.includes(v.toLowerCase())) { hint.style.color='#e74c3c'; hint.textContent='❌ This nickname is taken'; }
+        else { hint.style.color='#27ae60'; hint.textContent=`✅ "${v}" is available!`; }
+    };
+
+    document.getElementById('confirmNickBtn').onclick = () => {
+        const nick = nickInput.value.trim();
+        if (nick.length < 2) { alert('Min 2 characters'); return; }
+        if (!/^[a-zA-Zа-яА-ЯіІїЇєЄёЁ0-9_]+$/.test(nick)) { alert('Only letters, numbers, _'); return; }
+        currentUser.nickname = nick;
+        saveAll();
+        currentUser.hasBasicPaid = true;
+        addPoints('first_login');
+        saveAll();
+        renderAskGeolocation();
+    };
+}
+
+// ========== ЗАПИТ ГЕОЛОКАЦІЇ ПІСЛЯ РЕЄСТРАЦІЇ ==========
+function renderAskGeolocation() {
+    const app = document.getElementById('appRoot');
+    app.innerHTML = '<div class="card" style="text-align:center;">' +
+      '<div style="font-size:3.5rem;margin-bottom:8px;">📍</div>' +
+      '<div style="font-size:1.25rem;font-weight:900;color:#1f3b4c;margin-bottom:8px;">Дозвольте визначити ваше місце</div>' +
+      '<div style="font-size:0.88rem;color:#555;margin-bottom:20px;line-height:1.6;">' +
+        'MagicFish використовує геолокацію для:<br>' +
+        '🎣 <b>Водойми поруч</b> — сортування за відстанню<br>' +
+        '🆘 <b>SOS</b> — точні координати для рятувальників<br>' +
+        '📍 <b>Чекіни</b> — підтвердження що ви на місці<br>' +
+        '🏕️ <b>Кемпінги і бази</b> — найближчі до вас' +
+      '</div>' +
+      '<button id="geoAllowBtn" class="btn btn-block" style="margin-bottom:12px;background:#27ae60;font-size:1rem;">' +
+        '📍 Дозволити геолокацію' +
+      '</button>' +
+      '<button id="geoSkipBtn" class="btn btn-block btn-secondary" style="font-size:0.9rem;">' +
+        '✖ Пропустити' +
+      '</button>' +
+      '<div id="geoStatus" style="margin-top:14px;font-size:0.82rem;color:#888;"></div>' +
+    '</div>';
+
+    document.getElementById('geoAllowBtn').onclick = function() {
+        var statusDiv = document.getElementById('geoStatus');
+        var allowBtn  = document.getElementById('geoAllowBtn');
+        allowBtn.disabled = true;
+        allowBtn.textContent = '⏳ Визначаємо...';
+        statusDiv.textContent = '';
+        if (!navigator.geolocation) {
+            statusDiv.innerHTML = '❌ Геолокація не підтримується браузером';
+            allowBtn.disabled = false;
+            allowBtn.textContent = '📍 Дозволити геолокацію';
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                currentLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy };
+                currentUser.locationDenied = false;
+                saveAll();
+                statusDiv.innerHTML = '✅ Визначено: ' + pos.coords.latitude.toFixed(4) + ', ' + pos.coords.longitude.toFixed(4) + ' (±' + Math.round(pos.coords.accuracy) + 'м)';
+                setTimeout(function() {
+                    const lastSection = localStorage.getItem('mf_current_section');
+                    if (lastSection && lastSection !== 'main' && lastSection !== 'login') {
+                        try { renderSection(lastSection); } catch(e) { renderMainMenu(); }
+                    } else { renderMainMenu(); }
+                }, 800);
+            },
+            function(err) {
+                statusDiv.innerHTML = '⚠️ Не вдалось визначити. Перевірте дозволи браузера.';
+                allowBtn.disabled = false;
+                allowBtn.textContent = '📍 Спробувати ще раз';
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    };
+
+    document.getElementById('geoSkipBtn').onclick = function() {
+        currentUser.locationDenied = true;
+        saveAll();
+        renderMainMenu();
+        setTimeout(function() { showGeoWarningBanner(); }, 300);
+    };
+}
+
+function showGeoWarningBanner() {
+    if (document.getElementById('geoWarningBanner')) return;
+    var warn = document.createElement('div');
+    warn.id = 'geoWarningBanner';
+    warn.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#e65100;color:#fff;padding:10px 16px;font-size:0.82rem;z-index:9999;display:flex;align-items:center;gap:10px;';
+    var span = document.createElement('span');
+    span.style.flex = '1';
+    span.textContent = '⚠️ Геолокація вимкнена — SOS, «Поруч» і чекіни будуть неточними';
+    var btn1 = document.createElement('button');
+    btn1.textContent = 'Увімкнути';
+    btn1.style.cssText = 'background:#fff;color:#e65100;border:none;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;';
+    btn1.onclick = function() { warn.remove(); renderAskGeolocation(); };
+    var btn2 = document.createElement('button');
+    btn2.textContent = '✕';
+    btn2.style.cssText = 'background:transparent;color:#fff;border:none;font-size:1.1rem;cursor:pointer;';
+    btn2.onclick = function() { warn.remove(); };
+    warn.appendChild(span);
+    warn.appendChild(btn1);
+    warn.appendChild(btn2);
+    document.body.appendChild(warn);
+}
+
+// ========== ГОЛОВНЕ МЕНЮ ==========
+// ========== ГЛОБАЛЬНИЙ ПОШУК ==========
+function globalSearch(q) {
+    var results = [];
+
+    // Водойми
+    if (typeof waterbodies !== 'undefined') {
+        waterbodies.forEach(function(w) {
+            if (w.name.toLowerCase().includes(q) || (w.city && w.city.toLowerCase().includes(q))) {
+                results.push({ emoji:'🗺️', title: w.name, subtitle: (w.city||'') + (w.paid ? ' · Платна' : ' · Безкоштовна'), section:'waterbodies' });
+            }
+        });
+    }
+
+    // Магазини
+    if (typeof fishStores !== 'undefined') {
+        fishStores.forEach(function(s) {
+            if (s.name.toLowerCase().includes(q) || (s.city && s.city.toLowerCase().includes(q))) {
+                results.push({ emoji:'🏪', title: s.name, subtitle: s.address || s.city || '', section:'stores' });
+            }
+        });
+    }
+
+    // Кемпінги
+    if (typeof campings !== 'undefined') {
+        campings.forEach(function(c) {
+            if (c.name.toLowerCase().includes(q)) {
+                results.push({ emoji:'🏕️', title: c.name, subtitle: c.region || '', section:'campings' });
+            }
+        });
+    }
+
+    // Бази відпочинку
+    if (typeof resorts !== 'undefined') {
+        resorts.forEach(function(r) {
+            if (r.name.toLowerCase().includes(q)) {
+                results.push({ emoji:'🏖️', title: r.name, subtitle: r.region || '', section:'resorts' });
+            }
+        });
+    }
+
+    // Звіти
+    var reports = JSON.parse(localStorage.getItem('mf_reports') || '[]');
+    reports.forEach(function(r) {
+        if ((r.title && r.title.toLowerCase().includes(q)) ||
+            (r.water && r.water.toLowerCase().includes(q)) ||
+            (r.author && r.author.toLowerCase().includes(q))) {
+            results.push({ emoji:'🐟', title: r.author + ': ' + (r.title||r.water||'Звіт'), subtitle: r.date + (r.water ? ' · ' + r.water : ''), section:'reports' });
+        }
+    });
+
+    // GTR товари
+    if (typeof gtrShopProducts !== 'undefined') {
+        gtrShopProducts.forEach(function(p) {
+            if (p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)) {
+                results.push({ emoji: p.emoji||'📦', title: p.name, subtitle: '₴' + convertPrice(p.price, p.currency||'UAH', 'UAH') + ' · $' + convertPrice(p.price, p.currency||'UAH', 'USD') + ' · GTR Shop', section:'alarm' });
+            }
+        });
+    }
+
+    // Розділи сайту
+    var sections = [
+        { emoji:'🗺️', title:'Водойми', subtitle:'Карта та список водойм', section:'waterbodies', keys:['водойм','озер','річк','ставок','водосховищ'] },
+        { emoji:'🔮', title:'Прогноз клювання', subtitle:'Коли краще ловити рибу', section:'forecast', keys:['прогноз','клюв','погод','ловити'] },
+        { emoji:'🏕️', title:'Кемпінги', subtitle:'Місця для відпочинку', section:'campings', keys:['кемпінг','намет','відпочин'] },
+        { emoji:'🏖️', title:'Бази відпочинку', subtitle:'Рибальські бази', section:'resorts', keys:['база','відпочин','котедж'] },
+        { emoji:'⭐', title:'Рейтинг приманок', subtitle:'Голосування за снасті', section:'lure_rating', keys:['рейтинг','приманк','воблер','блесн','силікон'] },
+        { emoji:'🔧', title:'Майстерня', subtitle:'Ремонт та саморобки', section:'workshop', keys:['майстерн','ремонт','саморобк'] },
+        { emoji:'❄️', title:'Зимова рибалка', subtitle:'Мормишка, жерлиці', section:'winter_fishing', keys:['зимов','мормишк','жерлиц','балансир','лід'] },
+        { emoji:'🎣', title:'Способи ловлі', subtitle:'Спінінг, фідер, нахлист', section:'fishing_methods', keys:['спінінг','фідер','нахлист','троллінг','джиг','карп'] },
+        { emoji:'🚤', title:'Човни та мотори', subtitle:'ПВХ, алюміній, мотори', section:'boats', keys:['човен','мотор','катер','пвх','алюмін'] },
+        { emoji:'🤿', title:'Підводне полювання', subtitle:'Рушниці, маски, костюми', section:'underwater', keys:['підводн','рушниц','маска','гідрокостюм'] },
+        { emoji:'📋', title:'Плани рибалок', subtitle:'Спільні виїзди', section:'fishing_plans', keys:['план','виїзд','спільн'] },
+        { emoji:'💬', title:'Форум', subtitle:'Обговорення', section:'forum', keys:['форум','обговор','питанн'] },
+        { emoji:'📢', title:'Дошка оголошень', subtitle:'Купити/продати', section:'marketplace', keys:['оголошен','купити','продати','барахолк'] },
+        { emoji:'🏪', title:'Магазини', subtitle:'Рибальські магазини України', section:'stores', keys:['магазин','купити','снасті'] },
+        { emoji:'🆘', title:'SOS', subtitle:'Екстрена допомога', section:'sos', keys:['sos','допомог','рятувал','екстрен'] },
+    ];
+
+    sections.forEach(function(s) {
+        if (s.title.toLowerCase().includes(q) || s.keys.some(function(k){ return k.includes(q) || q.includes(k); })) {
+            if (!results.find(function(r){ return r.section === s.section && r.title === s.title; })) {
+                results.push(s);
+            }
+        }
+    });
+
+    return results.slice(0, 8);
+}
+
+function renderMainMenu() {
+    localStorage.setItem('mf_current_section', 'main');
+    const app = document.getElementById('appRoot');
+    // Показуємо банер якщо геолокація відхилена і ще не визначена
+    if (currentUser?.locationDenied && !currentLocation) {
+        setTimeout(() => {
+            if (document.getElementById('geoWarningBanner')) return;
+            showGeoWarningBanner();
+        }, 400);
+    }
+    const activeTCount = getActiveTournamentsCount();
+    const totalP = getTotalParticipantsCount();
+    const flag = getCountryFlag();
+    const sym = getCurrencySymbol();
+
+    // Партнери — логотипи через текст/emoji (реальні SVG логотипи будуть після хостингу)
+    const partners = [
+        { name:'Shimano',    color:'#003087', bg:'#e8f0fb', emoji:'🎣' },
+        { name:'Daiwa',      color:'#c0392b', bg:'#fdf0f0', emoji:'🎣' },
+        { name:'Abu Garcia', color:'#1a1a2e', bg:'#f0f0f5', emoji:'🎣' },
+        { name:'Rapala',     color:'#e67e22', bg:'#fff3e0', emoji:'🐟' },
+        { name:'Fox Carp',   color:'#2c7a2c', bg:'#e8f5e9', emoji:'🦊' },
+        { name:'Nash',       color:'#1f3b4c', bg:'#e8f4fd', emoji:'🎣' },
+        { name:'Prologic',   color:'#6a1b9a', bg:'#f3e5f5', emoji:'🎣' },
+        { name:'Berkley',    color:'#c0392b', bg:'#fdf0f0', emoji:'🐟' },
+        { name:'Columbia',   color:'#1565c0', bg:'#e3f2fd', emoji:'🏕️' },
+        { name:'Humminbird', color:'#f57f17', bg:'#fffde7', emoji:'📡' },
+        { name:'Garmin',     color:'#007dc5', bg:'#e3f2fd', emoji:'🗺️' },
+        { name:'Primus',     color:'#e74c3c', bg:'#fdf0f0', emoji:'🔥' },
+    ];
+
+    let menuHtml = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="font-size:1.4rem;cursor:pointer;" onclick="showCurrencyRates()" title="Курси валют НБУ">
+        ${flag} <span style="font-size:0.8rem;color:#555;font-weight:600;">${appCountry} · ${appCurrency}</span>
+        <span style="font-size:0.7rem;color:#aaa;" id="rateIndicator"></span>
+      </div>
+      <div style="font-size:0.9rem;color:#1e3a3a;">👤 ${currentUser.nickname} | <span id="logoutBtn" style="text-decoration:underline;cursor:pointer;">${T('logout')}</span></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+        <div>
+          <h1 style="margin:0;">🎣 MagicFish</h1>
+          <div class="tagline" style="margin:0;">Рибальська спільнота</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:4px;">
+          <a href="#" onclick="alert('Google Play — незабаром! 🚀');return false;"
+            style="background:#1a1a2e;color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
+            <span style="font-size:1rem;">▶</span>
+            <div>
+              <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
+              <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">Google Play</div>
+            </div>
+          </a>
+          <a href="#" onclick="alert('App Store — незабаром! 🚀');return false;"
+            style="background:#1a1a2e;color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
+            <span style="font-size:1rem;"></span>
+            <div>
+              <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
+              <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">App Store</div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <!-- Глобальний пошук -->
+      <div style="position:relative;margin-bottom:14px;">
+        <input id="globalSearch" type="text" placeholder="${T('search')}" style="width:100%;padding:11px 40px 11px 16px;border-radius:40px;border:1.5px solid #c8e6c9;background:#f8fff8;font-size:0.88rem;box-sizing:border-box;outline:none;">
+        <div id="globalSearchClear" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:#aaa;font-size:1rem;display:none;">✕</div>
+        <div id="globalSearchResults" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:1000;max-height:320px;overflow-y:auto;border:1px solid #eee;"></div>
+      </div>
+      <div class="menu-grid">`;
+
+    const menuCards = `
+            <div class="menu-card" data-section="waterbodies" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🗺️<br><span>${T('menu_waterbodies')}</span></div>
+            <div class="menu-card" data-section="forecast" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔮<br><span>${T('menu_forecast')}</span></div>
+            <div class="menu-card" data-section="resorts" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🏖️<br><span>${T('menu_resorts')}</span></div>
+            <div class="menu-card" data-section="campings" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🏕️<br><span>${T('menu_campings')}</span></div>
+            <div class="menu-card" data-section="tours" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🚌<br><span>${T('menu_tours')}</span></div>
+            <div class="menu-card" data-section="marketplace" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📢<br><span>${T('menu_marketplace')}</span></div>
+            <div class="menu-card" data-section="stores" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🏪<br><span>${T('menu_stores')}</span></div>
+            <div class="menu-card" data-section="news" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📰<br><span>${T('menu_news')}</span></div>
+            <div class="menu-card" data-section="forum" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">💬<br><span>${T('menu_forum')}</span></div>
+            <div class="menu-card" data-section="cabinet" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">👤<br><span>${T('menu_cabinet')}</span></div>
+            <div class="menu-card" data-section="reports" style="background:#e8f5e9;border:1.5px solid #c8e6c9;padding:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;">
+              <div style="font-size:0.75rem;font-weight:700;color:#1f3b4c;margin-top:10px;">${T('menu_reports')}</div>
+              <div style="margin:4px 8px 8px;background:linear-gradient(135deg,#4a7fc1,#2a5298);border-radius:40px;display:flex;align-items:center;gap:0;overflow:hidden;width:90%;">
+                <div style="background:rgba(255,255,255,0.2);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:3px;">📍</div>
+                <div style="color:#fff;font-weight:900;font-size:0.72rem;letter-spacing:1px;padding:0 8px 0 4px;">CHECK IN</div>
+              </div>
+            </div>
+            <div class="menu-card" data-section="lure_rating" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">⭐<br><span>${T('menu_rating')}</span></div>
+            <div class="menu-card" data-section="workshop" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🔧<br><span>${T('menu_workshop')}</span></div>
+            <div class="menu-card" data-section="fishing_plans" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">📋<br><span>${T('menu_plans')}</span></div>
+            <div class="menu-card" data-section="winter_fishing" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">❄️<br><span>${T('menu_winter')}</span></div>
+            <div class="menu-card" data-section="fishing_methods" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🎣<br><span>${T('menu_methods')}</span></div>
+            <div class="menu-card" data-section="boats" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🚤<br><span>${T('menu_boats')}</span></div>
+            <div class="menu-card" data-section="underwater" style="background:#e8f5e9;border:1.5px solid #c8e6c9;">🤿<br><span>${T('menu_underwater')}</span></div>
+            <div class="menu-card" data-section="sos" style="background:#e74c3c;color:white;border:none;">🆘<br><span>${T('menu_sos')}</span></div>
+            <div class="menu-card" data-section="alarm" style="background:#1a1a2e;color:white;border:none;">📡<br><span>${T('menu_gtr')}</span></div>`;
+
+    if (currentUser.hasBasicPaid) {
+        menuHtml += menuCards;
+    } else {
+        menuHtml += menuCards;
+    }
+
+    menuHtml += `</div>
+
+      <!-- Рекламні банери -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
+
+        <!-- Банер 1 -->
+        <div id="banner1" style="border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;">
+          <div style="color:rgba(255,255,255,0.3);font-size:0.7rem;position:absolute;top:8px;left:10px;">${T('banner_ad')}</div>
+          <div style="font-size:2rem;margin-bottom:6px;">🎣</div>
+          <div style="color:#fff;font-weight:700;font-size:0.85rem;text-align:center;padding:0 8px;">${T('banner_your_ad')}</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:4px;">magicfish.club</div>
+        </div>
+
+        <!-- Банер 2 -->
+        <div id="banner2" style="border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#2e7d32,#1b5e20);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;">
+          <div style="color:rgba(255,255,255,0.3);font-size:0.7rem;position:absolute;top:8px;left:10px;">${T('banner_ad')}</div>
+          <div style="font-size:2rem;margin-bottom:6px;">🏪</div>
+          <div style="color:#fff;font-weight:700;font-size:0.85rem;text-align:center;padding:0 8px;">${T('banner_your_ad')}</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:4px;">magicfish.club</div>
+        </div>
+
+      </div>
+      <div style="text-align:center;margin-top:8px;margin-bottom:4px;">
+        <a href="mailto:ckbbuild@gmail.com" style="font-size:0.72rem;color:#aaa;text-decoration:none;">${T('banner_place_ad')}</a>
+      </div>
+
+      <!-- ПАРТНЕРИ + GTR PHANTOM -->
+    </div>`;
+
+    app.innerHTML = menuHtml;
+
+    // ===== ГЛОБАЛЬНИЙ ПОШУК =====
+    var searchInput = document.getElementById('globalSearch');
+    var searchResults = document.getElementById('globalSearchResults');
+    var searchClear = document.getElementById('globalSearchClear');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            var q = this.value.trim().toLowerCase();
+            if (searchClear) searchClear.style.display = q ? 'block' : 'none';
+            if (!q || q.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            var results = globalSearch(q);
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div style="padding:16px;text-align:center;color:#aaa;font-size:0.85rem;">' + T('nothing_found') + '</div>';
+            } else {
+                searchResults.innerHTML = results.map(function(r) {
+                    return '<div class="sr-item" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;gap:10px;" data-sec="' + r.section + '">' +
+                        '<div style="font-size:1.3rem;flex-shrink:0;">' + r.emoji + '</div>' +
+                        '<div><div style="font-weight:700;font-size:0.88rem;color:#1f3b4c;">' + r.title + '</div>' +
+                        '<div style="font-size:0.73rem;color:#888;">' + r.subtitle + '</div></div>' +
+                        '</div>';
+                }).join('');
+                Array.from(searchResults.querySelectorAll('.sr-item')).forEach(function(el) {
+                    el.onclick = function() {
+                        var sec = this.getAttribute('data-sec');
+                        searchResults.style.display = 'none';
+                        searchInput.value = '';
+                        if (searchClear) searchClear.style.display = 'none';
+                        renderSection(sec);
+                    };
+                });
+            }
+            searchResults.style.display = 'block';
+        });
+
+        if (searchClear) searchClear.onclick = function() {
+            searchInput.value = '';
+            searchResults.style.display = 'none';
+            searchClear.style.display = 'none';
+            searchInput.focus();
+        };
+    }
+
+    // Банери onclick
+    var b1 = document.getElementById('banner1');
+    var b2 = document.getElementById('banner2');
+    if (b1) b1.onclick = function() { window.location.href = 'mailto:ckbbuild@gmail.com?subject=Реклама на MagicFish'; };
+    if (b2) b2.onclick = function() { window.location.href = 'mailto:ckbbuild@gmail.com?subject=Реклама на MagicFish'; };
+
+    app.querySelectorAll('[data-section]').forEach(c => c.addEventListener('click', () => {
+        const s = c.dataset.section;
+        if (s==='tournaments') renderTournaments();
+        else renderSection(s);
+    }));
+    document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('mf_user'); currentUser=null; renderLogin(); };
     document.getElementById('becomePartnerBtn')?.addEventListener('click', () => {
         alert('📧 Для співпраці: partners@magicfish.app\n\nМи раді новим партнерам!');
     });
