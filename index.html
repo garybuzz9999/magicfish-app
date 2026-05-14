@@ -2840,7 +2840,41 @@ var gtrShopProducts = [
 ];
 
 function saveGTRProducts() {
-    // gtrShopProducts завжди з коду, не кешуємо
+    try {
+        localStorage.setItem('mf_gtr_products', JSON.stringify(gtrShopProducts));
+    } catch(e) {}
+}
+
+function loadGTRProducts() {
+    try {
+        var saved = localStorage.getItem('mf_gtr_products');
+        if (saved) {
+            var parsed = JSON.parse(saved);
+            // Мержимо: беремо базові дані з коду, але оновлюємо ціни та фото з localStorage
+            gtrShopProducts = gtrShopProducts.map(function(base) {
+                var stored = parsed.find(function(p){ return p.id === base.id; });
+                if (stored) {
+                    return Object.assign({}, base, {
+                        price:     stored.price     !== undefined ? stored.price     : base.price,
+                        priceUSD:  stored.priceUSD  !== undefined ? stored.priceUSD  : base.priceUSD,
+                        priceEUR:  stored.priceEUR  !== undefined ? stored.priceEUR  : base.priceEUR,
+                        available: stored.available !== undefined ? stored.available : base.available,
+                        photos:    stored.photos    || base.photos || [],
+                        name:      stored.name      || base.name,
+                        desc:      stored.desc      || base.desc,
+                        emoji:     stored.emoji     || base.emoji,
+                    });
+                }
+                return base;
+            });
+            // Додаємо нові товари що були додані через адмін-панель
+            parsed.forEach(function(stored) {
+                if (!gtrShopProducts.find(function(b){ return b.id === stored.id; })) {
+                    gtrShopProducts.push(stored);
+                }
+            });
+        }
+    } catch(e) {}
 }
 
 function renderGTRShopInto(el) {
@@ -6174,7 +6208,7 @@ function renderSection(section) {
 
 // ========== СТАРТ ==========
 loadAll();
-// ТЕСТ-РЕЖИМ: вхід пропущено
+loadGTRProducts();
 if (!currentUser) {
     currentUser = { nickname:'Тест', email:'test@test.com', role:'user', hasBasicPaid:true, lang:'uk', country:'UA', currency:'UAH' };
     saveAll();
