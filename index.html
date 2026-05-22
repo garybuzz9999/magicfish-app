@@ -6277,10 +6277,11 @@ function renderSection(section) {
 // ========== СТАРТ ==========
 loadAll();
 loadGTRProducts();
-// Увага: НЕ створюємо тестового юзера автоматично
 updateSubscriptionStatus();
+
 // Старт додатку — перевіряємо авторизацію
-(function() {
+(async function() {
+    // Якщо є збережений юзер — одразу показуємо меню
     const savedUser = localStorage.getItem('mf_user');
     const lastSection = localStorage.getItem('mf_current_section');
 
@@ -6300,6 +6301,34 @@ updateSubscriptionStatus();
             }
         } catch(e) {}
     }
+
+    // Перевіряємо Supabase сесію (після Google OAuth редиректу)
+    if (typeof supabaseClient !== 'undefined') {
+        try {
+            const { data } = await supabaseClient.auth.getSession();
+            if (data && data.session && data.session.user) {
+                const u = data.session.user;
+                // Перевіряємо чи є збережений профіль
+                const saved = localStorage.getItem('mf_user');
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        if (parsed.email === u.email && parsed.nickname) {
+                            currentUser = parsed;
+                            renderMainMenu();
+                            return;
+                        }
+                    } catch(e) {}
+                }
+                // Новий юзер — вибір нікнейму
+                currentUser = { nickname:'', email: u.email, role:'user', hasBasicPaid:true, lang:appLang, country:appCountry, currency:appCurrency, regDate: new Date().toISOString(), points: 0 };
+                saveAll();
+                renderPickNickname('google');
+                return;
+            }
+        } catch(e) {}
+    }
+
     // Немає юзера — показуємо логін
     renderLogin();
 })();
