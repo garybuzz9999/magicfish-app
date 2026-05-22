@@ -1015,11 +1015,12 @@ function canAddListing() {
     // Base access (user) gets 50 listings
     return myListings < 50;
 }
-function myActiveListingsCount() { return listings.filter(l=>l.seller===currentUser.nickname&&l.status==='active').length; }
+function myActiveListingsCount() { if (!currentUser) return 0; return listings.filter(l=>l.seller===currentUser.nickname&&l.status==='active').length; }
 function getActiveTournamentsCount() { return tournaments.filter(t=>new Date(t.date)>=new Date()).length; }
 function getTotalParticipantsCount() { return tournaments.reduce((s,t)=>s+(t.participants?t.participants.length:0),0); }
 
 function updateSubscriptionStatus() {
+    if (!currentUser) return;
     const now = new Date();
     const roles = ['seller','store','waterowner','manufacturer'];
     const expFields = { store:'storeExpiry', waterowner:'waterOwnerExpiry', manufacturer:'manufacturerExpiry', camping:'campingExpiry', resort:'resortExpiry', travelagency:'travelagencyExpiry' };
@@ -2508,6 +2509,7 @@ function globalSearch(q) {
 }
 
 function renderMainMenu() {
+    if (!currentUser) { renderLogin(); return; }
     localStorage.setItem('mf_current_section', 'main');
     const app = document.getElementById('appRoot');
     // Показуємо банер якщо геолокація відхилена і ще не визначена
@@ -6250,10 +6252,7 @@ function renderSection(section) {
 // ========== СТАРТ ==========
 loadAll();
 loadGTRProducts();
-if (!currentUser) {
-    currentUser = { nickname:'Тест', email:'test@test.com', role:'user', hasBasicPaid:true, lang:'uk', country:'UA', currency:'UAH' };
-    saveAll();
-}
+// Увага: НЕ створюємо тестового юзера автоматично
 updateSubscriptionStatus();
 // Старт додатку — перевіряємо авторизацію
 (function() {
@@ -6265,7 +6264,6 @@ updateSubscriptionStatus();
             const user = JSON.parse(savedUser);
             if (user && user.nickname && user.email) {
                 currentUser = user;
-                // Відновлюємо останній розділ
                 if (window.location.hash === '#admin') {
                     renderAdmin();
                 } else if (lastSection && lastSection !== 'main' && lastSection !== 'login') {
