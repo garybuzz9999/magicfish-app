@@ -77,9 +77,9 @@
     </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: linear-gradient(145deg, #c0c2c0 0%, #a0a3a0 100%); font-family: system-ui, sans-serif; min-height: 100vh; padding: 16px; }
+        body { background: linear-gradient(145deg, #c0c2c0 0%, #a0a3a0 100%); font-family: system-ui, sans-serif; min-height: 100vh; padding: 6px; }
         .container { max-width: 700px; margin: 0 auto; }
-        .card { background: rgba(255,255,255,0.96); border-radius: 48px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        .card { background: rgba(255,255,255,0.96); border-radius: 20px; padding: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); margin-bottom: 10px; }
         h1 { font-size: 2rem; background: linear-gradient(135deg, #1f3b4c, #2a5f7a); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 8px; }
         .tagline { color: #2c3e2f; font-weight: 500; border-left: 3px solid #f39c12; padding-left: 12px; margin-bottom: 24px; }
         .btn { background: #f39c12; border: none; border-radius: 40px; padding: 12px 20px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; display: inline-block; text-align: center; color: #1a0a00; }
@@ -102,8 +102,11 @@
         .close-modal { background: #eee; color: #333; border: none; padding: 10px; border-radius: 40px; margin-top: 16px; width: 100%; cursor: pointer; font-weight: 600; }
 
         /* ===== MENU ===== */
-        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
-        .menu-card { background: white; border-radius: 28px; padding: 16px 8px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-size: 0.9rem; position: relative; }
+        .menu-card br + span { font-size: 0.68rem; line-height: 1.2; display: block; margin-top: 2px; }
+        .menu-grid { overflow: hidden; }
+        @media (max-width: 400px) { .menu-grid { gap: 5px; } .menu-card { padding: 8px 2px; font-size: 0.65rem; border-radius: 12px; } }
+        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: 10px; }
+        .menu-card { background: white; border-radius: 16px; padding: 10px 4px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.08); font-size: 0.72rem; position: relative; }
         .menu-card:hover { transform: scale(0.97); background: #fef5e0; }
         .menu-card-tournament { background: linear-gradient(135deg, #ff6b00, #ffd700); color: #1a0a00; font-weight: 900; border-radius: 28px; padding: 16px 8px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 20px rgba(255,107,0,0.5); font-size: 0.95rem; position: relative; animation: pulseGold 2s infinite; }
         .menu-card-tournament:hover { transform: scale(1.04); }
@@ -2488,42 +2491,39 @@ function renderMainMenu() {
     ];
 
     let menuHtml = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div style="font-size:1.4rem;cursor:pointer;" onclick="showCurrencyRates()" title="Курси валют НБУ">
-        ${flag} <span style="font-size:0.8rem;color:#555;font-weight:600;">${appCountry} · ${appCurrency}</span>
-        <span style="font-size:0.7rem;color:#aaa;" id="rateIndicator"></span>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding:0 2px;">
+      <div style="font-size:1rem;cursor:pointer;" onclick="showCurrencyRates()" title="Курси валют НБУ">
+        ${flag} <span style="font-size:0.75rem;color:#555;font-weight:600;">${appCountry} · ${appCurrency}</span>
+        <span style="font-size:0.65rem;color:#aaa;" id="rateIndicator"></span>
       </div>
-      <div style="font-size:0.9rem;color:#1e3a3a;">👤 ${currentUser.nickname} | <span id="logoutBtn" style="text-decoration:underline;cursor:pointer;">${T('logout')}</span></div>
+      <div style="font-size:0.8rem;color:#1e3a3a;">👤 ${currentUser.nickname} | <span id="logoutBtn" style="text-decoration:underline;cursor:pointer;">${T('logout')}</span></div>
     </div>
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
-        <div>
-          <h1 style="margin:0;">🎣 MagicFish</h1>
-          <div class="tagline" style="margin:0;">Рибальська спільнота</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:1.4rem;">🎣</span>
+          <div>
+            <div style="font-size:1.2rem;font-weight:900;color:#1f3b4c;line-height:1.1;">MagicFish</div>
+            <div style="font-size:0.7rem;color:#888;border-left:2px solid #f39c12;padding-left:6px;">Рибальська спільнота</div>
+          </div>
         </div>
-        <div style="display:flex;gap:6px;margin-top:4px;">
+        <div style="display:flex;gap:4px;">
           <a href="#" onclick="alert('Google Play — незабаром! 🚀');return false;"
-            style="background:#1a1a2e;color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
-            <span style="font-size:1rem;">▶</span>
-            <div>
-              <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
-              <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">Google Play</div>
-            </div>
+            style="background:#1a1a2e;color:white;border-radius:8px;padding:4px 7px;text-decoration:none;display:flex;align-items:center;gap:3px;">
+            <span style="font-size:0.8rem;">▶</span>
+            <div style="line-height:1.1;"><div style="font-size:0.38rem;opacity:0.7;">GET IT ON</div><div style="font-size:0.58rem;font-weight:800;">Google Play</div></div>
           </a>
           <a href="#" onclick="alert('App Store — незабаром! 🚀');return false;"
-            style="background:#1a1a2e;color:white;border-radius:12px;padding:6px 10px;text-decoration:none;display:flex;align-items:center;gap:5px;">
-            <span style="font-size:1rem;"></span>
-            <div>
-              <div style="font-size:0.5rem;opacity:0.7;line-height:1;">Завантажити в</div>
-              <div style="font-size:0.72rem;font-weight:800;line-height:1.2;">App Store</div>
-            </div>
+            style="background:#1a1a2e;color:white;border-radius:8px;padding:4px 7px;text-decoration:none;display:flex;align-items:center;gap:3px;">
+            <span style="font-size:0.8rem;"></span>
+            <div style="line-height:1.1;"><div style="font-size:0.38rem;opacity:0.7;">DOWNLOAD ON</div><div style="font-size:0.58rem;font-weight:800;">App Store</div></div>
           </a>
         </div>
       </div>
       <!-- Глобальний пошук -->
-      <div style="position:relative;margin-bottom:14px;">
-        <input id="globalSearch" type="text" placeholder="${T('search')}" style="width:100%;padding:11px 40px 11px 16px;border-radius:40px;border:1.5px solid #c8e6c9;background:#f8fff8;font-size:0.88rem;box-sizing:border-box;outline:none;">
-        <div id="globalSearchClear" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:#aaa;font-size:1rem;display:none;">✕</div>
+      <div style="position:relative;margin-bottom:10px;">
+        <input id="globalSearch" type="text" placeholder="${T('search')}" style="width:100%;padding:9px 36px 9px 14px;border-radius:40px;border:1.5px solid #c8e6c9;background:#f8fff8;font-size:0.82rem;box-sizing:border-box;outline:none;">
+        <div id="globalSearchClear" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#aaa;font-size:0.9rem;display:none;">✕</div>
         <div id="globalSearchResults" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:1000;max-height:320px;overflow-y:auto;border:1px solid #eee;"></div>
       </div>
       <div class="menu-grid">`;
