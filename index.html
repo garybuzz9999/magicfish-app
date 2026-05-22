@@ -2320,13 +2320,17 @@ function renderPickNickname(provider) {
         else { hint.style.color='#27ae60'; hint.textContent=`✅ "${v}" is available!`; }
     };
 
-    document.getElementById('confirmNickBtn').onclick = () => {
+    document.getElementById('confirmNickBtn').onclick = async () => {
         const nick = nickInput.value.trim();
         if (nick.length < 2) { alert('Min 2 characters'); return; }
         if (!/^[a-zA-Zа-яА-ЯіІїЇєЄёЁ0-9_]+$/.test(nick)) { alert('Only letters, numbers, _'); return; }
         currentUser.nickname = nick;
-        saveAll();
         currentUser.hasBasicPaid = true;
+        // Зберігаємо окремо по email-ключу щоб знайти при наступному вході
+        if (currentUser.email) {
+            localStorage.setItem('mf_nick_' + currentUser.email, nick);
+        }
+        saveAll();
         addPoints('first_login');
         saveAll();
         renderAskGeolocation();
@@ -6288,7 +6292,7 @@ if (typeof supabaseClient !== 'undefined') {
             // Якщо вже залогінений з нікнеймом — не чіпаємо
             if (currentUser && currentUser.nickname) return;
 
-            // Перевіряємо localStorage
+            // Шукаємо збережений профіль по email
             const saved = localStorage.getItem('mf_user');
             if (saved) {
                 try {
@@ -6299,6 +6303,15 @@ if (typeof supabaseClient !== 'undefined') {
                         return;
                     }
                 } catch(e) {}
+            }
+
+            // Шукаємо нікнейм по email-ключу (резервний варіант)
+            const savedNick = localStorage.getItem('mf_nick_' + u.email);
+            if (savedNick) {
+                currentUser = { nickname: savedNick, email: u.email, role:'user', hasBasicPaid:true, lang:appLang, country:appCountry, currency:appCurrency, regDate: new Date().toISOString(), points: 0 };
+                saveAll();
+                renderMainMenu();
+                return;
             }
 
             // Новий юзер — вибір нікнейму
