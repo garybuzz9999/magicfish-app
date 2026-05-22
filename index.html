@@ -1651,7 +1651,7 @@ const I18N = {
         // Рекламні банери
         banner_ad: 'РЕКЛАМА',
         banner_your_ad: 'Ваша реклама тут',
-        banner_place_ad: '📧 Розмістити рекламу → ckbbuild@gmail.com',
+        banner_place_ad: '📧 Розмістити рекламу → magicfishapp@gmail.com',
         // Партнери
         become_partner: '🤝 Стати партнером',
         // Завантажити в
@@ -1857,7 +1857,7 @@ const I18N = {
         // Ad banners
         banner_ad: 'AD',
         banner_your_ad: 'Your ad here',
-        banner_place_ad: '📧 Place ad → ckbbuild@gmail.com',
+        banner_place_ad: '📧 Place ad → magicfishapp@gmail.com',
         // Partners
         become_partner: '🤝 Become a partner',
         // Download
@@ -2130,6 +2130,7 @@ function renderLogin() {
                       : '1️⃣ Tap <b>Google</b> or <b>Apple</b> — passwordless sign in<br>2️⃣ Pick a unique <b>fishing nickname</b><br>3️⃣ Allow location — find nearby spots<br>4️⃣ Check in "biting / not biting", log catches, chat<br>5️⃣ One-tap <b>SOS</b> in emergencies<br>6️⃣ 🆓 <b>Free listings for businesses</b> — shops, resorts, tournaments<br>7️⃣ 🆓 <b>Free listings for private sellers</b> — used gear, boats, motors'}
                 </div>
                 <button class="close-modal" style="width:100%;padding:12px;background:#1f3b4c;color:#fff;border:none;border-radius:40px;cursor:pointer;font-weight:700;">${isUk ? 'Зрозуміло 🎣' : 'Got it 🎣'}</button>
+                <a href="mailto:magicfishapp@gmail.com?subject=Питання MagicFish" style="display:block;text-align:center;margin-top:12px;font-size:0.78rem;color:#888;text-decoration:none;">✉️ magicfishapp@gmail.com</a>
             </div>
         `);
         modal.querySelector('.close-modal').onclick = () => modal.remove();
@@ -2638,7 +2639,14 @@ function renderMainMenu() {
 
       </div>
       <div style="text-align:center;margin-top:8px;margin-bottom:4px;">
-        <a href="mailto:ckbbuild@gmail.com" style="font-size:0.72rem;color:#aaa;text-decoration:none;">${T('banner_place_ad')}</a>
+        <a href="mailto:magicfishapp@gmail.com" style="font-size:0.72rem;color:#aaa;text-decoration:none;">${T('banner_place_ad')}</a>
+      </div>
+
+      <!-- Підтримка -->
+      <div style="text-align:center;margin:10px 0 4px;">
+        <a href="mailto:magicfishapp@gmail.com?subject=Питання MagicFish" style="display:inline-flex;align-items:center;gap:6px;background:#f5f7f0;border:1px solid #dde8dd;border-radius:40px;padding:8px 18px;text-decoration:none;color:#1f3b4c;font-size:0.78rem;font-weight:600;">
+          ✉️ ${appLang==='uk' ? 'Підтримка: magicfishapp@gmail.com' : 'Support: magicfishapp@gmail.com'}
+        </a>
       </div>
 
       <!-- ПАРТНЕРИ + GTR PHANTOM -->
@@ -2694,8 +2702,8 @@ function renderMainMenu() {
     // Банери onclick
     var b1 = document.getElementById('banner1');
     var b2 = document.getElementById('banner2');
-    if (b1) b1.onclick = function() { window.location.href = 'mailto:ckbbuild@gmail.com?subject=Реклама на MagicFish'; };
-    if (b2) b2.onclick = function() { window.location.href = 'mailto:ckbbuild@gmail.com?subject=Реклама на MagicFish'; };
+    if (b1) b1.onclick = function() { window.location.href = 'mailto:magicfishapp@gmail.com?subject=Реклама на MagicFish'; };
+    if (b2) b2.onclick = function() { window.location.href = 'mailto:magicfishapp@gmail.com?subject=Реклама на MagicFish'; };
 
     app.querySelectorAll('[data-section]').forEach(c => c.addEventListener('click', () => {
         const s = c.dataset.section;
@@ -3525,7 +3533,7 @@ window.showPhantomLicenseModal = function() {
             `Дата: ${new Date().toLocaleString('uk-UA')}\n\n` +
             `Активуйте в Supabase → phantom_devices → is_active = true`
         );
-        window.open(`mailto:ckbbuild@gmail.com?subject=${subject}&body=${body}`);
+        window.open(`mailto:magicfishapp@gmail.com?subject=${subject}&body=${body}`);
 
         modal.remove();
         alert('✅ Заявку надіслано!\n\nЛіцензія буде активована протягом 24 годин.\nСтатус можна перевірити в Налаштуваннях GTR Phantom.');
@@ -4567,7 +4575,7 @@ function renderResorts() {
                 </div>
                 ${!b.site ? `<div style="margin-top:10px;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
                     <div style="color:white;font-size:0.85rem;font-weight:800;">Немає свого сайту? Зробимо!</div>
-                    <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${b.name}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
+                    <a href="mailto:magicfishapp@gmail.com?subject=Реклама MagicFish — ${b.name}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
                 </div>` : ''}
 
                 <!-- Останні відгуки -->
@@ -4984,7 +4992,7 @@ function renderWaterbodies() {
                 </div>
                 ${!w.site ? `<div style="margin-top:10px;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
                     <div style="color:white;font-size:0.85rem;font-weight:800;">Немає свого сайту? Зробимо!</div>
-                    <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${w.name}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
+                    <a href="mailto:magicfishapp@gmail.com?subject=Реклама MagicFish — ${w.name}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
                 </div>` : ''}
                 <div style="display:none;">
                 </div>
@@ -5383,7 +5391,7 @@ function renderCampings() {
                     </div>
                     ${!c.site ? `<div style="margin-top:10px;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
                         <div style="color:white;font-size:0.85rem;font-weight:800;">Немає свого сайту? Зробимо!</div>
-                        <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${c.name}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
+                        <a href="mailto:magicfishapp@gmail.com?subject=Реклама MagicFish — ${c.name}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
                     </div>` : ''}
                     ${reviews.length ? `<div style="margin-top:10px;border-top:1px solid #f0f0f0;padding-top:8px;">${reviews.slice(-2).reverse().map(r=>`<div style="font-size:0.82rem;margin-bottom:6px;"><span style="font-weight:700;color:#1f3b4c;">👤 ${r.author}</span> <span>${'👑'.repeat(r.rating||0)}</span><div style="color:#666;margin-top:2px;">${r.text}</div></div>`).join('')}</div>` : ''}
                 </div>
@@ -5460,7 +5468,7 @@ function renderTours() {
             </div>
             ${!t.site ? `<div style="margin-top:10px;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
                 <div style="color:white;font-size:0.85rem;font-weight:800;">Немає свого сайту? Зробимо!</div>
-                <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${t.agency}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
+                <a href="mailto:magicfishapp@gmail.com?subject=Реклама MagicFish — ${t.agency}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
             </div>` : ''}
         </div>`;
     }).join('') || '<div style="text-align:center;padding:40px;color:#aaa;">🚌 Турів поки немає</div>';
@@ -5645,7 +5653,7 @@ function renderStores() {
                     <div style="color:white;font-size:0.78rem;">
                         <div style="font-weight:800;font-size:0.9rem;">${appLang==='uk'?'Немає свого сайту? Зробимо!':'No website? We\'ll make one!'}</div>
                     </div>
-                    <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${encodeURIComponent(s.name)}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
+                    <a href="mailto:magicfishapp@gmail.com?subject=Реклама MagicFish — ${encodeURIComponent(s.name)}" style="background:#f39c12;color:#1a0a00;padding:8px 14px;border-radius:40px;text-decoration:none;font-size:0.78rem;font-weight:900;white-space:nowrap;margin-left:10px;">📧 Написати</a>
                 </div>` : ''}
                 </div>
                 ${reviews.length ? `<div style="margin-top:10px;border-top:1px solid #f0f0f0;padding-top:8px;">${reviews.slice(-2).reverse().map(r=>`<div style="font-size:0.82rem;margin-bottom:6px;"><span style="font-weight:700;color:#1f3b4c;">👤 ${r.author}</span> <span>${'👑'.repeat(r.rating||0)}</span><div style="color:#666;margin-top:2px;">${r.text}</div></div>`).join('')}</div>` : ''}
@@ -5666,9 +5674,9 @@ window.showMagicFishAd = function(storeName) {
             Хочете розмістити сайт, рекламу або акції на MagicFish?<br>
             Зв'яжіться з нами — це просто і вигідно!
         </div>
-        <a href="mailto:ckbbuild@gmail.com?subject=Реклама MagicFish — ${storeName}" 
+        <a href="mailto:magicfishapp@gmail.com?subject=Реклама MagicFish — ${storeName}" 
             style="display:block;background:#1f3b4c;color:white;text-align:center;padding:14px;border-radius:40px;text-decoration:none;font-weight:900;font-size:0.95rem;margin-bottom:8px;">
-            📧 ckbbuild@gmail.com
+            📧 magicfishapp@gmail.com
         </a>
         <button class="close-modal" style="width:100%;padding:12px;background:#f5f5f5;border:none;border-radius:40px;cursor:pointer;font-weight:700;">Закрити</button>
     `);
@@ -5705,7 +5713,7 @@ window.openStoreReview = function(name) {
 function renderNews() {
     localStorage.setItem('mf_current_section', 'news');
     const app = document.getElementById('appRoot');
-    const isAdmin = currentUser && (currentUser.email==='ckbbuild@gmail.com' || currentUser.role==='admin');
+    const isAdmin = currentUser && (currentUser.email==='magicfishapp@gmail.com' || currentUser.role==='admin');
     app.innerHTML = `
     <div class="nickname-header">👤 ${currentUser.nickname}</div>
     <div class="card">
@@ -5794,9 +5802,26 @@ function renderCabinet() {
             <button class="cabinet-tab" id="tabPartner">🤝 ${appLang==='uk'?'Партнерство':'Partnership'}</button>
         </div>
         <div id="cabinetContent"></div>
-        <button id="backCabinet" class="btn btn-block btn-secondary" style="margin-top:16px;">${T('back')}</button>
+
+        <!-- Підтримка + вийти -->
+        <a href="mailto:magicfishapp@gmail.com?subject=Питання від ${u.nickname}" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#f0f8ff;border:1px solid #b3d4f0;border-radius:14px;padding:12px;text-decoration:none;color:#1565c0;font-size:0.85rem;font-weight:600;margin-top:14px;">
+          ✉️ ${appLang==='uk' ? 'Написати підтримку' : 'Contact support'} · magicfishapp@gmail.com
+        </a>
+        <button id="logoutCabinetBtn" style="width:100%;background:#fce4ec;border:none;border-radius:14px;padding:12px;color:#c62828;font-weight:700;cursor:pointer;margin-top:8px;font-size:0.85rem;">
+          🚪 ${appLang==='uk' ? 'Вийти з акаунту' : 'Log out'}
+        </button>
+        <button id="backCabinet" class="btn btn-block btn-secondary" style="margin-top:8px;">${T('back')}</button>
     </div>`;
     document.getElementById('backCabinet').onclick = () => renderMainMenu();
+    document.getElementById('logoutCabinetBtn').onclick = async () => {
+        localStorage.removeItem('mf_user');
+        localStorage.removeItem('mf_current_section');
+        currentUser = null;
+        if (typeof supabaseClient !== 'undefined') {
+            try { await supabaseClient.auth.signOut(); } catch(e) {}
+        }
+        renderLogin();
+    };
     function showMyAds() {
         document.querySelectorAll('.cabinet-tab').forEach(t=>t.classList.remove('active'));
         document.getElementById('tabMyAds').classList.add('active');
