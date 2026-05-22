@@ -6279,9 +6279,35 @@ loadAll();
 loadGTRProducts();
 updateSubscriptionStatus();
 
+// Слухаємо зміни сесії Supabase (спрацьовує після OAuth редиректу)
+if (typeof supabaseClient !== 'undefined') {
+    supabaseClient.auth.onAuthStateChange(async function(event, session) {
+        if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && session.user) {
+            const u = session.user;
+            // Якщо вже є збережений профіль з нікнеймом
+            const saved = localStorage.getItem('mf_user');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.email === u.email && parsed.nickname) {
+                        currentUser = parsed;
+                        renderMainMenu();
+                        return;
+                    }
+                } catch(e) {}
+            }
+            // Новий юзер — вибір нікнейму
+            if (!currentUser || !currentUser.nickname) {
+                currentUser = { nickname:'', email: u.email, role:'user', hasBasicPaid:true, lang:appLang, country:appCountry, currency:appCurrency, regDate: new Date().toISOString(), points: 0 };
+                saveAll();
+                renderPickNickname('google');
+            }
+        }
+    });
+}
+
 // Старт додатку — перевіряємо авторизацію
 (async function() {
-    // Якщо є збережений юзер — одразу показуємо меню
     const savedUser = localStorage.getItem('mf_user');
     const lastSection = localStorage.getItem('mf_current_section');
 
@@ -6302,13 +6328,12 @@ updateSubscriptionStatus();
         } catch(e) {}
     }
 
-    // Перевіряємо Supabase сесію (після Google OAuth редиректу)
+    // Перевіряємо Supabase сесію
     if (typeof supabaseClient !== 'undefined') {
         try {
             const { data } = await supabaseClient.auth.getSession();
             if (data && data.session && data.session.user) {
                 const u = data.session.user;
-                // Перевіряємо чи є збережений профіль
                 const saved = localStorage.getItem('mf_user');
                 if (saved) {
                     try {
@@ -6320,7 +6345,6 @@ updateSubscriptionStatus();
                         }
                     } catch(e) {}
                 }
-                // Новий юзер — вибір нікнейму
                 currentUser = { nickname:'', email: u.email, role:'user', hasBasicPaid:true, lang:appLang, country:appCountry, currency:appCurrency, regDate: new Date().toISOString(), points: 0 };
                 saveAll();
                 renderPickNickname('google');
@@ -6329,7 +6353,6 @@ updateSubscriptionStatus();
         } catch(e) {}
     }
 
-    // Немає юзера — показуємо логін
     renderLogin();
 })();
 
