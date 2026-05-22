@@ -6284,7 +6284,11 @@ if (typeof supabaseClient !== 'undefined') {
     supabaseClient.auth.onAuthStateChange(async function(event, session) {
         if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && session.user) {
             const u = session.user;
-            // Якщо вже є збережений профіль з нікнеймом
+
+            // Якщо вже залогінений з нікнеймом — не чіпаємо
+            if (currentUser && currentUser.nickname) return;
+
+            // Перевіряємо localStorage
             const saved = localStorage.getItem('mf_user');
             if (saved) {
                 try {
@@ -6296,12 +6300,11 @@ if (typeof supabaseClient !== 'undefined') {
                     }
                 } catch(e) {}
             }
+
             // Новий юзер — вибір нікнейму
-            if (!currentUser || !currentUser.nickname) {
-                currentUser = { nickname:'', email: u.email, role:'user', hasBasicPaid:true, lang:appLang, country:appCountry, currency:appCurrency, regDate: new Date().toISOString(), points: 0 };
-                saveAll();
-                renderPickNickname('google');
-            }
+            currentUser = { nickname:'', email: u.email, role:'user', hasBasicPaid:true, lang:appLang, country:appCountry, currency:appCurrency, regDate: new Date().toISOString(), points: 0 };
+            saveAll();
+            renderPickNickname('google');
         }
     });
 }
