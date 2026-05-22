@@ -2701,7 +2701,15 @@ function renderMainMenu() {
         if (s==='tournaments') renderTournaments();
         else renderSection(s);
     }));
-    document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('mf_user'); currentUser=null; renderLogin(); };
+    document.getElementById('logoutBtn').onclick = async () => {
+        localStorage.removeItem('mf_user');
+        localStorage.removeItem('mf_current_section');
+        currentUser = null;
+        if (typeof supabaseClient !== 'undefined') {
+            try { await supabaseClient.auth.signOut(); } catch(e) {}
+        }
+        renderLogin();
+    };
     document.getElementById('becomePartnerBtn')?.addEventListener('click', () => {
         alert('📧 Для співпраці: partners@magicfish.app\n\nМи раді новим партнерам!');
     });
