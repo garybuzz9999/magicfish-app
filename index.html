@@ -2249,7 +2249,7 @@ function renderLogin() {
         }
         const { error } = await supabaseClient.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: window.location.href }
+            options: { redirectTo: 'https://magicfish.club' }
         });
         if (error) { alert('❌ ' + error.message); this.style.opacity = ''; renderLogin(); }
     };
