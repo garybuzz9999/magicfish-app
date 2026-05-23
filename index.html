@@ -2626,20 +2626,10 @@ function renderMainMenu() {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
 
         <!-- Банер 1 -->
-        <div id="banner1" style="border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#1f3b4c,#2a5f7a);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;">
-          <div style="color:rgba(255,255,255,0.3);font-size:0.7rem;position:absolute;top:8px;left:10px;">${T('banner_ad')}</div>
-          <div style="font-size:2rem;margin-bottom:6px;">🎣</div>
-          <div style="color:#fff;font-weight:700;font-size:0.85rem;text-align:center;padding:0 8px;">${T('banner_your_ad')}</div>
-          <div style="color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:4px;">magicfish.club</div>
-        </div>
+        <div id="banner1" style="border-radius:16px;overflow:hidden;min-height:130px;cursor:pointer;position:relative;"></div>
 
         <!-- Банер 2 -->
-        <div id="banner2" style="border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#2e7d32,#1b5e20);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;">
-          <div style="color:rgba(255,255,255,0.3);font-size:0.7rem;position:absolute;top:8px;left:10px;">${T('banner_ad')}</div>
-          <div style="font-size:2rem;margin-bottom:6px;">🏪</div>
-          <div style="color:#fff;font-weight:700;font-size:0.85rem;text-align:center;padding:0 8px;">${T('banner_your_ad')}</div>
-          <div style="color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:4px;">magicfish.club</div>
-        </div>
+        <div id="banner2" style="border-radius:16px;overflow:hidden;min-height:130px;cursor:pointer;position:relative;"></div>
 
       </div>
       <div style="text-align:center;margin-top:8px;margin-bottom:4px;">
@@ -2704,10 +2694,88 @@ function renderMainMenu() {
     }
 
     // Банери onclick
-    var b1 = document.getElementById('banner1');
-    var b2 = document.getElementById('banner2');
-    if (b1) b1.onclick = function() { window.location.href = 'mailto:magicfishapp@gmail.com?subject=Реклама на MagicFish'; };
-    if (b2) b2.onclick = function() { window.location.href = 'mailto:magicfishapp@gmail.com?subject=Реклама на MagicFish'; };
+    // ===== БАНЕРИ =====
+    const DEFAULT_BANNERS = [
+        { bg: 'linear-gradient(135deg,#1f3b4c,#2a5f7a)', emoji: '🎣', text: 'Ваша реклама тут', sub: 'magicfish.club', url: 'mailto:magicfishapp@gmail.com?subject=Реклама на MagicFish', img: '' },
+        { bg: 'linear-gradient(135deg,#2e7d32,#1b5e20)', emoji: '🏪', text: 'Ваша реклама тут', sub: 'magicfish.club', url: 'mailto:magicfishapp@gmail.com?subject=Реклама на MagicFish', img: '' }
+    ];
+    function loadBanners() {
+        try { return JSON.parse(localStorage.getItem('mf_banners')) || DEFAULT_BANNERS; } catch(e) { return DEFAULT_BANNERS; }
+    }
+    function saveBanners(b) { localStorage.setItem('mf_banners', JSON.stringify(b)); }
+    function renderBanner(el, b, idx) {
+        const isAdmin = currentUser && (currentUser.email === 'magicfishapp@gmail.com' || currentUser.role === 'admin');
+        el.style.background = b.img ? '#000' : b.bg;
+        el.innerHTML = `
+            ${b.img ? `<img src="${b.img}" style="width:100%;height:130px;object-fit:cover;border-radius:16px;display:block;">` : `
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:130px;padding:12px;">
+                <div style="color:rgba(255,255,255,0.3);font-size:0.65rem;position:absolute;top:8px;left:10px;">РЕКЛАМА</div>
+                <div style="font-size:2rem;margin-bottom:6px;">${b.emoji||'🎣'}</div>
+                <div style="color:#fff;font-weight:700;font-size:0.82rem;text-align:center;">${b.text||'Ваша реклама тут'}</div>
+                <div style="color:rgba(255,255,255,0.55);font-size:0.68rem;margin-top:3px;">${b.sub||''}</div>
+            </div>`}
+            ${isAdmin ? `<div class="edit-banner-btn" data-idx="${idx}" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:8px;padding:3px 8px;font-size:0.65rem;cursor:pointer;z-index:2;">✏️ Змінити</div>` : ''}
+        `;
+        el.onclick = function(e) {
+            if (e.target.classList.contains('edit-banner-btn') || e.target.closest('.edit-banner-btn')) return;
+            if (b.url) window.open(b.url, '_blank');
+        };
+        if (isAdmin) {
+            el.querySelector('.edit-banner-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showBannerEditModal(idx);
+            });
+        }
+    }
+    function showBannerEditModal(idx) {
+        const banners = loadBanners();
+        const b = banners[idx];
+        const modal = openModal(`
+            <h3 style="margin-bottom:14px;">✏️ Банер ${idx+1}</h3>
+            <div class="input-group"><label>Посилання (URL)</label><input id="bUrl" placeholder="https://..." value="${b.url||''}"></div>
+            <div class="input-group"><label>Текст</label><input id="bText" placeholder="Назва реклами" value="${b.text||''}"></div>
+            <div class="input-group"><label>Підпис</label><input id="bSub" placeholder="сайт або слоган" value="${b.sub||''}"></div>
+            <div class="input-group"><label>Емодзі</label><input id="bEmoji" placeholder="🎣" value="${b.emoji||''}" style="font-size:1.4rem;text-align:center;width:80px;"></div>
+            <div class="input-group">
+                <label>📷 Фото банеру (замінить текст)</label>
+                ${b.img ? `<img src="${b.img}" style="width:100%;height:80px;object-fit:cover;border-radius:12px;margin-bottom:8px;">` : ''}
+                <label style="display:flex;align-items:center;gap:8px;background:#f5f5f5;border:2px dashed #ccc;border-radius:14px;padding:10px;cursor:pointer;font-size:0.85rem;">
+                    📷 ${b.img ? 'Змінити фото' : 'Додати фото'}
+                    <input type="file" id="bImg" accept="image/*" style="display:none;">
+                </label>
+                ${b.img ? `<button id="bImgClear" style="margin-top:6px;background:#fce4ec;border:none;border-radius:8px;padding:6px 12px;color:#c62828;cursor:pointer;font-size:0.78rem;">🗑️ Прибрати фото</button>` : ''}
+            </div>
+            <button id="saveBanner" class="btn btn-block">💾 Зберегти</button>
+            <button class="close-modal btn-secondary" style="width:100%;margin-top:6px;">Скасувати</button>
+        `);
+        let newImg = b.img || '';
+        modal.querySelector('#bImg').onchange = async function() {
+            const f = this.files[0]; if (!f) return;
+            const b64 = await fileToBase64(f);
+            newImg = await compressImage(b64, 600);
+            this.parentElement.querySelector('label').textContent = '✅ Фото обрано';
+        };
+        modal.querySelector('#bImgClear')?.addEventListener('click', () => { newImg = ''; modal.querySelector('#bImg').parentElement.querySelector('label').textContent = '📷 Додати фото'; });
+        modal.querySelector('.close-modal').onclick = () => modal.remove();
+        modal.querySelector('#saveBanner').onclick = () => {
+            banners[idx] = {
+                bg: b.bg,
+                url: modal.querySelector('#bUrl').value.trim(),
+                text: modal.querySelector('#bText').value.trim(),
+                sub: modal.querySelector('#bSub').value.trim(),
+                emoji: modal.querySelector('#bEmoji').value.trim() || '🎣',
+                img: newImg
+            };
+            saveBanners(banners);
+            modal.remove();
+            renderBanner(document.getElementById('banner'+(idx+1)), banners[idx], idx);
+        };
+    }
+    const banners = loadBanners();
+    const b1el = document.getElementById('banner1');
+    const b2el = document.getElementById('banner2');
+    if (b1el) renderBanner(b1el, banners[0], 0);
+    if (b2el) renderBanner(b2el, banners[1], 1);
 
     app.querySelectorAll('[data-section]').forEach(c => c.addEventListener('click', () => {
         const s = c.dataset.section;
