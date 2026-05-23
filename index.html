@@ -2626,10 +2626,10 @@ function renderMainMenu() {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
 
         <!-- Банер 1 -->
-        <div id="banner1" style="border-radius:16px;overflow:hidden;min-height:130px;cursor:pointer;position:relative;"></div>
+        <div id="banner1" style="border-radius:16px;overflow:hidden;min-height:160px;cursor:pointer;position:relative;"></div>
 
         <!-- Банер 2 -->
-        <div id="banner2" style="border-radius:16px;overflow:hidden;min-height:130px;cursor:pointer;position:relative;"></div>
+        <div id="banner2" style="border-radius:16px;overflow:hidden;min-height:160px;cursor:pointer;position:relative;"></div>
 
       </div>
       <div style="text-align:center;margin-top:8px;margin-bottom:4px;">
@@ -2707,8 +2707,8 @@ function renderMainMenu() {
         const isAdmin = currentUser && (currentUser.email === 'magicfishapp@gmail.com' || currentUser.role === 'admin');
         el.style.background = b.img ? '#000' : b.bg;
         el.innerHTML = `
-            ${b.img ? `<img src="${b.img}" style="width:100%;height:130px;object-fit:cover;border-radius:16px;display:block;">` : `
-            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:130px;padding:12px;">
+            ${b.img ? `<img src="${b.img}" style="width:100%;height:160px;object-fit:cover;border-radius:16px;display:block;">` : `
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;padding:12px;">
                 <div style="color:rgba(255,255,255,0.3);font-size:0.65rem;position:absolute;top:8px;left:10px;">РЕКЛАМА</div>
                 <div style="font-size:2rem;margin-bottom:6px;">${b.emoji||'🎣'}</div>
                 <div style="color:#fff;font-weight:700;font-size:0.82rem;text-align:center;">${b.text||'Ваша реклама тут'}</div>
