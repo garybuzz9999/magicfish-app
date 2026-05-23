@@ -2030,7 +2030,7 @@ function renderLogin() {
         <div id="emailAuthBlock" style="margin-bottom:12px;">
           <input id="authEmail" type="email" placeholder="📧 Ваш email" style="margin-bottom:8px;border-radius:16px;">
           <div id="otpBlock" style="display:none;">
-            <input id="authOtp" type="number" placeholder="🔢 Код з листа (6 цифр)" style="margin-bottom:8px;letter-spacing:4px;font-size:1.1rem;text-align:center;border-radius:16px;">
+          <input id="authOtp" type="text" inputmode="numeric" placeholder="🔢 Код з листа" style="margin-bottom:8px;letter-spacing:4px;font-size:1.1rem;text-align:center;border-radius:16px;">
           </div>
           <button id="emailAuthBtn" style="width:100%;background:#1f3b4c;color:white;border:none;border-radius:16px;padding:16px 20px;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 2px 12px rgba(31,59,76,0.25);margin-bottom:6px;">
             📧 ${isUk ? 'Увійти через Email' : 'Continue with Email'}
@@ -2210,9 +2210,9 @@ function renderLogin() {
             statusDiv.textContent = (isUk ? '📨 Код надіслано на ' : '📨 Code sent to ') + email;
         } else {
             const otp = document.getElementById('authOtp').value.trim();
-            if (otp.length !== 6) {
+            if (otp.length < 6 || otp.length > 8) {
                 statusDiv.style.color = '#e74c3c';
-                statusDiv.textContent = isUk ? '❌ Введіть 6-значний код' : '❌ Enter 6-digit code';
+                statusDiv.textContent = isUk ? '❌ Введіть код з листа' : '❌ Enter the code from email';
                 return;
             }
 
